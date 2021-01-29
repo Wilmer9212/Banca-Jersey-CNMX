@@ -18,7 +18,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 @Path("/customer")
 public class CustomerServices {
-
+    //Desde Linux
     @POST
     @Path("GetClientsByDocuments")
     @Produces({MediaType.APPLICATION_JSON})
