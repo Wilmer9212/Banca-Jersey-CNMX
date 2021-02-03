@@ -14,7 +14,8 @@
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
-    
+        
+        
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-core</artifactId>
@@ -33,12 +34,14 @@
             <version>1.19</version>
         </dependency>
         
+        
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
             <version>2.1</version>
         </dependency>
         
+        <!--Funciona con Glasfish pero no con WebLogic-->
         <dependency>
             <groupId>com.github.cliftonlabs</groupId>
             <artifactId>json-simple</artifactId>
@@ -60,11 +63,41 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.2-1002-jdbc4</version>
-        </dependency>        
- 
-
+            <version>42.2.9</version>
+        </dependency>
+      
+      
+    
+      
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.2.3</version>
+        </dependency>
         
+        <!--Funciona con Glasfih y con Weblogic-->
+        <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>1.1.4</version>
+        </dependency>
+        
+        
+        <!--Funciona con Glasfish pero no con WebLogic-->
+        <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
+        </dependency>  
+        
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20140107</version>
+        </dependency>     
+
         
     </dependencies>
     <build>

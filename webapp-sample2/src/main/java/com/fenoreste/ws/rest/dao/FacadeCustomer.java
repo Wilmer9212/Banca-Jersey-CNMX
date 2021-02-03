@@ -8,7 +8,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
-
 import com.fenoreste.ws.rest.modelos.*;
 
 import java.text.DateFormat;
@@ -29,7 +28,7 @@ public abstract class FacadeCustomer<T> {
         emf = AbstractFacade.conexion();
     }
 
-    public List<GetClientByDocumentDTO> getClientByDocument(String documentId, int clientType, String Name, String LastName, String Mail, String Phone, String CellPhone, String UserName) {
+    public GetClientByDocumentDTO getClientByDocument(String documentId, int clientType, String Name, String LastName, String Mail, String Phone, String CellPhone, String UserName) {
         EntityManager em = emf.createEntityManager();
         GetClientByDocumentDTO client = null;
         List<GetClientByDocumentDTO> clientes = new ArrayList<GetClientByDocumentDTO>();
@@ -41,7 +40,7 @@ public abstract class FacadeCustomer<T> {
         } else if (clientType == 2) {
             IdentClientType = "rfc";
         }
-        
+
         try {
             String consulta = "SELECT replace(to_char(p.idorigen,'099999')||to_char(p.idgrupo,'09')||to_char(p.idsocio,'099999'),' ','') as ogs,"
                     + "nombre||' '||appaterno||' '||apmaterno as nombrec,"
@@ -58,30 +57,27 @@ public abstract class FacadeCustomer<T> {
 
             Query query = em.createNativeQuery(consulta);
             List<Object[]> SocioEncontrados = query.getResultList();
-            System.out.println("salio:"+SocioEncontrados.size());
-            if (SocioEncontrados.size() > 0) {
-                for (Object[] objetos : SocioEncontrados) {
-                    Grupos grupo = em.find(Grupos.class, Integer.parseInt(objetos[2].toString()));
-                    client = new GetClientByDocumentDTO(objetos[0].toString(),objetos[1].toString(),String.valueOf(clientType), documentId+""+String.valueOf(clientType));
-                    users = new usuarios_banca_bankinglyDTO(0, UserName, client.getClientBankIdentifier());
-                    clientes.add(client);
-                }
-                
-                usuarios_banca_bankingly userDB = new usuarios_banca_bankingly(0, UserName, users.getSocio());
-                EntityTransaction tr=em.getTransaction();
-                tr.begin();
-                em.persist(userDB);
-                tr.commit();
-                System.out.println("Username:" + UserName);
-                
-                return clientes;
-            } else {
-                System.out.println("Error socio no encontrado");
+            System.out.println("salio:" + SocioEncontrados.size());
+            for (Object[] objetos : SocioEncontrados) {
+                Grupos grupo = em.find(Grupos.class, Integer.parseInt(objetos[2].toString()));
+                client = new GetClientByDocumentDTO(objetos[0].toString(), objetos[1].toString(), String.valueOf(clientType), documentId + "" + String.valueOf(clientType));
+                //users = new usuarios_banca_bankinglyDTO(0, UserName, client.getClientBankIdentifier());
+
             }
+
+            /*usuarios_banca_bankingly userDB = new usuarios_banca_bankingly(0, UserName, users.getSocio());
+            EntityTransaction tr = em.getTransaction();
+            tr.begin();
+            em.persist(userDB);
+            tr.commit();
+            System.out.println("Username:" + UserName);*/
+
+            return client;
+
         } catch (Exception e) {
             System.out.println("Error al procesar GetClientByDocument:" + e.getMessage());
             cerrar();
-        } 
+        }
         return null;
     }
 
@@ -124,7 +120,7 @@ public abstract class FacadeCustomer<T> {
         boolean bandera = false;
 
         EntityManager em = emf.createEntityManager();
-       
+
         try {
             Query query = em.createNativeQuery("SELECT count(*) FROM usuarios_bancam_bankingly WHERE username='" + user + "'");
             int count = Integer.parseInt(query.getSingleResult().toString());
@@ -135,13 +131,13 @@ public abstract class FacadeCustomer<T> {
             }
         } catch (Exception e) {
             System.out.println("Error en metodo para buscar usuario:" + e.getMessage());
-        } finally {   
-         if (em.getTransaction().isActive()) {
+        } finally {
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
                 em.close();
             }
             em.close();
-            
+
         }
         return bandera;
     }
@@ -432,17 +428,17 @@ public abstract class FacadeCustomer<T> {
 
         return persona;
     }
-    
-    public String nombre(){
-        EntityManager em=emf.createEntityManager();
-        String nombre="";
+
+    public String nombre() {
+        EntityManager em = emf.createEntityManager();
+        String nombre = "";
         try {
-            Query query=em.createNativeQuery("SELECT nombre FROM personas limit 1");
-            nombre=(String)query.getSingleResult();
+            Query query = em.createNativeQuery("SELECT nombre FROM personas limit 1");
+            nombre = (String) query.getSingleResult();
         } catch (Exception e) {
-            System.out.println("Error en buscar nombre:"+e.getMessage());
-        }        
-       
+            System.out.println("Error en buscar nombre:" + e.getMessage());
+        }
+
         return nombre;
     }
 

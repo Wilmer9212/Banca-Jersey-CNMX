@@ -12,9 +12,15 @@ import org.codehaus.jettison.json.JSONObject;
 import com.fenoreste.ws.rest.Bankingly.dto.GetAccountDetailsDTO;
 import com.fenoreste.ws.rest.Bankingly.dto.GetAccountLast5MovementsDTO;
 import com.fenoreste.ws.rest.dao.AccountsDAO;
-import com.github.cliftonlabs.json_simple.JsonObject;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 import org.codehaus.jettison.json.JSONException;
 
 @Path("/accounts")
@@ -34,7 +40,7 @@ public class AccountsServices {
             System.out.println("Error al convertir cadena a JSON:" + e.getMessage());
         }
 
-        JsonObject Json_De_Error = new JsonObject();
+        JsonObject Json_De_Error = null;
 
         boolean bande = true;
         //Reccorremos el accountId para veru que solo sean numeros que trae
@@ -56,21 +62,18 @@ public class AccountsServices {
                 if (cuenta != null) {
                     return Response.status(Response.Status.OK).entity(cuenta).build();
                 } else {
-                    Json_De_Error.put("type", "urn:vn:error-codes:VAL00003");
-                    Json_De_Error.put("title", "ERROR PRODUCTO NO ENCONTRADO");
+                    Json_De_Error = Json.createObjectBuilder().add("type", "urn:vn:error-codes:VAL00003").add("title", "ERROR PRODUCTO NO ENCONTRADO").build();
                     metodos.cerrar();
                     return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
                 }
             } catch (Exception e) {
-                Json_De_Error.put("type", "urn:vn:error-codes:VAL00003");
-                Json_De_Error.put("title", "ERROR INTERNO EN EL SERVIDOR");
+                Json_De_Error = Json.createObjectBuilder().add("type", "urn:vn:error-codes:VAL00003").add("title", "ERROR INTERNO EN EL SERVIDOR").build();
                 metodos.cerrar();
                 return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
             }
 
         } else {
-            Json_De_Error.put("type", "urn:vn:error-codes:VAL00003");
-            Json_De_Error.put("title", "FORMATO DE INDETIFICADOR INVALIDO");
+            Json_De_Error = Json.createObjectBuilder().add("type", "urn:vn:error-codes:VAL00003").add("title", "FORMATO DE INDETIFICADOR INVALIDO").build();
             metodos.cerrar();
             return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
         }
@@ -85,6 +88,8 @@ public class AccountsServices {
         System.out.println("Cadena Json:" + cadenaJson);
         JSONObject jsonRecibido = new JSONObject(cadenaJson);
         JsonObject Json_De_Error = null;
+        JsonObjectBuilder ObjectBuilder = Json.createObjectBuilder();
+        JsonArrayBuilder arrayEsqueleto = Json.createArrayBuilder();
         String accountId = jsonRecibido.getString("productBankIdentifier");
         boolean bandera = true;
         for (int i = 0; i < accountId.length(); i++) {
@@ -94,32 +99,48 @@ public class AccountsServices {
         }
         AccountsDAO metodos = new AccountsDAO();
         List<GetAccountLast5MovementsDTO> cuenta = new ArrayList<GetAccountLast5MovementsDTO>();
+        GetAccountLast5MovementsDTO cuentaM = null;
         if (bandera) {
             try {
                 cuenta = metodos.getAccountLast5Movements(accountId);
                 if (cuenta.size() > 0) {
                     metodos.cerrar();
-                    JsonObject jsonEntegado=new JsonObject();
-                    jsonEntegado.put("AccountLast5Movements",cuenta);
-                    return Response.status(Response.Status.OK).entity(jsonEntegado).build();
+
+                    for (int i = 0; i < cuenta.size(); i++) {
+                        cuentaM = cuenta.get(i);
+                        System.out.println("Movimientos:" + cuenta);
+                        JsonObjectBuilder data = Json.createObjectBuilder();
+                        JsonObject clientes = data.add("MovementId", cuentaM.getMovementId())
+                                .add("ccountBankIdentifier", cuentaM.getAccountBankIdentifier())
+                                .add("MovementDate", cuentaM.getMovementDate())
+                                .add("Description", cuentaM.getDescription())
+                                .add("Amount", cuentaM.getAmount())
+                                .add("isDebit", cuentaM.isIsDebit())
+                                .add("Balance", cuentaM.getBalance())
+                                .add("MovementTypeId", cuentaM.getMovementId())
+                                .add("TypeDescription", cuentaM.getTypeDescription())
+                                .add("CheckId", cuentaM.getCheckId())
+                                .add("VoucherId", cuentaM.getVoucherId()).build();
+
+                        arrayEsqueleto.add(clientes);
+                    }
+                    JsonObject cuentasJson = ObjectBuilder.add("AccountLast5Movements", arrayEsqueleto).build();
+                    return Response.status(Response.Status.OK).entity(cuentasJson).build();
                 } else {
-                    Json_De_Error.put("type", "urn:vn:error-codes:VAL00003");
-                    Json_De_Error.put("title", "PRODUCTO NO ENCONTRADO");
+                    Json_De_Error = Json.createObjectBuilder().add("type", "urn:vn:error-codes:VAL00003").add("title", "PRODUCTO NO ENCONTRADO").build();
                     metodos.cerrar();
                     return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
                 }
 
             } catch (Exception e) {
-                    Json_De_Error.put("type", "urn:vn:error-codes:VAL00003");
-                    Json_De_Error.put("title", "ERROR INTERNO EN EL SERVIDOR");
-                     metodos.cerrar();
+                Json_De_Error = Json.createObjectBuilder().add("type", "urn:vn:error-codes:VAL00003").add("title", "ERROR INTERNO EN EL SERVIDOR").build();
+                metodos.cerrar();
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Json_De_Error).build();
             }
 
         } else {
-                    Json_De_Error.put("type", "urn:vn:error-codes:VAL00003");
-                    Json_De_Error.put("title", "CARACTERES INVALIDOS EN ENTRADA");
-                    metodos.cerrar();
+            Json_De_Error = Json.createObjectBuilder().add("type", "urn:vn:error-codes:VAL00003").add("title", "CARACTERES INVALIDOS EN ENTRADA").build();
+            metodos.cerrar();
             return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
         }
 

@@ -24,8 +24,8 @@ public class usuarios_banca_bankingly implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sec_codigolibros")
-    @SequenceGenerator(name = "sec_codigolibros", sequenceName = "sec_codigolibros")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sec_usuarios_bankingly")
+    @SequenceGenerator(name = "sec_usuarios_bankingly", sequenceName = "sec_usuarios_bankingly")
     private int id;
     @Column(name = "username")
     private String username;
