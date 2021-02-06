@@ -1,6 +1,6 @@
 package com.fenoreste.ws.rest.dao;
 
-import com.fenoreste.ws.rest.modelos.Auxiliares;
+import com.fenoreste.ws.rest.modelos.entidad.Auxiliares;
 
 public class AccountsDAO extends FacadeAccounts<Auxiliares>{
 	 public AccountsDAO() {

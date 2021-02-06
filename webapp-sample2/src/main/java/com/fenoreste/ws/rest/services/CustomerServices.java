@@ -1,8 +1,8 @@
 package com.fenoreste.ws.rest.services;
 
+import com.fenoreste.ws.rest.modelos.entidad.usuarios_banca_bankingly;
 import com.fenoreste.ws.rest.Bankingly.dto.*;
 import com.fenoreste.ws.rest.dao.CustomerDAO;
-import com.fenoreste.ws.rest.modelos.*;
 import java.math.BigDecimal;
 
 import java.util.List;

@@ -1,8 +1,10 @@
 package com.fenoreste.ws.rest.dao;
 
+import com.fenoreste.ws.rest.modelos.entidad.AuxiliaresPK;
+import com.fenoreste.ws.rest.modelos.entidad.Productos;
+import com.fenoreste.ws.rest.modelos.entidad.Auxiliares;
 import com.fenoreste.ws.rest.Bankingly.dto.*;
 import com.fenoreste.ws.rest.Util.*;
-import com.fenoreste.ws.rest.modelos.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;

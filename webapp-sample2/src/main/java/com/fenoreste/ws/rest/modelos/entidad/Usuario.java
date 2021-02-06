@@ -1,4 +1,4 @@
-package com.fenoreste.ws.rest.modelos;
+package com.fenoreste.ws.rest.modelos.entidad;
 
 public class Usuario {
     

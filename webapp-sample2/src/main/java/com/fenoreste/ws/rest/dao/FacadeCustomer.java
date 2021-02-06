@@ -1,5 +1,9 @@
 package com.fenoreste.ws.rest.dao;
 
+import com.fenoreste.ws.rest.modelos.entidad.Colonias;
+import com.fenoreste.ws.rest.modelos.entidad.Grupos;
+import com.fenoreste.ws.rest.modelos.entidad.Persona;
+import com.fenoreste.ws.rest.modelos.entidad.PersonasPK;
 import com.fenoreste.ws.rest.Bankingly.dto.*;
 import com.fenoreste.ws.rest.Util.AbstractFacade;
 
@@ -8,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
-import com.fenoreste.ws.rest.modelos.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

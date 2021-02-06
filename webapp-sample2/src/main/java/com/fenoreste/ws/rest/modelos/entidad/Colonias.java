@@ -1,4 +1,4 @@
-package com.fenoreste.ws.rest.modelos;
+package com.fenoreste.ws.rest.modelos.entidad;
 import java.io.Serializable;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;

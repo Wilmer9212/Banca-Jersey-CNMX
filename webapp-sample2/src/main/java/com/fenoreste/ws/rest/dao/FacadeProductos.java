@@ -1,7 +1,12 @@
 package com.fenoreste.ws.rest.dao;
 
+import com.fenoreste.ws.rest.Bankingly.dto.GetProductsDTO;
 import com.fenoreste.ws.rest.Util.*;
+import com.fenoreste.ws.rest.modelos.entidad.Auxiliares;
+import com.fenoreste.ws.rest.modelos.entidad.Catalogo_Cuenta_Bankingly;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,30 +24,59 @@ public abstract class FacadeProductos<T> {
         emf = AbstractFacade.conexion();//Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);    
     }
 
-    public List<Object[]> getProducts1() {
-        String s = "";
-        EntityManager em = emf.createEntityManager();
-        Query query = null;
-        System.out.println("Accediendo a consulta...");
-        String consulta = "select idproducto,(case when tipoproducto=2 then 'Prestamo' else 'Ahorro' end) as pr,nombre from productos";
-        try {
-            // s = new String(consulta.getBytes(),"ISO-8859-1");
-            s = new String(consulta.getBytes("ISO-8859-1"), "UTF-8");
-            System.out.println("si:" + s);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(FacadeProductos.class.getName()).log(Level.SEVERE, null, ex);
+    public List<GetProductsDTO> getProductos(String productBI,String productTp) {        
+        
+        List<GetProductsDTO>ListagetP=new ArrayList<GetProductsDTO>();
+        GetProductsDTO auxi=new GetProductsDTO();
+        try{
+        EntityManager em=emf.createEntityManager();
+        
+        String consulta="";
+        if(!productBI.equals("") && !productTp.equals("")){
+            consulta="SELECT * FROM auxiliares WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='"+productBI+"' AND idproducto="+productTp;
+        }else if(!productBI.equals("") && productTp.equals("")){
+            consulta="SELECT * FROM auxiliares WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='"+productBI+"'";
+        }else if(productBI.equals(em) && !productTp.equals("")){
+            consulta="SELECT * FROM auxiliares WHERE idproducto="+Integer.parseInt(productTp);
+        }else{
+            consulta="SELECT * FROM auxiliares WHERE estatus=2";
         }
-        List<Object[]> lista = null;
-        try {
-            query = em.createNativeQuery(s);
-            lista = query.getResultList();
-            System.out.println("Resultados obtenidos:" + lista.size());
-        } catch (Exception e) {
-            System.out.println("No pudo obtener datos");
-        } finally {
-            em.clear();
+        
+        
+        Query query=em.createNativeQuery(consulta,Auxiliares.class);
+        List<Auxiliares>ListaA=query.getResultList();
+        
+        for(int i=0;i<ListaA.size();i++){
+            Auxiliares a=ListaA.get(i);
+            Catalogo_Cuenta_Bankingly catalogoCuentas=em.find(Catalogo_Cuenta_Bankingly.class,a.getAuxiliaresPK().getIdproducto());
+            
+            String og=String.format("%06d",a.getIdorigen())+String.format("%02d",a.getIdgrupo());
+            String s=String.format("%06d",a.getIdsocio());
+            
+            String op=String.format("%06d",a.getAuxiliaresPK().getIdorigenp())+String.format("%05d",a.getAuxiliaresPK().getIdproducto());
+            String aa=String.format("%08d",a.getAuxiliaresPK().getIdauxiliar());
+            
+            
+            auxi= new GetProductsDTO(og+s,
+                                    op+aa,//"%06d",a.getAuxiliaresPK().getIdorigenp())+""+p.format("%05d",a.getAuxiliaresPK().getIdproducto())+""+a1.format("%08d",a.getAuxiliaresPK().getIdauxiliar()),
+                                    String.valueOf(a.getAuxiliaresPK().getIdproducto()),
+                                    "",
+                                    productTp,  
+                                    productBI,
+                                    consulta,
+                                    productTp);
+            ListagetP.add(auxi);
+          
         }
-        return query.getResultList();
+        System.out.println("Lista:"+ListagetP);
+        
+        
+        return ListagetP;
+        }catch(Exception e){
+            System.out.println("Error Producido:"+e.getMessage());
+        }
+        
+        return null;
     }
 
     public List<Object[]> getProductsRate(String customerId, int productCode, String accountType) {
@@ -113,7 +147,7 @@ public abstract class FacadeProductos<T> {
         return lista;
     }
 
-    public void cerrar() throws Throwable {
+    public void cerrar(){
         emf.close();
     }
 }

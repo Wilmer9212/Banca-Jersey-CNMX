@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.fenoreste.ws.rest.modelos;
+package com.fenoreste.ws.rest.modelos.entidad;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,7 +15,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -24,7 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Cacheable(false)
 @Entity
 @Table(name = "auxiliares")
-@XmlRootElement
 public class Auxiliares implements Serializable {
 
     private static final long serialVersionUID = 1L;
