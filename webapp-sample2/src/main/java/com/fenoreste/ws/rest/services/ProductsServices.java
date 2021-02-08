@@ -31,7 +31,7 @@ public class ProductsServices {
     
     
     @POST
-    @Path("/getProducts")
+    @Path("/GetProducts")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Response ObtenerProductos(String cadena) throws Throwable { 
