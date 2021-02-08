@@ -50,12 +50,12 @@ public abstract class FacadeCustomer<T> {
                     + "p.idgrupo as grupo,"
                     + "p.idorigen||''||p.idgrupo||''||p.idsocio as identificador "
                     + "FROM personas p WHERE "
-                    + "(p." + IdentClientType.toUpperCase() + ")='" + documentId + "'"
-                    + " AND UPPER(p.nombre)='" + Name.toUpperCase() + "'"
-                    + " AND UPPER(p.appaterno||''||p.apmaterno) like '%" + LastName.toUpperCase().replace(" ", "") + "%'"
-                    + " AND UPPER(p.email)='" + Mail.toUpperCase() + "'"
-                    + " AND p.telefono='" + Phone + "'"
-                    + " AND p.celular='" + CellPhone + "'";
+                    + "replace((p." + IdentClientType.toUpperCase() + "),' ','')='" + documentId.replace(" ","") + "'"
+                    + " AND replace(UPPER(p.nombre),' ','')='" + Name.toUpperCase().replace(" ","") + "'"
+                    + " AND UPPER(replace(p.appaterno,' ','')||''||replace(p.apmaterno,' ','')) like '%" + LastName.toUpperCase().replace(" ", "") + "%'"
+                    + " AND UPPER(replace(p.email,' ',''))='" + Mail.toUpperCase().replace(" ","") + "'"
+                    + " AND replace(p.telefono,' ','')='" + Phone.replace(" ","") + "'"
+                    + " AND replace(p.celular,' ','')='" + CellPhone.replace(" ","") + "'";
             System.out.println("Consulta:" + consulta);
 
             Query query = em.createNativeQuery(consulta);
@@ -91,11 +91,11 @@ public abstract class FacadeCustomer<T> {
         boolean bandera = false;
         try {
             String consulta = "SELECT * FROM personas p WHERE "
-                    + "UPPER(p.nombre)='" + Name.toUpperCase() + "' AND "
-                    + "UPPER(p.appaterno||''||p.apmaterno) like '%" + LastName.toUpperCase().replace(" ", "") + "%' AND "
-                    + "UPPER(p.email)='" + Mail.toUpperCase() + "' AND "
-                    + "p.telefono='" + Phone + "' AND "
-                    + "p.celular='" + CellPhone + "'";
+                    + "replace(UPPER(p.nombre),' ','')='" + Name.toUpperCase().replace(" ","") + "' AND "
+                    + "UPPER(replace(p.appaterno,' ','')||''||replace(p.apmaterno,' ','')) like '%" + LastName.toUpperCase().replace(" ", "") + "%' AND "
+                    + "replace(UPPER(p.email),' ','')='" + Mail.toUpperCase() + "' AND "
+                    + "replace(p.telefono,' ','')='" + Phone.replace(" ","") + "' AND "
+                    + "replace(p.celular,' ','')='" + CellPhone.replace(" ","") + "'";
             System.out.println("Consulta:" + consulta);
 
             Query query = em.createNativeQuery(consulta, Persona.class);

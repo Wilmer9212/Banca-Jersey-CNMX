@@ -110,7 +110,7 @@ public class CustomerServices {
             datos.cerrar();
         
 
-        return Response.status(Response.Status.CREATED).entity(jsonol).build();
+        return Response.status(Response.Status.CREATED).entity("hola").build();
     }
 
     @GET

@@ -1,5 +1,9 @@
 
+import com.fenoreste.ws.rest.Util.AbstractFacade;
 import java.util.Formatter;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -11,16 +15,15 @@ import java.util.Formatter;
  *
  * @author wilmer
  */
+
 public class pruebas {
     public static void main(String[] args) {
-        String.format("%010d", 4);
-        Formatter fmt = new Formatter();
-        int numero=2901;
-        Formatter h=fmt.format("%08d",numero);
-        System.out.println("h:"+h);
-        for(int x=0;x<5;x++){
-            System.out.println("x:"+x);
-        }
+        EntityManagerFactory emf=AbstractFacade.conexion();
+        EntityManager em=emf.createEntityManager();
+        Query query=em.createNativeQuery("SELECT nombre FROM personas limit 1");
+        String nombre=(String)query.getSingleResult();
+        System.out.println("El nombre es:"+nombre);
+        emf.close();
     }
     
 }
