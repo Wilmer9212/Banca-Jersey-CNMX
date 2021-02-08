@@ -19,7 +19,7 @@ import com.fenoreste.ws.rest.Util.JPAUtil;
 
 @Path("/delete")
 public class Services {
-
+        //Se esta modificando hola mundo  fredy
 	@GET
 	@Path("/users")
 	@Produces({MediaType.APPLICATION_JSON})
