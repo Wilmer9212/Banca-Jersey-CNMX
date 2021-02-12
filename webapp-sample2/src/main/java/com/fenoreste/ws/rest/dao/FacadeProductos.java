@@ -78,7 +78,7 @@ public abstract class FacadeProductos<T> {
         
         return null;
     }
-
+/*
     public List<Object[]> getProductsRate(String customerId, int productCode, String accountType) {
         EntityManager em = emf.createEntityManager();
         Query query = null;
@@ -98,6 +98,7 @@ public abstract class FacadeProductos<T> {
         }
         return query.getResultList();
     }
+*/
 
     public List<Object[]> getProducts(String ogs, Integer tipoProducto) {
         String s = "";
@@ -147,7 +148,66 @@ public abstract class FacadeProductos<T> {
         return lista;
     }
 
+
+public List<Object[]> getProductsConsoli(String ogs, String opa) {
+String s = "";
+        List<Object[]> lista = null;
+        EntityManager em = emf.createEntityManager();
+        Query query = null;
+        System.out.println("ogs: " + ogs + "\n" + "opa: " + opa);
+
+        String consulta = "SELECT TRIM(TO_CHAR(a.idorigen,'099999'))||TRIM(TO_CHAR(a.idgrupo,'09'))||TRIM(TO_CHAR(a.idsocio,'099999')) as ogs, " 
+                + "      TRIM(TO_CHAR(a.idorigenp,'099999'))||TRIM(TO_CHAR(a.idproducto,'09999'))||TRIM(TO_CHAR(a.idauxiliar,'09999999')) as opa, " 
+                + "      (SELECT idelemento FROM (SELECT * FROM (SELECT regexp_split_to_table(dato2,',') AS product, "
+                + "                                                     idelemento "
+                + "                                                FROM tablas " 
+                + "                                               WHERE idtabla = 'bankingly' "
+                + "                                                 AND dato1 = 'lista_productos') AS pro "
+                + "                                WHERE TRIM(product) is not null AND TRIM(product) <> '') AS pr " 
+                + "        WHERE product::INTEGER = (select dato from prueba)) AS ProductTypeId, "
+                + "      pr.nombre, "
+                + "      a.idproducto, "
+                + "      a.saldo, "
+                + "      (case when tipoproducto in (0,1,8) and tasaiod is null and tasaim is null then tasaio else 0 end) as tasa, "
+                + "      (case when tipoproducto in (1,8) then date(fechaactivacion + (plazo||' month'||\\:\\:interval)) else '01/01/1999' end) as fecha_vence, "
+                + "      a.plazo, "
+                + "      a.fechaactivacion, "
+                + "      pr.tipoproducto, "
+                + "      (SELECT count(*) FROM amortizaciones am WHERE am.idorigenp = a.idorigenp AND am.idproducto = a.idproducto AND am.idauxiliar = a.idauxiliar AND am.todopag = TRUE) AS pagos_realizados, "
+                + "      (SELECT count(*) FROM amortizaciones am WHERE am.idorigenp = a.idorigenp AND am.idproducto = a.idproducto AND am.idauxiliar = a.idauxiliar) AS totales_mensualidades, "
+                + "      (SELECT count(*) FROM amortizaciones am WHERE am.idorigenp = a.idorigenp AND am.idproducto = a.idproducto AND am.idauxiliar = a.idauxiliar AND am.) AS pox_pag, "
+                + "      (SELECT o.nombre FROM origenes o WHERE o.idorigen = a.idorigenp) AS sucursal, "
+                + "      (SELECT p.nombre||' '||p.appaterno||' '||p.apmaterno FROM personas p WHERE p.idorigen = a.idorigen AND p.idgrupo = a.idgrupo AND p.idsocio = a.idsocio) as socio,  "
+                + "      (SELECT su.nombre from origenes su where su.idorigen = a.idorigenp) as sucursal "
+                + " FROM auxiliares a "
+                + " INNER JOIN productos pr USING(idproducto) "
+                + "WHERE a.estatus = 2 "
+                + "  AND TRIM(TO_CHAR(a.idorigen,'099999'))||TRIM(TO_CHAR(a.idgrupo,'09'))||TRIM(TO_CHAR(a.idsocio,'099999')) = TRIM('" + ogs + "') "
+                + "  AND TRIM(TO_CHAR(a.idorigenp,'099999'))||TRIM(TO_CHAR(a.idproducto,'09999'))||TRIM(TO_CHAR(a.idauxiliar,'09999999')) = TRIM('" + opa + "'); ";
+
+        System.out.println("Consuuuuuuuuuuuuuuuuuuuulta: \n" + consulta);
+
+        try {
+            // query = em.createNativeQuery(s);
+            query = em.createNativeQuery(consulta);
+            lista = query.getResultList();
+            System.out.println("Resultados obtenidos: " + lista);
+        } catch (Exception e) {
+            em.clear();
+            em.close();
+            System.out.println("No pudo obtener datos \n Error: " + e.getMessage());
+        } finally {
+            em.clear();
+            em.close();
+        }
+        // return query.getResultList();
+        return lista;    
+    }
+
+
+
     public void cerrar(){
         emf.close();
     }
+
 }
