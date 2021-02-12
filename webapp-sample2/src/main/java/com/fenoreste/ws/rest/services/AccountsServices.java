@@ -12,15 +12,12 @@ import org.codehaus.jettison.json.JSONObject;
 import com.fenoreste.ws.rest.Bankingly.dto.GetAccountDetailsDTO;
 import com.fenoreste.ws.rest.Bankingly.dto.GetAccountLast5MovementsDTO;
 import com.fenoreste.ws.rest.dao.AccountsDAO;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
 import org.codehaus.jettison.json.JSONException;
 
 @Path("/accounts")
@@ -50,9 +47,10 @@ public class AccountsServices {
                 System.out.println("Charat:" + accountId.charAt(i));
             }
         }
-
+        
         System.out.println("Bande:" + bande);
         AccountsDAO metodos = new AccountsDAO();
+       
         //Si no trae letras en Identificador de producto(OPA) y la longitud es igual a lo que se maneja en la caja 
 
         if (bande == true && accountId.length() == 19) {

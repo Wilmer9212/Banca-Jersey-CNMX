@@ -123,71 +123,7 @@ public abstract class FacadeAccounts<T> {
 
     }
 
-    public List<GetAccountMovementsDTO> getAccountMovements(String accountId, String dateFromFilter, String dateToFilter) {
-        em = emf.createEntityManager();
-        GetAccountMovementsDTO cuenta;
-        boolean isDC = false;
-        String Description = "";
-        List<GetAccountMovementsDTO> ListaDTO = new ArrayList<GetAccountMovementsDTO>();
-        try {
-            String consulta = " SELECT m.* "
-                    + "         FROM auxiliares_d m"
-                    + "         WHERE date(fecha) between '" + dateFromFilter + "'"
-                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ?";
-            Query k = em.createNativeQuery(consulta);
-            k.setParameter(1, accountId);
-
-            List<Object[]> milista = k.getResultList();
-            for (int i = 0; i < milista.size(); i++) {
-                Object[] as = milista.get(i);
-                if (Integer.parseInt(as[4].toString()) == 1) {
-                    Description = "Abono";
-                } else if (Integer.parseInt(as[4].toString()) == 0) {
-                    Description = "Cargo";
-                }
-                Productos productos = em.find(Productos.class, Integer.parseInt(as[1].toString()));
-                if (productos.getTipoproducto() == 2) {
-                    isDC = false;
-                } else {
-                    isDC = true;
-                }
-                cuenta = new GetAccountMovementsDTO(
-                        Integer.parseInt(as[12].toString()),
-                        accountId,
-                        as[3].toString(),
-                        Description,
-                        Double.parseDouble(as[5].toString()),
-                        isDC,
-                        Double.parseDouble(as[14].toString()),
-                        1,
-                        Description,
-                        as[12].toString(),
-                        as[20].toString());
-
-                ListaDTO.add(cuenta);
-            }
-            System.out.println("ListaDTO:" + ListaDTO);
-
-        } catch (Exception e) {
-            if (em.isOpen()) {
-                em.close();
-                emf.close();
-
-            }
-
-            System.out.println("Error:" + e.getMessage());
-        } finally {
-            if (em.isOpen()) {
-                em.close();
-                emf.close();
-
-            }
-        }
-        return ListaDTO;
-    }
-
     public List<GetAccountLast5MovementsDTO> getAccountLast5Movements(String accountId) {
-
         em = emf.createEntityManager();
         GetAccountLast5MovementsDTO cuenta;
         boolean isDC = false;
@@ -232,10 +168,70 @@ public abstract class FacadeAccounts<T> {
             System.out.println("ListaDTO:" + ListaDTO);
 
         } catch (Exception e) {
+            em.close();
             System.out.println("Error en GetAccountLast5Movements:" + e.getMessage());
         }
         return ListaDTO;
     }
+    
+    
+    public List<GetAccountMovementsDTO> getAccountMovements(String accountId, String dateFromFilter, String dateToFilter) {
+        em = emf.createEntityManager();
+        GetAccountMovementsDTO cuenta;
+        boolean isDC = false;
+        String Description = "";
+        List<GetAccountMovementsDTO> ListaDTO = new ArrayList<GetAccountMovementsDTO>();
+    
+        
+        try {
+            String consulta = " SELECT m.* "
+                    + "         FROM auxiliares_d m"
+                    + "         WHERE date(fecha) between '" + dateFromFilter + "'"
+                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ?";
+            Query k = em.createNativeQuery(consulta,Auxiliares.class);
+            k.setParameter(1, accountId);
+            
+           
+            List<Object[]> milista = k.getResultList();
+            
+            for (int i = 0; i < milista.size(); i++) {
+                Object[] as = milista.get(i);
+                if (Integer.parseInt(as[4].toString()) == 1) {
+                    Description = "Abono";
+                } else if (Integer.parseInt(as[4].toString()) == 0) {
+                    Description = "Cargo";
+                }
+                Productos productos = em.find(Productos.class, Integer.parseInt(as[1].toString()));
+                if (productos.getTipoproducto() == 2) {
+                    isDC = false;
+                } else {
+                    isDC = true;
+                }
+                cuenta = new GetAccountMovementsDTO(
+                        Integer.parseInt(as[12].toString()),
+                        accountId,
+                        as[3].toString(),
+                        Description,
+                        Double.parseDouble(as[5].toString()),
+                        isDC,
+                        Double.parseDouble(as[14].toString()),
+                        1,
+                        Description,
+                        as[12].toString(),
+                        as[20].toString());
+
+                ListaDTO.add(cuenta);
+            }
+            System.out.println("ListaDTO:" + ListaDTO);
+
+        } catch (Exception e) {
+                em.close();
+              System.out.println("Error:" + e.getMessage());
+        } 
+        return ListaDTO;
+    }
+
+    
 
     public static Date substractDate(int numeroDias) {
         SimpleDateFormat d = new SimpleDateFormat("dd/MM/yyyy");

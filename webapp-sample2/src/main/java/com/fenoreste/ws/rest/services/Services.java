@@ -12,13 +12,33 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import com.fenoreste.ws.rest.Util.AbstractFacade;
-import com.fenoreste.ws.rest.Util.JPAUtil;
+import com.fenoreste.ws.rest.modelos.entidad.Persona;
+import java.util.List;
 
 
-@Path("/delete")
+@Path("tests")
 public class Services {
+    
+       
+        @GET
+        @Produces({MediaType.APPLICATION_JSON})
+	@Consumes({MediaType.APPLICATION_JSON})
+        public Response getLista(){
+            System.out.println("Lista:"+ListPerson(0));
+            
+           return Response.ok(ListPerson(0)).build();
+        }
+        public List<Persona>ListPerson(int offset){
+            EntityManagerFactory emf=AbstractFacade.conexion();
+            EntityManager em=emf.createEntityManager();
+            Query query=em.createNativeQuery("SELECT * FROM personas",Persona.class);
+            query.setMaxResults(10);
+            query.setFirstResult(offset);
+            
+            
+            return query.getResultList();
+        }
         //Se esta modificando hola mundo  fredy
 	@GET
 	@Path("/users")
