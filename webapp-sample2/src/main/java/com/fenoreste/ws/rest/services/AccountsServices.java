@@ -11,8 +11,10 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.fenoreste.ws.rest.Bankingly.dto.GetAccountDetailsDTO;
 import com.fenoreste.ws.rest.Bankingly.dto.GetAccountLast5MovementsDTO;
+import com.fenoreste.ws.rest.Bankingly.dto.GetAccountMovementsDTO;
 import com.fenoreste.ws.rest.dao.AccountsDAO;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -47,12 +49,11 @@ public class AccountsServices {
                 System.out.println("Charat:" + accountId.charAt(i));
             }
         }
-        
+
         System.out.println("Bande:" + bande);
         AccountsDAO metodos = new AccountsDAO();
-       
-        //Si no trae letras en Identificador de producto(OPA) y la longitud es igual a lo que se maneja en la caja 
 
+        //Si no trae letras en Identificador de producto(OPA) y la longitud es igual a lo que se maneja en la caja 
         if (bande == true && accountId.length() == 19) {
             GetAccountDetailsDTO cuenta = null;
             try {
@@ -76,6 +77,43 @@ public class AccountsServices {
             return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
         }
 
+    }
+
+    @POST
+    @Path("/GetAccountMovements")
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response getAccountMovements(String cadenaJson) {
+        AccountsDAO dao = new AccountsDAO();
+        String ProductBankIdentifier = "";
+        String DateFromFilter = null;
+        String DateToFilter = null;
+        int PageSize = 0;
+        int PageStartIndex = 0;
+
+        try {
+            JSONObject jsonRecibido = new JSONObject(cadenaJson);
+            ProductBankIdentifier = jsonRecibido.getString("productBankIdentifier");
+            DateFromFilter = jsonRecibido.getString("dateFromFilter");
+            DateToFilter = jsonRecibido.getString("dateToFilter");
+            JSONObject json = jsonRecibido.getJSONObject("paging");
+            PageSize = json.getInt("pageSize");
+            PageStartIndex = json.getInt("pageStartIndex");
+            List<GetAccountMovementsDTO>MiListaDTO=dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex);
+            
+        } catch (Exception e) {
+            System.out.println("Error al convertir cadena a JSON:" + e.getMessage());
+
+        } finally {
+            dao.cerrar();
+        }
+        System.out.println("ProductBankIdentifier:" + ProductBankIdentifier);
+        System.out.println("DateFromFilter:" + DateFromFilter);
+        System.out.println("DateToFilter:" + DateToFilter);
+        System.out.println("PageSize:" + PageSize);
+        System.out.println("PageStartIndex:" + PageStartIndex);
+        //dao.getAccountMovements(cadenaJson, cadenaJson, cadenaJson)
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @POST

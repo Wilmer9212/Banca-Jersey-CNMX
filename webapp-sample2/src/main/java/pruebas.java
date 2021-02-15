@@ -20,9 +20,13 @@ public class pruebas {
     public static void main(String[] args) {
         EntityManagerFactory emf=AbstractFacade.conexion();
         EntityManager em=emf.createEntityManager();
-        Query query=em.createNativeQuery("SELECT nombre FROM personas limit 1");
-        String nombre=(String)query.getSingleResult();
-        System.out.println("El nombre es:"+nombre);
+        try{
+       /* Auxiliares_dPK dpk=new Auxiliares_dPK(30506,110,4470);
+        AuxiliaresD d=em.find(AuxiliaresD.class,dpk);*/
+        //System.out.println(" IdProducto:"+d.getPeriodo());
+        }catch(Exception e){
+            System.out.println("Error:"+e.getStackTrace());
+        }
         emf.close();
     }
     

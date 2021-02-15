@@ -5,6 +5,7 @@ import com.fenoreste.ws.rest.modelos.entidad.Productos;
 import com.fenoreste.ws.rest.modelos.entidad.Auxiliares;
 import com.fenoreste.ws.rest.Bankingly.dto.*;
 import com.fenoreste.ws.rest.Util.*;
+import com.fenoreste.ws.rest.modelos.entidad.Persona;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -175,15 +176,43 @@ public abstract class FacadeAccounts<T> {
     }
     
     
-    public List<GetAccountMovementsDTO> getAccountMovements(String accountId, String dateFromFilter, String dateToFilter) {
+    public List<GetAccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize,int pageStartIndex) {
         em = emf.createEntityManager();
         GetAccountMovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
         List<GetAccountMovementsDTO> ListaDTO = new ArrayList<GetAccountMovementsDTO>();
-    
         
+        EntityManagerFactory emf = AbstractFacade.conexion();
+        EntityManager em = emf.createEntityManager();
+        int pageNumber = pageStartIndex;
+        int pageSizes = pageSize;         
+         int inicioB=0;
+         
+         //Query query = em.createNativeQuery("SELECT * FROM personas order by idsocio ASC",Persona.class);
+          String consulta = " SELECT m.* "
+                    + "         FROM auxiliares_d m"
+                    + "         WHERE date(fecha) between '" + dateFromFilter + "'"
+                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ? ORDER BY fecha ASC";
+           
+         if(pageNumber==1 || pageNumber==0){
+             inicioB=pageNumber;
+         }else if(pageNumber>1){
+              inicioB=((pageNumber * pageSizes)-pageSizes);
+         }    
+                
         try {
+        /*Query queryE=em.createNativeQuery(consulta,AuxiliaresD.class);
+        queryE.setFirstResult(inicioB);
+        queryE.setMaxResults(pageSizes);
+        List<AuxiliaresD>MiLista=queryE.getResultList();
+        for(int i=0;i<MiLista.size();i++){
+            System.out.println("Fecha:"+MiLista.get(i).getFecha());
+        }*/
+        //System.out.println("Lista:"+MiLista.size());
+        } catch (Exception e) {
+        }
+        /*try {
             String consulta = " SELECT m.* "
                     + "         FROM auxiliares_d m"
                     + "         WHERE date(fecha) between '" + dateFromFilter + "'"
@@ -227,7 +256,7 @@ public abstract class FacadeAccounts<T> {
         } catch (Exception e) {
                 em.close();
               System.out.println("Error:" + e.getMessage());
-        } 
+        } */
         return ListaDTO;
     }
 
