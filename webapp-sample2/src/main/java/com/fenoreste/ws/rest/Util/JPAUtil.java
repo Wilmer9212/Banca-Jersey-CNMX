@@ -34,6 +34,7 @@ public class JPAUtil{
         return Persistence.createEntityManagerFactory(PU,properties);   
          
         } catch (Throwable e) {
+            System.out.println(""+e.getStackTrace());
             System.err.println("Error al conectar a la persistencia: " + e.getMessage());
        
         }

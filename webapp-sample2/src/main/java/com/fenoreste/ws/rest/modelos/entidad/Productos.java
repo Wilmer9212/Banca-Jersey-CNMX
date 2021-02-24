@@ -8,10 +8,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="productos")
-public class Productos implements  Serializable{
+public class Productos{
 
-private static final long SerialVersionUID=1L;
-	
 	@Id
 	@Column(name="idproducto")
 	private Integer idproducto;

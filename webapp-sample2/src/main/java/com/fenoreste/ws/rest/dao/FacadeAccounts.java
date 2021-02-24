@@ -5,7 +5,10 @@ import com.fenoreste.ws.rest.modelos.entidad.Productos;
 import com.fenoreste.ws.rest.modelos.entidad.Auxiliares;
 import com.fenoreste.ws.rest.Bankingly.dto.*;
 import com.fenoreste.ws.rest.Util.*;
+import com.fenoreste.ws.rest.modelos.entidad.AuxiliaresD;
 import com.fenoreste.ws.rest.modelos.entidad.Persona;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -174,93 +177,90 @@ public abstract class FacadeAccounts<T> {
         }
         return ListaDTO;
     }
-    
-    
-    public List<GetAccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize,int pageStartIndex) {
+
+    public List<GetAccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize, int pageStartIndex) {
         em = emf.createEntityManager();
         GetAccountMovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
         List<GetAccountMovementsDTO> ListaDTO = new ArrayList<GetAccountMovementsDTO>();
-        
+
         EntityManagerFactory emf = AbstractFacade.conexion();
         EntityManager em = emf.createEntityManager();
         int pageNumber = pageStartIndex;
-        int pageSizes = pageSize;         
-         int inicioB=0;
-         
-         //Query query = em.createNativeQuery("SELECT * FROM personas order by idsocio ASC",Persona.class);
-          String consulta = " SELECT m.* "
-                    + "         FROM auxiliares_d m"
+        int pageSizes = pageSize;
+        int inicioB = 0;
+
+        //Query query = em.createNativeQuery("SELECT * FROM personas order by idsocio ASC",Persona.class);
+        String consulta = "";
+        if (!dateFromFilter.equals("") && !dateToFilter.equals("")) {
+            consulta = " SELECT *"
+                    + "         FROM auxiliares_d"
                     + "         WHERE date(fecha) between '" + dateFromFilter + "'"
-                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ? ORDER BY fecha ASC";
-           
-         if(pageNumber==1 || pageNumber==0){
-             inicioB=pageNumber;
-         }else if(pageNumber>1){
-              inicioB=((pageNumber * pageSizes)-pageSizes);
-         }    
-                
-        try {
-        /*Query queryE=em.createNativeQuery(consulta,AuxiliaresD.class);
-        queryE.setFirstResult(inicioB);
-        queryE.setMaxResults(pageSizes);
-        List<AuxiliaresD>MiLista=queryE.getResultList();
-        for(int i=0;i<MiLista.size();i++){
-            System.out.println("Fecha:"+MiLista.get(i).getFecha());
-        }*/
-        //System.out.println("Lista:"+MiLista.size());
-        } catch (Exception e) {
+                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+        } else if (!dateFromFilter.equals("") && dateToFilter.equals("")) {
+            consulta = " SELECT *"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE date(fecha) > '" + dateFromFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+
+        } else if (dateFromFilter.equals("") && !dateToFilter.equals("")) {
+            consulta = " SELECT *"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE date(fecha) < '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+
+        } else {
+            consulta = " SELECT *"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+
         }
-        /*try {
-            String consulta = " SELECT m.* "
-                    + "         FROM auxiliares_d m"
-                    + "         WHERE date(fecha) between '" + dateFromFilter + "'"
-                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ?";
-            Query k = em.createNativeQuery(consulta,Auxiliares.class);
-            k.setParameter(1, accountId);
-            
-           
-            List<Object[]> milista = k.getResultList();
-            
-            for (int i = 0; i < milista.size(); i++) {
-                Object[] as = milista.get(i);
-                if (Integer.parseInt(as[4].toString()) == 1) {
+
+        System.out.println("Consulta:" + consulta);
+
+        if (pageNumber == 1 || pageNumber == 0) {
+            inicioB = 0;
+        } else if (pageNumber > 1) {
+            inicioB = ((pageNumber * pageSizes) - pageSizes);
+        }
+
+        try {
+            Query queryE = em.createNativeQuery(consulta);
+            queryE.setFirstResult(inicioB);
+            queryE.setMaxResults(pageSizes);
+            List<Object[]> MiLista = queryE.getResultList();
+            for(Object[] ListaO:MiLista) {
+            if (Integer.parseInt(ListaO[4].toString()) == 1) {
                     Description = "Abono";
-                } else if (Integer.parseInt(as[4].toString()) == 0) {
+                } else if (Integer.parseInt(ListaO[4].toString()) == 0) {
                     Description = "Cargo";
                 }
-                Productos productos = em.find(Productos.class, Integer.parseInt(as[1].toString()));
+                Productos productos = em.find(Productos.class, Integer.parseInt(ListaO[1].toString()));
                 if (productos.getTipoproducto() == 2) {
                     isDC = false;
                 } else {
                     isDC = true;
                 }
-                cuenta = new GetAccountMovementsDTO(
-                        Integer.parseInt(as[12].toString()),
-                        accountId,
-                        as[3].toString(),
+                GetAccountMovementsDTO dto = new GetAccountMovementsDTO(
+                        Integer.parseInt(ListaO[12].toString()),
+                        productBankIdentifier,
+                        ListaO[3].toString(),
                         Description,
-                        Double.parseDouble(as[5].toString()),
+                        Double.parseDouble(ListaO[5].toString()),
                         isDC,
-                        Double.parseDouble(as[14].toString()),
-                        1,
+                        Double.parseDouble(ListaO[14].toString()),
+                        Integer.parseInt(ListaO[12].toString()),
                         Description,
-                        as[12].toString(),
-                        as[20].toString());
-
-                ListaDTO.add(cuenta);
+                        ListaO[11].toString(),
+                        ListaO[11].toString());   
+                ListaDTO.add(dto);
+                
+                
             }
-            System.out.println("ListaDTO:" + ListaDTO);
-
         } catch (Exception e) {
-                em.close();
-              System.out.println("Error:" + e.getMessage());
-        } */
+            System.out.println("Error:" + e.getMessage());
+        }
         return ListaDTO;
     }
-
-    
 
     public static Date substractDate(int numeroDias) {
         SimpleDateFormat d = new SimpleDateFormat("dd/MM/yyyy");
@@ -366,6 +366,43 @@ public abstract class FacadeAccounts<T> {
         }
         System.out.println("saldos:" + saldo1 + "," + saldo2 + "," + saldo3);
         return saldos;
+    }
+
+    public int contadorAuxD(String productBankIdentifier, String dateFromFilter, String dateToFilter) {
+        String consulta = "";
+        int count=0;
+        try{
+        if (!dateFromFilter.equals("") && !dateToFilter.equals("")) {
+            consulta = " SELECT count(*)"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE date(fecha) between '" + dateFromFilter + "'"
+                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "'";
+        } else if (!dateFromFilter.equals("") && dateToFilter.equals("")) {
+            consulta = " SELECT count(*)"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE date(fecha) > '" + dateFromFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "'";
+
+        } else if (dateFromFilter.equals("") && !dateToFilter.equals("")) {
+            consulta = " SELECT count(*)"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE date(fecha) < '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "'";
+
+        } else {
+            consulta = " SELECT count(*)"
+                    + "         FROM auxiliares_d"
+                    + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "'";
+
+        }
+        Query query = em.createNativeQuery(consulta);
+        BigInteger b1;
+        b1 = new BigInteger(query.getSingleResult().toString());
+        count = Integer.parseInt(b1.toString());
+        }catch(Exception e){
+        System.out.println("Error al contar registros:"+e.getMessage());
+        }
+        System.out.println("contadooooooooooooooooooooooooooor:"+count);
+        em.close();
+        return count;
     }
 
     /**

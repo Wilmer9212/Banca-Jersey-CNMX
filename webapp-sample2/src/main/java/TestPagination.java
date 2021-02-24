@@ -52,6 +52,8 @@ public class TestPagination {
         for(int ii=0;ii<fooList1.size();ii++){
             System.out.println("Nombre1:"+fooList1.get(ii).getPersonasPK().getIdsocio()+" " +fooList1.get(ii).getNombre()+" "+fooList1.get(ii).getAppaterno() +" "+fooList1.get(ii).getApmaterno());
         }
+        em.clear();
+        em.close();
         emf.close();
     }
 

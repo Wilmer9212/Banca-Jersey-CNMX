@@ -22,7 +22,7 @@ public class Catalogo_Cuenta_Bankingly {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idproducto")
-    private Integer idProducto;    
+    private Integer idproducto;    
     @Column(name="producttypename")    
     private String productTypeName;
     @Column(name="descripcion")    
@@ -32,11 +32,11 @@ public class Catalogo_Cuenta_Bankingly {
     public Catalogo_Cuenta_Bankingly() {
     }
 
-    public Catalogo_Cuenta_Bankingly(Integer productTypeId, String productTypeName, String descripcion, int idProducto) {
+    public Catalogo_Cuenta_Bankingly(Integer productTypeId, String productTypeName, String descripcion, Integer idproducto) {
         this.productTypeId = productTypeId;
         this.productTypeName = productTypeName;
         this.descripcion = descripcion;
-        this.idProducto = idProducto;
+        this.idproducto = idproducto;
     }
 
     public Integer getProductTypeId() {
@@ -63,19 +63,17 @@ public class Catalogo_Cuenta_Bankingly {
         this.descripcion = descripcion;
     }
 
-    public int getIdProducto() {
-        return idProducto;
+    public Integer getIdproducto() {
+        return idproducto;
     }
 
-    public void setIdProducto(int idProducto) {
-        this.idProducto = idProducto;
+    public void setIdproducto(Integer idproducto) {
+        this.idproducto = idproducto;
     }
 
     @Override
     public String toString() {
-        return "Catalogo_Cuenta_Bankingly{" + "productTypeId=" + productTypeId + ", productTypeName=" + productTypeName + ", descripcion=" + descripcion + ", idProducto=" + idProducto + '}';
+        return "Catalogo_Cuenta_Bankingly{" + "productTypeId=" + productTypeId + ", productTypeName=" + productTypeName + ", descripcion=" + descripcion + ", idproducto=" + idproducto + '}';
     }
-    
-    
     
 }
