@@ -18,6 +18,7 @@
             <param-value>
                 com.jersey.jaxb,
                 com.fasterxml.jackson.jaxrs.json
+                
             </param-value>
 
         </init-param>
