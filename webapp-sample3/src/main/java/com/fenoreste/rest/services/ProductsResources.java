@@ -43,12 +43,10 @@ public class ProductsResources {
             for (int i = 0; i < jsonCB.length(); i++) {
                 JSONObject jCB = (JSONObject) jsonCB.get(i);
                 ClientBankIdentifiers = jCB.getString("value");
-                System.out.println("ClientBankIdentifiers:" + ClientBankIdentifiers);
             }
             for (int x = 0; x < jsonPB.length(); x++) {
                 JSONObject jPB = (JSONObject) jsonPB.get(x);
                 ProductTypes = jPB.getInt("value");
-                System.out.println("ProductTypes:" + ProductTypes);
             }
         } catch (Exception e) {
             jsonError.put("Error","Request Failed");

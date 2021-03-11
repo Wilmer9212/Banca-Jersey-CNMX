@@ -17,9 +17,9 @@ public class GetProductsConsolidatePositionDTO {
       private String productTypeId;
       private String productAlias;
       private String productNumber;
-      private String localCurrencyId;
+      private Integer localCurrencyId;
       private Double localBalance;
-      private String internationalCurrencyId;
+      private Integer internationalCurrencyId;
       private Double internationalBalance;
       private Double rate;
       private Date expirationDate;
@@ -36,7 +36,7 @@ public class GetProductsConsolidatePositionDTO {
     public GetProductsConsolidatePositionDTO() {
     }
 
-    public GetProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, String localCurrencyId, Double localBalance, String internationalCurrencyId, Double internationalBalance, Double rate, Date expirationDate, Integer paidFees, Double term, Date nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName, Integer backendId) {
+    public GetProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, Double localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, Date expirationDate, Integer paidFees, Double term, Date nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName, Integer backendId) {
         this.clientBankIdentifier = clientBankIdentifier;
         this.productBankIdentifier = productBankIdentifier;
         this.productTypeId = productTypeId;
@@ -99,11 +99,11 @@ public class GetProductsConsolidatePositionDTO {
         this.productNumber = productNumber;
     }
 
-    public String getLocalCurrencyId() {
+    public Integer getLocalCurrencyId() {
         return localCurrencyId;
     }
 
-    public void setLocalCurrencyId(String localCurrencyId) {
+    public void setLocalCurrencyId(Integer localCurrencyId) {
         this.localCurrencyId = localCurrencyId;
     }
 
@@ -115,11 +115,11 @@ public class GetProductsConsolidatePositionDTO {
         this.localBalance = localBalance;
     }
 
-    public String getInternationalCurrencyId() {
+    public Integer getInternationalCurrencyId() {
         return internationalCurrencyId;
     }
 
-    public void setInternationalCurrencyId(String internationalCurrencyId) {
+    public void setInternationalCurrencyId(Integer internationalCurrencyId) {
         this.internationalCurrencyId = internationalCurrencyId;
     }
 

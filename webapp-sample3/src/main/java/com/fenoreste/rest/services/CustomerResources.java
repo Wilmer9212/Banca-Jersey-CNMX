@@ -69,10 +69,10 @@ public class CustomerResources {
         System.out.println("Persona:" + buscaP);
         try {
             if (buscaP) {
-                if (bande == false) {
+                /*if (bande == false) {
                     Json_De_Error.put("Error", "USUARIO YA SE ENCUENTRA REGISTRADO");                           
                     return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
-                } else {
+                } else {*/
                     GetClientByDocumentDTO clientes = null;
                     clientes = metodos.getClientByDocument(DocumentId, ClientType, Name, LastName, Mail, Phone, CellPhone, UserName);
                     if (clientes != null) {
@@ -83,7 +83,7 @@ public class CustomerResources {
                    return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
                     }
 
-                }
+                //}
             } else {
                 Json_De_Error.put("Error", "SOCIO NO EXISTE,VERIFIQUE DATOS");                
                 return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();

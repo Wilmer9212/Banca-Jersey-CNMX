@@ -14,7 +14,7 @@ public class GetProductsDTO {
       private String clientBankIdentifier;
       private String productBankIdentifier;
       private String productNumber;
-      private String productStatusId;
+      private int productStatusId;
       private String productTypeId;
       private String productAlias;
       private String canTransact;
@@ -23,7 +23,7 @@ public class GetProductsDTO {
     public GetProductsDTO() {
     }
 
-    public GetProductsDTO(String clientBankIdentifier, String productBankIdentifier, String productNumber, String productStatusId, String productTypeId, String productAlias, String canTransact, String currencyId) {
+    public GetProductsDTO(String clientBankIdentifier, String productBankIdentifier, String productNumber, int productStatusId, String productTypeId, String productAlias, String canTransact, String currencyId) {
         this.clientBankIdentifier = clientBankIdentifier;
         this.productBankIdentifier = productBankIdentifier;
         this.productNumber = productNumber;
@@ -58,11 +58,11 @@ public class GetProductsDTO {
         this.productNumber = productNumber;
     }
 
-    public String getProductStatusId() {
+    public int getProductStatusId() {
         return productStatusId;
     }
 
-    public void setProductStatusId(String productStatusId) {
+    public void setProductStatusId(int productStatusId) {
         this.productStatusId = productStatusId;
     }
 

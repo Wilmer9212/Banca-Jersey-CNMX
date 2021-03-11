@@ -6,6 +6,7 @@ import com.fenoreste.rest.ResponseDTO.GetProductsDTO;
 import com.fenoreste.rest.entidades.Amortizaciones;
 import com.fenoreste.rest.entidades.AmortizacionesPK;
 import com.fenoreste.rest.entidades.Auxiliares;
+import com.fenoreste.rest.entidades.Catalog_Status_Bankingly;
 import com.fenoreste.rest.entidades.Catalogo_Cuenta_Bankingly;
 import com.fenoreste.rest.entidades.Productos;
 import java.io.UnsupportedEncodingException;
@@ -26,10 +27,9 @@ import javax.persistence.Query;
 public abstract class FacadeProductos<T> {
 
     private static EntityManagerFactory emf;
-    private static final String PERSISTENCE_UNIT_NAME = "conexion";
 
     public FacadeProductos(Class<T> entityClass) {
-        emf = AbstractFacade.conexion();//Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);    
+        emf = AbstractFacade.conexion();
     }
 
     public List<GetProductsDTO> getProductos(String clientBankIdentifiers, Integer productTypes) {
@@ -61,22 +61,24 @@ public abstract class FacadeProductos<T> {
                     productTypeId="";
                     descripcion="";
                 }
-               
+                
+                
                 
                 String og = String.format("%06d", a.getIdorigen()) + String.format("%02d", a.getIdgrupo());
                 String s = String.format("%06d", a.getIdsocio());
 
                 String op = String.format("%06d", a.getAuxiliaresPK().getIdorigenp()) + String.format("%05d", a.getAuxiliaresPK().getIdproducto());
                 String aa = String.format("%08d", a.getAuxiliaresPK().getIdauxiliar());
-
+                
+                Catalog_Status_Bankingly ctb=em.find(Catalog_Status_Bankingly.class,Integer.parseInt(a.getEstatus().toString()));
                 auxi = new GetProductsDTO(
                         og + s,
                         op + aa,
                         String.valueOf(a.getAuxiliaresPK().getIdproducto()),
-                        "",
+                        ctb.getProductstatusid(),
                         productTypeId,
                         descripcion,
-                        "",
+                        "1",
                         "1");
                 ListagetP.add(auxi);
                 productTypeId="";
@@ -144,9 +146,9 @@ public abstract class FacadeProductos<T> {
                         productTypeId,
                         pr.getNombre(),
                         String.valueOf(a.getAuxiliaresPK().getIdproducto()),
-                        "MXN",
+                        1,
                         Double.parseDouble(a.getSaldo().toString()),
-                        "",
+                        1,
                         Double.parseDouble(a.getSaldo().toString()),
                         Double.parseDouble(a.getSaldo().toString()),
                         date,
