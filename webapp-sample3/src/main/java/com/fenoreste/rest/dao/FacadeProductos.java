@@ -1,24 +1,17 @@
 package com.fenoreste.rest.dao;
 
 import com.fenoreste.rest.Util.AbstractFacade;
-import com.fenoreste.rest.ResponseDTO.GetProductsConsolidatePositionDTO;
-import com.fenoreste.rest.ResponseDTO.GetProductsDTO;
-import com.fenoreste.rest.entidades.Amortizaciones;
-import com.fenoreste.rest.entidades.AmortizacionesPK;
+import com.fenoreste.rest.ResponseDTO.ProductsConsolidatePositionDTO;
+import com.fenoreste.rest.ResponseDTO.ProductsDTO;
 import com.fenoreste.rest.entidades.Auxiliares;
 import com.fenoreste.rest.entidades.Catalog_Status_Bankingly;
 import com.fenoreste.rest.entidades.Catalogo_Cuenta_Bankingly;
 import com.fenoreste.rest.entidades.Productos;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -32,8 +25,8 @@ public abstract class FacadeProductos<T> {
         emf = AbstractFacade.conexion();
     }
 
-    public List<GetProductsDTO> getProductos(String clientBankIdentifiers, Integer productTypes) {
-        List<GetProductsDTO> ListagetP = new ArrayList<GetProductsDTO>();
+    public List<ProductsDTO> getProductos(String clientBankIdentifiers, Integer productTypes) {
+        List<ProductsDTO> ListagetP = new ArrayList<ProductsDTO>();
         
         String productTypeId="",descripcion="";
         try {
@@ -41,17 +34,17 @@ public abstract class FacadeProductos<T> {
             String consulta = "";
             Catalogo_Cuenta_Bankingly ccb = null;
             if (!clientBankIdentifiers.equals("") && productTypes != null) {
-                consulta = "SELECT * FROM auxiliares a WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifiers + "' AND (SELECT producttypeid FROM tipos_cuenta_bankingly cb WHERE a.idproducto=cb.idproducto)=" + productTypes;
+                consulta = "SELECT * FROM auxiliares a INNER JOIN tipos_cuenta_bankingly pr USING(idproducto) WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifiers + "' AND (SELECT producttypeid FROM tipos_cuenta_bankingly cb WHERE a.idproducto=cb.idproducto)=" + productTypes;
             } else if (!clientBankIdentifiers.equals("") && productTypes == null) {
-                consulta = "SELECT * FROM auxiliares WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifiers + "'";
+                consulta = "SELECT * FROM auxiliares INNER JOIN tipos_cuenta_bankingly pr USING(idproducto) WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifiers + "'";
             }
-
+            System.out.println("Consulta:"+consulta);
             Query query = em.createNativeQuery(consulta, Auxiliares.class);
             List<Auxiliares> ListaA = query.getResultList();
             
             
             for (int i = 0; i < ListaA.size(); i++) {
-                GetProductsDTO auxi = new GetProductsDTO();
+                ProductsDTO auxi = new ProductsDTO();
                 Auxiliares a = ListaA.get(i);
                 try {
                     ccb=em.find(Catalogo_Cuenta_Bankingly.class,a.getAuxiliaresPK().getIdproducto());
@@ -70,12 +63,19 @@ public abstract class FacadeProductos<T> {
                 String op = String.format("%06d", a.getAuxiliaresPK().getIdorigenp()) + String.format("%05d", a.getAuxiliaresPK().getIdproducto());
                 String aa = String.format("%08d", a.getAuxiliaresPK().getIdauxiliar());
                 
-                Catalog_Status_Bankingly ctb=em.find(Catalog_Status_Bankingly.class,Integer.parseInt(a.getEstatus().toString()));
-                auxi = new GetProductsDTO(
+                 Catalog_Status_Bankingly ctb=new Catalog_Status_Bankingly();
+                 int sttt=0;
+                try{
+                 ctb=em.find(Catalog_Status_Bankingly.class,Integer.parseInt(a.getEstatus().toString()));
+                 sttt=ctb.getProductstatusid();
+                }catch(Exception ex){
+                 sttt=0;
+                }
+                auxi = new ProductsDTO(
                         og + s,
                         op + aa,
                         String.valueOf(a.getAuxiliaresPK().getIdproducto()),
-                        ctb.getProductstatusid(),
+                        sttt,
                         productTypeId,
                         descripcion,
                         "1",
@@ -89,20 +89,20 @@ public abstract class FacadeProductos<T> {
             return ListagetP;
 
         } catch (Exception e) {
-            cerrar();
             e.getStackTrace();
             System.out.println("Error Producido:" + e.getMessage());
         }
         return null;
     }
 
-    public List<GetProductsConsolidatePositionDTO> GetProductsConsolidatePosition(String clientBankIdentifier, String productBankIdentifier) {
+    public List<ProductsConsolidatePositionDTO> GetProductsConsolidatePosition(String clientBankIdentifier, List<String>productsBank) {
         EntityManager em = emf.createEntityManager();
+        List<ProductsConsolidatePositionDTO> ListaReturn = new ArrayList<ProductsConsolidatePositionDTO>();
+        String productTypeId="";
+        for(int ii=0;ii<productsBank.size();ii++){        
         String consulta = "SELECT * FROM auxiliares "
                 + " WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifier
-                + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "'";
-        List<GetProductsConsolidatePositionDTO> ListaReturn = new ArrayList<GetProductsConsolidatePositionDTO>();
-        String productTypeId="";
+                + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productsBank.get(ii) + "'";
         try {
             Query query = em.createNativeQuery(consulta, Auxiliares.class);
             List<Auxiliares> listaA = query.getResultList();
@@ -140,9 +140,9 @@ public abstract class FacadeProductos<T> {
                 if (prA == true) {
                     date = stringTodate(Vence);
                 }
-                GetProductsConsolidatePositionDTO dto = new GetProductsConsolidatePositionDTO(
+                ProductsConsolidatePositionDTO dto = new ProductsConsolidatePositionDTO(
                         clientBankIdentifier,
-                        productBankIdentifier,
+                        productsBank.get(ii),
                         productTypeId,
                         pr.getNombre(),
                         String.valueOf(a.getAuxiliaresPK().getIdproducto()),
@@ -155,8 +155,8 @@ public abstract class FacadeProductos<T> {
                         i,
                         Double.NaN,
                         a.getFechaAutorizacion(),
-                        productBankIdentifier,
-                        productBankIdentifier,
+                        productsBank.get(ii),
+                        productsBank.get(ii),
                         1,
                         i,
                         "",
@@ -169,7 +169,7 @@ public abstract class FacadeProductos<T> {
             System.out.println("Error:" + e.getMessage());
             cerrar();
         }
-
+        }
         return ListaReturn;
 
     }

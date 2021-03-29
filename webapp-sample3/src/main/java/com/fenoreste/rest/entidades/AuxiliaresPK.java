@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 
 /**
  *
- * @author Wilmer
+ * @author Elliot
  */
 @Embeddable
 public class AuxiliaresPK implements Serializable {

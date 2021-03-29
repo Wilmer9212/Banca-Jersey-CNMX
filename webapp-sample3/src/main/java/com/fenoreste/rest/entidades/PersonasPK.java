@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 
 /**
  *
- * @author gerardo
+ * @author Elliot
  */
 @Cacheable(false)
 @Embeddable

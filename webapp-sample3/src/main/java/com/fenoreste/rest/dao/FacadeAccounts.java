@@ -1,9 +1,9 @@
 package com.fenoreste.rest.dao;
 
 import com.fenoreste.rest.Util.AbstractFacade;
-import com.fenoreste.rest.ResponseDTO.GetAccountLast5MovementsDTO;
-import com.fenoreste.rest.ResponseDTO.GetAccountDetailsDTO;
-import com.fenoreste.rest.ResponseDTO.GetAccountMovementsDTO;
+import com.fenoreste.rest.ResponseDTO.AccountLast5MovementsDTO;
+import com.fenoreste.rest.ResponseDTO.AccountDetailsDTO;
+import com.fenoreste.rest.ResponseDTO.AccountMovementsDTO;
 import com.fenoreste.rest.entidades.AuxiliaresPK;
 import com.fenoreste.rest.entidades.Productos;
 import com.fenoreste.rest.entidades.Auxiliares;
@@ -38,7 +38,7 @@ public abstract class FacadeAccounts<T> {
     }
     EntityManager em = null;
 
-    public GetAccountDetailsDTO GetAccountDetails(String accountId) {
+    public AccountDetailsDTO GetAccountDetails(String accountId) {
         //0302823264400006853 opa con mivimientos 29/11/2020 24 Hrs
         //0302163404400000226 opa con movimientos 28/11/2020 48 Hrs
         //0302203666400000037 opa sin movimientos durante 48 Hrs
@@ -48,7 +48,7 @@ public abstract class FacadeAccounts<T> {
         int p = Integer.parseInt(accountId.substring(6, 11));
         int a = Integer.parseInt(accountId.substring(11, 19));
 
-        GetAccountDetailsDTO cuenta = null;
+        AccountDetailsDTO cuenta = null;
         System.out.println("O:" + o + ",P:" + p + ",A:" + a);
         try {
             AuxiliaresPK auxpk = new AuxiliaresPK(o, p, a);
@@ -99,7 +99,7 @@ public abstract class FacadeAccounts<T> {
             System.out.println("Saldo promedio:" + saldoPromedioMensual);
             //replace(sai_calcula_saldo_promedio_diario(aux.idorigenp,aux.idproducto,aux.idauxiliar,fecha_inicial,fecha_final,0),',','')::numeric as "Promedio Diario" 
             //System.out.println("ad:"+adpk);
-            cuenta = new GetAccountDetailsDTO(
+            cuenta = new AccountDetailsDTO(
                     accountId,
                     prod.getNombre(),
                     Double.parseDouble(aux.getMontoautorizado().toString()),
@@ -129,12 +129,12 @@ public abstract class FacadeAccounts<T> {
 
     }
 
-    public List<GetAccountLast5MovementsDTO> getAccountLast5Movements(String accountId) {
+    public List<AccountLast5MovementsDTO> getAccountLast5Movements(String accountId) {
         em = emf.createEntityManager();
-        GetAccountLast5MovementsDTO cuenta;
+        AccountLast5MovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
-        List<GetAccountLast5MovementsDTO> ListaDTO = new ArrayList<GetAccountLast5MovementsDTO>();
+        List<AccountLast5MovementsDTO> ListaDTO = new ArrayList<AccountLast5MovementsDTO>();
         try {
             String consulta = " SELECT m.* "
                     + "         FROM auxiliares_d m"
@@ -156,7 +156,7 @@ public abstract class FacadeAccounts<T> {
                 } else {
                     isDC = true;
                 }
-                cuenta = new GetAccountLast5MovementsDTO(
+                cuenta = new AccountLast5MovementsDTO(
                         Integer.parseInt(as[12].toString()),
                         accountId,
                         as[3].toString(),
@@ -180,12 +180,12 @@ public abstract class FacadeAccounts<T> {
         return ListaDTO;
     }
 
-    public List<GetAccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize, int pageStartIndex) {
+    public List<AccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize, int pageStartIndex) {
         em = emf.createEntityManager();
-        GetAccountMovementsDTO cuenta;
+        AccountMovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
-        List<GetAccountMovementsDTO> ListaDTO = new ArrayList<GetAccountMovementsDTO>();
+        List<AccountMovementsDTO> ListaDTO = new ArrayList<AccountMovementsDTO>();
 
         EntityManagerFactory emf = AbstractFacade.conexion();
         EntityManager em = emf.createEntityManager();
@@ -242,7 +242,7 @@ public abstract class FacadeAccounts<T> {
                 } else {
                     isDC = true;
                 }
-                GetAccountMovementsDTO dto = new GetAccountMovementsDTO(
+                AccountMovementsDTO dto = new AccountMovementsDTO(
                         Integer.parseInt(ListaO[12].toString()),
                         productBankIdentifier,
                         ListaO[3].toString(),

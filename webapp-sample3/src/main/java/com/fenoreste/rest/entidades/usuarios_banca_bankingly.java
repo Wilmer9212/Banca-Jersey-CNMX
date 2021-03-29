@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author wilmer
+ * @author Elliot
  */
 @Entity
 @Table(name = "usuarios_bancam_bankingly")

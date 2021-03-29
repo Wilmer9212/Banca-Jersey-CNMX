@@ -9,7 +9,7 @@ package com.fenoreste.rest.ResponseDTO;
  *
  * @author wilmer
  */
-public class GetProductsDTO {
+public class ProductsDTO {
     
       private String clientBankIdentifier;
       private String productBankIdentifier;
@@ -20,10 +20,10 @@ public class GetProductsDTO {
       private String canTransact;
       private String currencyId;
 
-    public GetProductsDTO() {
+    public ProductsDTO() {
     }
 
-    public GetProductsDTO(String clientBankIdentifier, String productBankIdentifier, String productNumber, int productStatusId, String productTypeId, String productAlias, String canTransact, String currencyId) {
+    public ProductsDTO(String clientBankIdentifier, String productBankIdentifier, String productNumber, int productStatusId, String productTypeId, String productAlias, String canTransact, String currencyId) {
         this.clientBankIdentifier = clientBankIdentifier;
         this.productBankIdentifier = productBankIdentifier;
         this.productNumber = productNumber;

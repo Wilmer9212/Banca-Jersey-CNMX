@@ -12,7 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 /**
  *
- * @author Fredy
+ * @author Elliot
  */
 @Cacheable(false)
 @Embeddable

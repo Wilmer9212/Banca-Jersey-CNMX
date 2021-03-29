@@ -9,17 +9,17 @@ package com.fenoreste.rest.ResponseDTO;
  *
  * @author root
  */
-public class GetClientByDocumentDTO {
+public class ClientByDocumentDTO {
        
      private String ClientBankIdentifier;
      private String ClientName;
      private String ClientType;
      private String DocumentId;
 
-    public GetClientByDocumentDTO() {
+    public ClientByDocumentDTO() {
     }
 
-    public GetClientByDocumentDTO(String ClientBankIdentifier, String ClientName, String ClientType, String DocumentId) {
+    public ClientByDocumentDTO(String ClientBankIdentifier, String ClientName, String ClientType, String DocumentId) {
         this.ClientBankIdentifier = ClientBankIdentifier;
         this.ClientName = ClientName;
         this.ClientType = ClientType;

@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author Elliot
  */
-public class GetProductsConsolidatePositionDTO {
+public class ProductsConsolidatePositionDTO {
       private String clientBankIdentifier;
       private String productBankIdentifier;
       private String productTypeId;
@@ -33,10 +33,10 @@ public class GetProductsConsolidatePositionDTO {
       private String subsidiaryName;
       private Integer backendId;
 
-    public GetProductsConsolidatePositionDTO() {
+    public ProductsConsolidatePositionDTO() {
     }
 
-    public GetProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, Double localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, Date expirationDate, Integer paidFees, Double term, Date nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName, Integer backendId) {
+    public ProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, Double localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, Date expirationDate, Integer paidFees, Double term, Date nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName, Integer backendId) {
         this.clientBankIdentifier = clientBankIdentifier;
         this.productBankIdentifier = productBankIdentifier;
         this.productTypeId = productTypeId;

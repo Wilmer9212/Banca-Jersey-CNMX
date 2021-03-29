@@ -19,9 +19,9 @@ private String AccountBankIdentifier;
 private Double CurrentBalance;        
 private Double CurrentRate;      	       
 private int FeesDue;         	       
-private List<Amortizaciones>FeesDueData;	
+private FeesDueData FeesDueData;	
 private int LoanStatusId;	
-private Amortizaciones NextFee;	
+private LoanFee NextFee;	
 private Double OriginalAmount;
 private int OverdueDays;
 private int PaidFees;
@@ -29,15 +29,15 @@ private Double PayoffBalance;
 private Double PrepaymentAmount;	        
 private String ProducttBankIdentifier;
 private int term;	                    
-private boolean showPrincipalInformation;	
-/*private LoanFeesResultDTO GetLoanFeesResult;
-GetLoanRatesResult	  
-GetLoanPaymentsResult	*/
+private boolean showPrincipalInformation;	/*
+private LoanFeesResult GetLoanFeesResult;
+private LoanRatesResult loanRateResult;	  
+private LoanPaymentsResult loanPaymentsResult;]*/
 
     public LoanDTO() {
     }
 
-    public LoanDTO(String AccountBankIdentifier, Double CurrentBalance, Double CurrentRate, int FeesDue, List<Amortizaciones> FeesDueData, int LoanStatusId, Amortizaciones NextFee, Double OriginalAmount, int OverdueDays, int PaidFees, Double PayoffBalance, Double PrepaymentAmount, String ProducttBankIdentifier, int term, boolean showPrincipalInformation) {
+    public LoanDTO(String AccountBankIdentifier, Double CurrentBalance, Double CurrentRate, int FeesDue, FeesDueData FeesDueData, int LoanStatusId, LoanFee NextFee, Double OriginalAmount, int OverdueDays, int PaidFees, Double PayoffBalance, Double PrepaymentAmount, String ProducttBankIdentifier, int term, boolean showPrincipalInformation) {
         this.AccountBankIdentifier = AccountBankIdentifier;
         this.CurrentBalance = CurrentBalance;
         this.CurrentRate = CurrentRate;
@@ -87,11 +87,11 @@ GetLoanPaymentsResult	*/
         this.FeesDue = FeesDue;
     }
 
-    public List<Amortizaciones> getFeesDueData() {
+    public FeesDueData getFeesDueData() {
         return FeesDueData;
     }
 
-    public void setFeesDueData(List<Amortizaciones> FeesDueData) {
+    public void setFeesDueData(FeesDueData FeesDueData) {
         this.FeesDueData = FeesDueData;
     }
 
@@ -103,11 +103,11 @@ GetLoanPaymentsResult	*/
         this.LoanStatusId = LoanStatusId;
     }
 
-    public Amortizaciones getNextFee() {
+    public LoanFee getNextFee() {
         return NextFee;
     }
 
-    public void setNextFee(Amortizaciones NextFee) {
+    public void setNextFee(LoanFee NextFee) {
         this.NextFee = NextFee;
     }
 
@@ -179,7 +179,8 @@ GetLoanPaymentsResult	*/
     public String toString() {
         return "LoanDTO{" + "AccountBankIdentifier=" + AccountBankIdentifier + ", CurrentBalance=" + CurrentBalance + ", CurrentRate=" + CurrentRate + ", FeesDue=" + FeesDue + ", FeesDueData=" + FeesDueData + ", LoanStatusId=" + LoanStatusId + ", NextFee=" + NextFee + ", OriginalAmount=" + OriginalAmount + ", OverdueDays=" + OverdueDays + ", PaidFees=" + PaidFees + ", PayoffBalance=" + PayoffBalance + ", PrepaymentAmount=" + PrepaymentAmount + ", ProducttBankIdentifier=" + ProducttBankIdentifier + ", term=" + term + ", showPrincipalInformation=" + showPrincipalInformation + '}';
     }
-
-
+     
+    
+    
 }
 

@@ -11,7 +11,7 @@ package com.fenoreste.rest.ResponseDTO;
  *
  * @author wilmer
  */
-public class GetAccountLast5MovementsDTO {
+public class AccountLast5MovementsDTO {
 
     private int MovementId;
     private String AccountBankIdentifier;
@@ -25,10 +25,10 @@ public class GetAccountLast5MovementsDTO {
     private String CheckId;
     private String VoucherId;
 
-    public GetAccountLast5MovementsDTO() {
+    public AccountLast5MovementsDTO() {
     }
 
-    public GetAccountLast5MovementsDTO(int MovementId, String AccountBankIdentifier, String MovementDate, String Description, Double Amount, boolean isDebit, Double Balance, int MovementTypeId, String TypeDescription, String CheckId, String VoucherId) {
+    public AccountLast5MovementsDTO(int MovementId, String AccountBankIdentifier, String MovementDate, String Description, Double Amount, boolean isDebit, Double Balance, int MovementTypeId, String TypeDescription, String CheckId, String VoucherId) {
         this.MovementId = MovementId;
         this.AccountBankIdentifier = AccountBankIdentifier;
         this.MovementDate = MovementDate;

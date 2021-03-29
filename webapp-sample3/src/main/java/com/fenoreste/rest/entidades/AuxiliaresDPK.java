@@ -6,6 +6,8 @@
 package com.fenoreste.rest.entidades;
 
 import java.io.Serializable;
+import java.util.Objects;
+
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -27,9 +29,7 @@ public class AuxiliaresDPK implements Serializable {
     
 
     public AuxiliaresDPK() {
-    }
-
-    
+    }    
 
     public AuxiliaresDPK(int idorigenp, int idproducto, int idauxiliar) {
         this.idorigenp = idorigenp;
@@ -61,7 +61,41 @@ public class AuxiliaresDPK implements Serializable {
         this.idauxiliar = idauxiliar;
     }
 
-   
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.idorigenp);
+        hash = 67 * hash + Objects.hashCode(this.idproducto);
+        hash = 67 * hash + Objects.hashCode(this.idauxiliar);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AuxiliaresDPK other = (AuxiliaresDPK) obj;
+        if (!Objects.equals(this.idorigenp, other.idorigenp)) {
+            return false;
+        }
+        if (!Objects.equals(this.idproducto, other.idproducto)) {
+            return false;
+        }
+        if (!Objects.equals(this.idauxiliar, other.idauxiliar)) {
+            return false;
+        }
+        return true;
+    }
+
+ 
+
     @Override
     public String toString() {
         return "com.fenoreste.modelo.entidad.AuxiliaresDPK[ idorigenp=" + idorigenp + ", idproducto=" + idproducto + ", idauxiliar=" + idauxiliar + " ]";

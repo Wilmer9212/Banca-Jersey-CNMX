@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author wilmer
  */
-public class GetAccountMovementsDTO {
+public class AccountMovementsDTO {
 
     private int MovementId;
     private String AccountBankIdentifier;
@@ -25,10 +25,10 @@ public class GetAccountMovementsDTO {
     private String CheckId;
     private String VoucherId;
 
-    public GetAccountMovementsDTO() {
+    public AccountMovementsDTO() {
     }
 
-    public GetAccountMovementsDTO(int MovementId, String AccountBankIdentifier, String MovementDate, String Description, Double Amount, boolean isDebit, Double Balance, int MovementTypeId, String TypeDescription, String CheckId, String VoucherId) {
+    public AccountMovementsDTO(int MovementId, String AccountBankIdentifier, String MovementDate, String Description, Double Amount, boolean isDebit, Double Balance, int MovementTypeId, String TypeDescription, String CheckId, String VoucherId) {
         this.MovementId = MovementId;
         this.AccountBankIdentifier = AccountBankIdentifier;
         this.MovementDate = MovementDate;

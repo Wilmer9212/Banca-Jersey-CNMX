@@ -6,6 +6,7 @@
 package com.fenoreste.rest.services;
 
 import com.fenoreste.rest.ResponseDTO.LoanDTO;
+import com.fenoreste.rest.ResponseDTO.LoanFee;
 import com.fenoreste.rest.dao.LoanDAO;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import javax.ws.rs.Consumes;
@@ -35,10 +36,10 @@ public class LoanResources {
         try {
             JSONObject jsonRecibido = new JSONObject(cadena);
             productBankIdentifier = jsonRecibido.getString("productBankIdentifier");
-            feesStatus = jsonRecibido.getInt("feesStatus");
+            /*feesStatus = jsonRecibido.getInt("feesStatus");
             JSONObject json = jsonRecibido.getJSONObject("paging");
             pageSize = json.getInt("pageSize");
-            pageStartIndex = json.getInt("pageStartIndex");
+            pageStartIndex = json.getInt("pageStartIndex");*/
         } catch (Exception e) {
             Error.put("Error", "Error en parametros JSON");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Error).build();
@@ -46,14 +47,9 @@ public class LoanResources {
         LoanDAO dao=new LoanDAO();
         int count = 0;
         try {
-            LoanDTO loan = dao.Loan(productBankIdentifier, feesStatus, pageSize, pageStartIndex);
+            LoanDTO loan = dao.Loan(productBankIdentifier);
             JsonObject j = new JsonObject();
-            if (count > 0) {
-                j.put("MovementsCount", count);
-            } else {
-                
-                return Response.status(Response.Status.NO_CONTENT).entity(Error).build();
-            }
+                     j.put("Loan", loan);
 
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
@@ -64,9 +60,43 @@ public class LoanResources {
 
         } finally {
             dao.cerrar();
-        }
-
-        
+        }      
         
     }
-}
+    
+    @POST
+    @Path("/Fee")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response loanFee(String cadena){
+        System.out.println("Cadena:" + cadena);
+        String productBankIdentifier = "";
+        JsonObject Error = new JsonObject();
+        int feeNumber = 0;
+        try {
+            JSONObject jsonRecibido = new JSONObject(cadena);
+            productBankIdentifier = jsonRecibido.getString("productBankIdentifier");
+            feeNumber = jsonRecibido.getInt("feeNumber");
+        } catch (Exception e) {
+            Error.put("Error", "Error en parametros JSON");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Error).build();
+        }
+        LoanDAO dao=new LoanDAO();
+        int count = 0;
+        try {
+            LoanFee loan = dao.LoanFee(productBankIdentifier,feeNumber);
+            System.out.println("DueData:"+loan.getDueDate());
+            JsonObject j = new JsonObject();
+            j.put("Loan", loan);
+            return Response.status(Response.Status.OK).entity(j).build();
+        } catch (Exception e) {
+            dao.cerrar();
+            Error.put("Error", "SOCIOS NO ENCONTRADOS");
+            System.out.println("Error al convertir cadena a JSON:" + e.getMessage());
+            return Response.status(Response.Status.NO_CONTENT).entity(Error).build();
+
+        } finally {
+            dao.cerrar();
+        }        
+    }
+   }

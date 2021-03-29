@@ -6,9 +6,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import com.fenoreste.rest.ResponseDTO.GetAccountDetailsDTO;
-import com.fenoreste.rest.ResponseDTO.GetAccountLast5MovementsDTO;
-import com.fenoreste.rest.ResponseDTO.GetAccountMovementsDTO;
+import com.fenoreste.rest.ResponseDTO.AccountDetailsDTO;
+import com.fenoreste.rest.ResponseDTO.AccountLast5MovementsDTO;
+import com.fenoreste.rest.ResponseDTO.AccountMovementsDTO;
 import com.fenoreste.rest.dao.AccountsDAO;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class AccountsResources {
         System.out.println("Bande:" + bande);
         //Si no trae letras en Identificador de producto(OPA) y la longitud es igual a lo que se maneja en la caja 
         if (bande == true && accountId.length() == 19) {
-            GetAccountDetailsDTO cuenta = null;
+            AccountDetailsDTO cuenta = null;
             try {
                 cuenta = metodos.GetAccountDetails(accountId);
                 if (cuenta != null) {
@@ -90,8 +90,8 @@ public class AccountsResources {
             }
         }
         AccountsDAO metodos = new AccountsDAO();
-        List<GetAccountLast5MovementsDTO> cuentas = new ArrayList<GetAccountLast5MovementsDTO>();
-        GetAccountLast5MovementsDTO cuentaM = null;
+        List<AccountLast5MovementsDTO> cuentas = new ArrayList<AccountLast5MovementsDTO>();
+        AccountLast5MovementsDTO cuentaM = null;
         if (bandera) {
             try {
                 cuentas = metodos.getAccountLast5Movements(accountId);
@@ -145,7 +145,7 @@ public class AccountsResources {
         }
             int count=0;
             try{
-            List<GetAccountMovementsDTO> MiListaDTO = dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex);
+            List<AccountMovementsDTO> MiListaDTO = dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex);
             com.github.cliftonlabs.json_simple.JsonObject j = new com.github.cliftonlabs.json_simple.JsonObject();
             count=dao.contadorAuxD(ProductBankIdentifier, DateFromFilter, DateToFilter);
             if(count>0){

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Fredy
+ * @author Wlliot
  */
 @Cacheable(false)
 @Entity

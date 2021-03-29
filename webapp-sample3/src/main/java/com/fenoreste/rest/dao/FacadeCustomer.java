@@ -2,7 +2,7 @@ package com.fenoreste.rest.dao;
 
 import com.fenoreste.rest.ResponseDTO.personaDTO;
 import com.fenoreste.rest.ResponseDTO.accountsDTO;
-import com.fenoreste.rest.ResponseDTO.GetClientByDocumentDTO;
+import com.fenoreste.rest.ResponseDTO.ClientByDocumentDTO;
 import com.fenoreste.rest.ResponseDTO.usuarios_banca_bankinglyDTO;
 import com.fenoreste.rest.ResponseDTO.customerDTO;
 import com.fenoreste.rest.entidades.Colonias;
@@ -36,10 +36,10 @@ public abstract class FacadeCustomer<T> {
         emf = AbstractFacade.conexion();
     }
 
-    public GetClientByDocumentDTO getClientByDocument(String documentId, int clientType, String Name, String LastName, String Mail, String Phone, String CellPhone, String UserName) {
+    public ClientByDocumentDTO getClientByDocument(String documentId, int clientType, String Name, String LastName, String Mail, String Phone, String CellPhone, String UserName) {
         EntityManager em = emf.createEntityManager();
-        GetClientByDocumentDTO client = null;
-        List<GetClientByDocumentDTO> clientes = new ArrayList<GetClientByDocumentDTO>();
+        ClientByDocumentDTO client = null;
+        List<ClientByDocumentDTO> clientes = new ArrayList<ClientByDocumentDTO>();
         usuarios_banca_bankinglyDTO users = null;
         System.out.println("LastName:" + LastName);
         String IdentClientType = "";
@@ -68,7 +68,7 @@ public abstract class FacadeCustomer<T> {
             System.out.println("salio:" + SocioEncontrados.size());
             for (Object[] objetos : SocioEncontrados) {
                 Grupos grupo = em.find(Grupos.class, Integer.parseInt(objetos[2].toString()));
-                client = new GetClientByDocumentDTO(objetos[0].toString(), objetos[1].toString(), String.valueOf(clientType), documentId + "" + String.valueOf(clientType));
+                client = new ClientByDocumentDTO(objetos[0].toString(), objetos[1].toString(), String.valueOf(clientType), documentId + "" + String.valueOf(clientType));
                 //users = new usuarios_banca_bankinglyDTO(0, UserName, client.getClientBankIdentifier());
 
             }

@@ -5,8 +5,7 @@
  */
 package com.fenoreste.rest.services;
 
-import com.fasterxml.jackson.databind.ser.std.JsonValueSerializer;
-import com.fenoreste.rest.ResponseDTO.GetClientByDocumentDTO;
+import com.fenoreste.rest.ResponseDTO.ClientByDocumentDTO;
 import com.fenoreste.rest.Util.AbstractFacade;
 import com.fenoreste.rest.dao.CustomerDAO;
 import com.fenoreste.rest.entidades.usuarios_banca_bankingly;
@@ -73,7 +72,7 @@ public class CustomerResources {
                     Json_De_Error.put("Error", "USUARIO YA SE ENCUENTRA REGISTRADO");                           
                     return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
                 } else {*/
-                    GetClientByDocumentDTO clientes = null;
+                    ClientByDocumentDTO clientes = null;
                     clientes = metodos.getClientByDocument(DocumentId, ClientType, Name, LastName, Mail, Phone, CellPhone, UserName);
                     if (clientes != null) {
                       jsonServido.put("customers",clientes);

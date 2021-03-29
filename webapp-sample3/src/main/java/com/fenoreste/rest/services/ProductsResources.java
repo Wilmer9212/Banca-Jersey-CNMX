@@ -3,8 +3,8 @@ package com.fenoreste.rest.services;
 
 
 import com.fenorest.rest.Auth.Security;
-import com.fenoreste.rest.ResponseDTO.GetProductsConsolidatePositionDTO;
-import com.fenoreste.rest.ResponseDTO.GetProductsDTO;
+import com.fenoreste.rest.ResponseDTO.ProductsConsolidatePositionDTO;
+import com.fenoreste.rest.ResponseDTO.ProductsDTO;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -15,12 +15,13 @@ import javax.ws.rs.core.Response;
 import com.fenoreste.rest.dao.ProductsDAO;
 import com.fenoreste.rest.entidades.UserRest;
 import com.github.cliftonlabs.json_simple.JsonObject;
+import java.util.ArrayList;
 import javax.ws.rs.HeaderParam;
 import org.json.JSONArray;
 import org.json.JSONObject;
 /**
  *
- * @author Wilmer
+ * @author Elliot
  */
 @Path("/Products")
 public class ProductsResources {
@@ -55,7 +56,7 @@ public class ProductsResources {
             
         }
         try {
-            List<GetProductsDTO> listaDTO = dao.getProductos(ClientBankIdentifiers, ProductTypes);
+            List<ProductsDTO> listaDTO = dao.getProductos(ClientBankIdentifiers, ProductTypes);
             if (listaDTO != null) {
                 JsonObject jsonD = new JsonObject();                    
                 jsonD.put("Products",listaDTO);
@@ -84,6 +85,7 @@ public class ProductsResources {
         /*SOLO FALTA DEL CATALOGO CAN TRANSACT ID*/
         String ClientBankIdentifiers = "", ProductBankIdentifiers = "";
         JsonObject jsonError=new JsonObject();
+        List<String>productsBank=new ArrayList<String>();
         try {
             JSONObject Object = new JSONObject(cadena);
             JSONArray jsonCB = Object.getJSONArray("clientBankIdentifiers");
@@ -94,17 +96,18 @@ public class ProductsResources {
                 System.out.println("ClientBankIdentifiers:" + ClientBankIdentifiers);
             }
             for (int x = 0; x < jsonPB.length(); x++) {
-                JSONObject jPB = (JSONObject) jsonPB.get(x);
+                JSONObject jPB =jsonPB.getJSONObject(x);
                 ProductBankIdentifiers = jPB.getString("value");
                 System.out.println("ProductBankIdentifiers:" + ProductBankIdentifiers);
+                productsBank.add(ProductBankIdentifiers);
             }
         } catch (Exception e) {
             System.out.println("Error al convertir Json:" + e.getMessage());
         }
-
+        System.out.println("Lista de opas:"+productsBank);
         ProductsDAO dao = new ProductsDAO();
         try {
-            List<GetProductsConsolidatePositionDTO> ListPC = dao.GetProductsConsolidatePosition(ClientBankIdentifiers, ProductBankIdentifiers);
+            List<ProductsConsolidatePositionDTO> ListPC = dao.GetProductsConsolidatePosition(ClientBankIdentifiers, productsBank);
             if (ListPC != null) {
                     JsonObject k =new JsonObject();
                     k.put("ConsolidatedPosition",ListPC);

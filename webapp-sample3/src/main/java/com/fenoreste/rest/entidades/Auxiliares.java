@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author gerardo
+ * @author Elliot
  */
 @Cacheable(false)
 @Entity

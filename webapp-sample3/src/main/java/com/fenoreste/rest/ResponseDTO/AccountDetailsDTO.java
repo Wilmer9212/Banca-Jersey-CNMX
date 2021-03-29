@@ -9,7 +9,7 @@ package com.fenoreste.rest.ResponseDTO;
  *
  * @author wilmer
  */
-public class GetAccountDetailsDTO {
+public class AccountDetailsDTO {
 
     private String AccountBankIdentifier;
     private String AccountOfficerName;
@@ -33,10 +33,10 @@ public class GetAccountDetailsDTO {
     private String ProductOwnerName;
     private Boolean ShowCurrentAccountChecksInformation;
 
-    public GetAccountDetailsDTO() {
+    public AccountDetailsDTO() {
     }
 
-    public GetAccountDetailsDTO(String AccountBankIdentifier, String AccountOfficerName, Double AccountCountableBalance, Double AccountAvailableBalance, Double AccountBalance24Hrs, Double AccountBalance48Hrs, Double AccountBalance48MoreHrs, Double MonthlyAverageBalance, int PendingChecks, int ChecksToReleaseToday, int ChecksToReleaseTomorrow, int CancelledChecks, int CertifiedChecks, int RejectedChecks, int BlockedAmount, double MovementsOfTheMonth, int ChecksDrawn, Double Overdrafts, String ProductBranchName, String ProductOwnerName, Boolean ShowCurrentAccountChecksInformation) {
+    public AccountDetailsDTO(String AccountBankIdentifier, String AccountOfficerName, Double AccountCountableBalance, Double AccountAvailableBalance, Double AccountBalance24Hrs, Double AccountBalance48Hrs, Double AccountBalance48MoreHrs, Double MonthlyAverageBalance, int PendingChecks, int ChecksToReleaseToday, int ChecksToReleaseTomorrow, int CancelledChecks, int CertifiedChecks, int RejectedChecks, int BlockedAmount, double MovementsOfTheMonth, int ChecksDrawn, Double Overdrafts, String ProductBranchName, String ProductOwnerName, Boolean ShowCurrentAccountChecksInformation) {
         this.AccountBankIdentifier = AccountBankIdentifier;
         this.AccountOfficerName = AccountOfficerName;
         this.AccountCountableBalance = AccountCountableBalance;
