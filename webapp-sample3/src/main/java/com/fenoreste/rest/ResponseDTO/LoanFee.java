@@ -16,7 +16,7 @@ public class LoanFee {
 private Double capitalBalance;
 private Integer feeNumber;
 private Double principalAmount;
-private Date dueDate;
+private String dueDate;
 private Double interestAmount;
 private Double overdueAmount;
 private Integer feeStatusId;
@@ -26,7 +26,7 @@ private Double totalAmount;
     public LoanFee() {
     }
 
-    public LoanFee(Double capitalBalance, Integer feeNumber, Double principalAmount, Date dueDate, Double interestAmount, Double overdueAmount, Integer feeStatusId, Double othersAmount, Double totalAmount) {
+    public LoanFee(Double capitalBalance, Integer feeNumber, Double principalAmount, String dueDate, Double interestAmount, Double overdueAmount, Integer feeStatusId, Double othersAmount, Double totalAmount) {
         this.capitalBalance = capitalBalance;
         this.feeNumber = feeNumber;
         this.principalAmount = principalAmount;
@@ -62,11 +62,11 @@ private Double totalAmount;
         this.principalAmount = principalAmount;
     }
 
-    public Date getDueDate() {
+    public String getDueDate() {
         return dueDate;
     }
 
-    public void setDueDate(Date dueDate) {
+    public void setDueDate(String dueDate) {
         this.dueDate = dueDate;
     }
 

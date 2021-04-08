@@ -107,7 +107,7 @@ public class ProductsResources {
         System.out.println("Lista de opas:"+productsBank);
         ProductsDAO dao = new ProductsDAO();
         try {
-            List<ProductsConsolidatePositionDTO> ListPC = dao.GetProductsConsolidatePosition(ClientBankIdentifiers, productsBank);
+            List<ProductsConsolidatePositionDTO> ListPC = dao.ProductsConsolidatePosition(ClientBankIdentifiers, productsBank);
             if (ListPC != null) {
                     JsonObject k =new JsonObject();
                     k.put("ConsolidatedPosition",ListPC);

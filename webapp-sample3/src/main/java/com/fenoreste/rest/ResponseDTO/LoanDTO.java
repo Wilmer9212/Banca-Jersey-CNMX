@@ -14,30 +14,30 @@ import java.util.List;
  * @author Elliot
  */
 public class LoanDTO {
-    
-private String AccountBankIdentifier;	   
-private Double CurrentBalance;        
-private Double CurrentRate;      	       
-private int FeesDue;         	       
-private FeesDueData FeesDueData;	
-private int LoanStatusId;	
-private LoanFee NextFee;	
-private Double OriginalAmount;
-private int OverdueDays;
-private int PaidFees;
-private Double PayoffBalance;   
-private Double PrepaymentAmount;	        
-private String ProducttBankIdentifier;
-private int term;	                    
-private boolean showPrincipalInformation;	/*
-private LoanFeesResult GetLoanFeesResult;
-private LoanRatesResult loanRateResult;	  
-private LoanPaymentsResult loanPaymentsResult;]*/
+
+    private String AccountBankIdentifier;
+    private Double CurrentBalance;
+    private Double CurrentRate;
+    private int FeesDue;
+    private FeesDueData FeesDueData;
+    private int LoanStatusId;
+    private LoanFee NextFee;
+    private Double OriginalAmount;
+    private int OverdueDays;
+    private int PaidFees;
+    private Double PayoffBalance;
+    private Double PrepaymentAmount;
+    private String ProductBankIdentifier;
+    private int term;
+    private boolean showPrincipalInformation;
+    private List<LoanFee> loanFeesResult;
+    private List<LoanRate> loanRateResult;
+    private List<LoanPayment> loanPaymentsResult;
 
     public LoanDTO() {
     }
 
-    public LoanDTO(String AccountBankIdentifier, Double CurrentBalance, Double CurrentRate, int FeesDue, FeesDueData FeesDueData, int LoanStatusId, LoanFee NextFee, Double OriginalAmount, int OverdueDays, int PaidFees, Double PayoffBalance, Double PrepaymentAmount, String ProducttBankIdentifier, int term, boolean showPrincipalInformation) {
+    public LoanDTO(String AccountBankIdentifier, Double CurrentBalance, Double CurrentRate, int FeesDue, FeesDueData FeesDueData, int LoanStatusId, LoanFee NextFee, Double OriginalAmount, int OverdueDays, int PaidFees, Double PayoffBalance, Double PrepaymentAmount, String ProductBankIdentifier, int term, boolean showPrincipalInformation, List<LoanFee> loanFeesResult, List<LoanRate> loanRateResult, List<LoanPayment> loanPaymentsResult) {
         this.AccountBankIdentifier = AccountBankIdentifier;
         this.CurrentBalance = CurrentBalance;
         this.CurrentRate = CurrentRate;
@@ -50,9 +50,12 @@ private LoanPaymentsResult loanPaymentsResult;]*/
         this.PaidFees = PaidFees;
         this.PayoffBalance = PayoffBalance;
         this.PrepaymentAmount = PrepaymentAmount;
-        this.ProducttBankIdentifier = ProducttBankIdentifier;
+        this.ProductBankIdentifier = ProductBankIdentifier;
         this.term = term;
         this.showPrincipalInformation = showPrincipalInformation;
+        this.loanFeesResult = loanFeesResult;
+        this.loanRateResult = loanRateResult;
+        this.loanPaymentsResult = loanPaymentsResult;
     }
 
     public String getAccountBankIdentifier() {
@@ -151,12 +154,12 @@ private LoanPaymentsResult loanPaymentsResult;]*/
         this.PrepaymentAmount = PrepaymentAmount;
     }
 
-    public String getProducttBankIdentifier() {
-        return ProducttBankIdentifier;
+    public String getProductBankIdentifier() {
+        return ProductBankIdentifier;
     }
 
-    public void setProducttBankIdentifier(String ProducttBankIdentifier) {
-        this.ProducttBankIdentifier = ProducttBankIdentifier;
+    public void setProductBankIdentifier(String ProductBankIdentifier) {
+        this.ProductBankIdentifier = ProductBankIdentifier;
     }
 
     public int getTerm() {
@@ -175,12 +178,33 @@ private LoanPaymentsResult loanPaymentsResult;]*/
         this.showPrincipalInformation = showPrincipalInformation;
     }
 
+    public List<LoanFee> getLoanFeesResult() {
+        return loanFeesResult;
+    }
+
+    public void setLoanFeesResult(List<LoanFee> loanFeesResult) {
+        this.loanFeesResult = loanFeesResult;
+    }
+
+    public List<LoanRate> getLoanRateResult() {
+        return loanRateResult;
+    }
+
+    public void setLoanRateResult(List<LoanRate> loanRateResult) {
+        this.loanRateResult = loanRateResult;
+    }
+
+    public List<LoanPayment> getLoanPaymentsResult() {
+        return loanPaymentsResult;
+    }
+
+    public void setLoanPaymentsResult(List<LoanPayment> loanPaymentsResult) {
+        this.loanPaymentsResult = loanPaymentsResult;
+    }
+
     @Override
     public String toString() {
-        return "LoanDTO{" + "AccountBankIdentifier=" + AccountBankIdentifier + ", CurrentBalance=" + CurrentBalance + ", CurrentRate=" + CurrentRate + ", FeesDue=" + FeesDue + ", FeesDueData=" + FeesDueData + ", LoanStatusId=" + LoanStatusId + ", NextFee=" + NextFee + ", OriginalAmount=" + OriginalAmount + ", OverdueDays=" + OverdueDays + ", PaidFees=" + PaidFees + ", PayoffBalance=" + PayoffBalance + ", PrepaymentAmount=" + PrepaymentAmount + ", ProducttBankIdentifier=" + ProducttBankIdentifier + ", term=" + term + ", showPrincipalInformation=" + showPrincipalInformation + '}';
+        return "LoanDTO{" + "AccountBankIdentifier=" + AccountBankIdentifier + ", CurrentBalance=" + CurrentBalance + ", CurrentRate=" + CurrentRate + ", FeesDue=" + FeesDue + ", FeesDueData=" + FeesDueData + ", LoanStatusId=" + LoanStatusId + ", NextFee=" + NextFee + ", OriginalAmount=" + OriginalAmount + ", OverdueDays=" + OverdueDays + ", PaidFees=" + PaidFees + ", PayoffBalance=" + PayoffBalance + ", PrepaymentAmount=" + PrepaymentAmount + ", ProductBankIdentifier=" + ProductBankIdentifier + ", term=" + term + ", showPrincipalInformation=" + showPrincipalInformation + ", loanFeesResult=" + loanFeesResult + ", loanRateResult=" + loanRateResult + ", loanPaymentsResult=" + loanPaymentsResult + '}';
     }
-     
-    
-    
-}
 
+}

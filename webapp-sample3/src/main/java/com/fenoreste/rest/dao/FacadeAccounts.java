@@ -219,29 +219,30 @@ public abstract class FacadeAccounts<T> {
 
         System.out.println("Consulta:" + consulta);
 
-        if (pageNumber == 1 || pageNumber == 0) {
+        /*if (pageNumber == 1 || pageNumber == 0) {
             inicioB = 0;
         } else if (pageNumber > 1) {
             inicioB = ((pageNumber * pageSizes) - pageSizes);
-        }
+        }*/
 
         try {
             Query queryE = em.createNativeQuery(consulta);
-            queryE.setFirstResult(inicioB);
+            queryE.setFirstResult(pageStartIndex);
             queryE.setMaxResults(pageSizes);
             List<Object[]> MiLista = queryE.getResultList();
+            int movementTypeId=0;
             for(Object[] ListaO:MiLista) {
             if (Integer.parseInt(ListaO[4].toString()) == 1) {
                     Description = "Abono";
+                    movementTypeId=2;
+                    isDC=false;
                 } else if (Integer.parseInt(ListaO[4].toString()) == 0) {
                     Description = "Cargo";
+                    movementTypeId=3;
+                    isDC=true;
                 }
                 Productos productos = em.find(Productos.class, Integer.parseInt(ListaO[1].toString()));
-                if (productos.getTipoproducto() == 2) {
-                    isDC = false;
-                } else {
-                    isDC = true;
-                }
+               
                 AccountMovementsDTO dto = new AccountMovementsDTO(
                         Integer.parseInt(ListaO[12].toString()),
                         productBankIdentifier,
@@ -250,13 +251,11 @@ public abstract class FacadeAccounts<T> {
                         Double.parseDouble(ListaO[5].toString()),
                         isDC,
                         Double.parseDouble(ListaO[14].toString()),
-                        Integer.parseInt(ListaO[12].toString()),
+                        movementTypeId,
                         Description,
                         ListaO[11].toString(),
                         ListaO[11].toString());   
-                ListaDTO.add(dto);
-                
-                
+                ListaDTO.add(dto);    
             }
         } catch (Exception e) {
             System.out.println("Error:" + e.getMessage());

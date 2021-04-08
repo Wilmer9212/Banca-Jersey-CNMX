@@ -22,10 +22,10 @@ public class ProductsConsolidatePositionDTO {
       private Integer internationalCurrencyId;
       private Double internationalBalance;
       private Double rate;
-      private Date expirationDate;
+      private String expirationDate;
       private Integer paidFees;
       private Double term;
-      private Date nextFeeDueDate;
+      private String nextFeeDueDate;
       private String productOwnerName;
       private String productBranchName;
       private Integer canTransact;
@@ -36,7 +36,7 @@ public class ProductsConsolidatePositionDTO {
     public ProductsConsolidatePositionDTO() {
     }
 
-    public ProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, Double localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, Date expirationDate, Integer paidFees, Double term, Date nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName, Integer backendId) {
+    public ProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, Double localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, String expirationDate, Integer paidFees, Double term, String nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName,Integer backendId) {
         this.clientBankIdentifier = clientBankIdentifier;
         this.productBankIdentifier = productBankIdentifier;
         this.productTypeId = productTypeId;
@@ -139,11 +139,11 @@ public class ProductsConsolidatePositionDTO {
         this.rate = rate;
     }
 
-    public Date getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(Date expirationDate) {
+    public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -163,11 +163,11 @@ public class ProductsConsolidatePositionDTO {
         this.term = term;
     }
 
-    public Date getNextFeeDueDate() {
+    public String getNextFeeDueDate() {
         return nextFeeDueDate;
     }
 
-    public void setNextFeeDueDate(Date nextFeeDueDate) {
+    public void setNextFeeDueDate(String nextFeeDueDate) {
         this.nextFeeDueDate = nextFeeDueDate;
     }
 
