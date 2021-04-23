@@ -9,14 +9,9 @@ import com.fenoreste.rest.ResponseDTO.LoanDTO;
 import com.fenoreste.rest.ResponseDTO.LoanFee;
 import com.fenoreste.rest.ResponseDTO.LoanPayment;
 import com.fenoreste.rest.ResponseDTO.LoanRate;
-import com.fenoreste.rest.Util.AbstractFacade;
 import com.fenoreste.rest.dao.LoanDAO;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -109,7 +104,7 @@ public class LoanResources {
         try {
             LoanFee loan = dao.LoanFee(productBankIdentifier, feeNumber);
             JsonObject j = new JsonObject();
-            j.put("Loan", loan);
+            j.put("Fee", loan);
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
             dao.cerrar();
@@ -132,6 +127,7 @@ public class LoanResources {
         JsonObject Error = new JsonObject();
         int feesStatus = 0, pageSize = 0, pageStartIndex = 0;
         LoanDAO dao = new LoanDAO();
+        String order="";
         try {
             JSONObject jsonRecibido = new JSONObject(cadena);
             productBankIdentifier = jsonRecibido.getString("productBankIdentifier");
@@ -139,10 +135,12 @@ public class LoanResources {
             JSONObject json = jsonRecibido.getJSONObject("paging");
             pageSize = json.getInt("pageSize");
             pageStartIndex = json.getInt("pageStartIndex");
+            order=json.getString("OrderByField");
+            System.out.println("order:"+order);
             int o = Integer.parseInt(productBankIdentifier.substring(0, 6));
             int p = Integer.parseInt(productBankIdentifier.substring(6, 11));
             int a = Integer.parseInt(productBankIdentifier.substring(11, 19));
-            if(dao.tipoproducto(p)!=2){
+            if(dao.tipoproducto(p)!=2 || !order.equalsIgnoreCase("feenumber")){
                 Error.put("Error","Producto no valido para LOANS");
                 return Response.status(Response.Status.BAD_REQUEST).entity(Error).build();
             }
@@ -154,9 +152,12 @@ public class LoanResources {
         
         int count = 0;
         try {
-            List<LoanFee> loan = dao.LoanFees(productBankIdentifier, feesStatus, pageSize, pageStartIndex);
+            List<LoanFee> loan = dao.LoanFees(productBankIdentifier, feesStatus, pageSize, pageStartIndex,order);
             JsonObject j = new JsonObject();
-            j.put("Loan", loan);
+            
+            int t=dao.contadorGeneral(productBankIdentifier, 1,feesStatus);
+            j.put("Fees", loan);
+            j.put("LoanFeesCount",t);
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
             dao.cerrar();
@@ -201,7 +202,9 @@ public class LoanResources {
         try {
             List<LoanRate> loan = dao.LoanRates(productBankIdentifier, pageSize, pageStartIndex);
             JsonObject j = new JsonObject();
-            j.put("Loan", loan);
+            int t=3;
+            j.put("Rates", loan);
+            j.put("LoanRatesCount",t);
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
             dao.cerrar();
@@ -247,7 +250,9 @@ public class LoanResources {
         try {
             List<LoanPayment> ListPayment = dao.loanPayments(productBankIdentifier, pageSize, pageStartIndex);
             JsonObject j = new JsonObject();
-            j.put("Loan", ListPayment);
+             int t=dao.contadorGeneral(productBankIdentifier, 2, 0);
+            j.put("Payments", ListPayment);
+            j.put("LoanPaymentsCount",t);
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
             dao.cerrar();

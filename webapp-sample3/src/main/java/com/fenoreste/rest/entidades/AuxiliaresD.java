@@ -8,7 +8,7 @@ package com.fenoreste.rest.entidades;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -18,6 +18,7 @@ import javax.persistence.Table;
  *
  * @author Elliot
  */
+@Cacheable(false)
 @Entity
 @Table(name = "auxiliares_d")
 public class AuxiliaresD implements Serializable {
@@ -25,7 +26,7 @@ public class AuxiliaresD implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @EmbeddedId
-    protected AuxiliaresDPK auxiliares_dPK;
+    protected AuxiliaresDPK auxiliaresDPK;
     @Column(name = "cargoabono")
     private Short cargoabono;
     @Column(name = "monto")
@@ -68,23 +69,24 @@ public class AuxiliaresD implements Serializable {
     private BigDecimal montoidncm;
     @Column(name = "montoiecom")
     private BigDecimal montoiecom;
-    @Column(name = "fecha")
-    private Date fecha;
-    
-    
+
     public AuxiliaresD() {
     }
 
     public AuxiliaresD(AuxiliaresDPK auxiliaresDPK) {
-        this.auxiliares_dPK = auxiliaresDPK;
+        this.auxiliaresDPK = auxiliaresDPK;
     }
-    
-     public AuxiliaresDPK getAuxiliaresDPK() {
-        return auxiliares_dPK;
+
+    public AuxiliaresD(int idorigenp, int idproducto, int idauxiliar, Date fecha) {
+        this.auxiliaresDPK = new AuxiliaresDPK(idorigenp, idproducto, idauxiliar, fecha);
+    }
+
+    public AuxiliaresDPK getAuxiliaresDPK() {
+        return auxiliaresDPK;
     }
 
     public void setAuxiliaresDPK(AuxiliaresDPK auxiliaresDPK) {
-        this.auxiliares_dPK = auxiliaresDPK;
+        this.auxiliaresDPK = auxiliaresDPK;
     }
 
     public Short getCargoabono() {
@@ -110,15 +112,7 @@ public class AuxiliaresD implements Serializable {
     public void setMontoio(BigDecimal montoio) {
         this.montoio = montoio;
     }
-    
-     public Date getFecha() {
-        return fecha;
-    }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-    
     public BigDecimal getMontoim() {
         return montoim;
     }
@@ -126,7 +120,7 @@ public class AuxiliaresD implements Serializable {
     public void setMontoim(BigDecimal montoim) {
         this.montoim = montoim;
     }
-    
+
     public BigDecimal getMontoiva() {
         return montoiva;
     }
@@ -266,7 +260,7 @@ public class AuxiliaresD implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (auxiliares_dPK != null ? auxiliares_dPK.hashCode() : 0);
+        hash += (auxiliaresDPK != null ? auxiliaresDPK.hashCode() : 0);
         return hash;
     }
 
@@ -277,13 +271,13 @@ public class AuxiliaresD implements Serializable {
             return false;
         }
         AuxiliaresD other = (AuxiliaresD) object;
-        return !((this.auxiliares_dPK == null && other.auxiliares_dPK != null) || (this.auxiliares_dPK != null && !this.auxiliares_dPK.equals(other.auxiliares_dPK)));
+        return !((this.auxiliaresDPK == null && other.auxiliaresDPK != null) || (this.auxiliaresDPK != null && !this.auxiliaresDPK.equals(other.auxiliaresDPK)));
     }
 
     @Override
     public String toString() {
-        return "AuxiliaresD{" + "auxiliares_dPK=" + auxiliares_dPK + ", cargoabono=" + cargoabono + ", monto=" + monto + ", montoio=" + montoio + ", montoim=" + montoim + ", montoiva=" + montoiva + ", idorigenc=" + idorigenc + ", periodo=" + periodo + ", idtipo=" + idtipo + ", idpoliza=" + idpoliza + ", tipomov=" + tipomov + ", saldoec=" + saldoec + ", transaccion=" + transaccion + ", montoivaim=" + montoivaim + ", efectivo=" + efectivo + ", diasvencidos=" + diasvencidos + ", montovencido=" + montovencido + ", ticket=" + ticket + ", montoidnc=" + montoidnc + ", montoieco=" + montoieco + ", montoidncm=" + montoidncm + ", montoiecom=" + montoiecom + ", fecha=" + fecha + '}';
+        return "com.fenoreste.modelo.entidad.AuxiliaresD[ auxiliaresDPK=" + auxiliaresDPK + " ]";
     }
 
-    
 }
+

@@ -6,18 +6,18 @@
 package com.fenoreste.rest.entidades;
 
 import java.io.Serializable;
-import java.util.Objects;
-
+import java.util.Date;
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
  * @author Elliot
  */
-@Cacheable(false)
-@Embeddable
+
 public class AuxiliaresDPK implements Serializable {
 
     @Column(name = "idorigenp")
@@ -26,10 +26,19 @@ public class AuxiliaresDPK implements Serializable {
     private int idproducto;
     @Column(name = "idauxiliar")
     private int idauxiliar;
-    
+    @Column(name = "fecha")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
 
     public AuxiliaresDPK() {
-    }    
+    }
+
+    public AuxiliaresDPK(int idorigenp, int idproducto, int idauxiliar, Date fecha) {
+        this.idorigenp = idorigenp;
+        this.idproducto = idproducto;
+        this.idauxiliar = idauxiliar;
+        this.fecha = fecha;
+    }
 
     public AuxiliaresDPK(int idorigenp, int idproducto, int idauxiliar) {
         this.idorigenp = idorigenp;
@@ -61,44 +70,46 @@ public class AuxiliaresDPK implements Serializable {
         this.idauxiliar = idauxiliar;
     }
 
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 67 * hash + Objects.hashCode(this.idorigenp);
-        hash = 67 * hash + Objects.hashCode(this.idproducto);
-        hash = 67 * hash + Objects.hashCode(this.idauxiliar);
+        int hash = 0;
+        hash += (int) idorigenp;
+        hash += (int) idproducto;
+        hash += (int) idauxiliar;
+        hash += (fecha != null ? fecha.hashCode() : 0);
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof AuxiliaresDPK)) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        AuxiliaresDPK other = (AuxiliaresDPK) object;
+        if (this.idorigenp != other.idorigenp) {
             return false;
         }
-        final AuxiliaresDPK other = (AuxiliaresDPK) obj;
-        if (!Objects.equals(this.idorigenp, other.idorigenp)) {
+        if (this.idproducto != other.idproducto) {
             return false;
         }
-        if (!Objects.equals(this.idproducto, other.idproducto)) {
+        if (this.idauxiliar != other.idauxiliar) {
             return false;
         }
-        if (!Objects.equals(this.idauxiliar, other.idauxiliar)) {
-            return false;
-        }
-        return true;
+        return !((this.fecha == null && other.fecha != null) || (this.fecha != null && !this.fecha.equals(other.fecha)));
     }
-
- 
 
     @Override
     public String toString() {
-        return "com.fenoreste.modelo.entidad.AuxiliaresDPK[ idorigenp=" + idorigenp + ", idproducto=" + idproducto + ", idauxiliar=" + idauxiliar + " ]";
+        return "com.fenoreste.modelo.entidad.AuxiliaresDPK[ idorigenp=" + idorigenp + ", idproducto=" + idproducto + ", idauxiliar=" + idauxiliar + ", fecha=" + fecha + " ]";
     }
 
 }

@@ -131,6 +131,7 @@ public class AccountsResources {
         int PageSize = 0;
         int PageStartIndex = 0;        
         JsonObject Error=new JsonObject();
+        String orderBy="";
         try {
             JSONObject jsonRecibido = new JSONObject(cadenaJson);
             ProductBankIdentifier = jsonRecibido.getString("productBankIdentifier");
@@ -139,13 +140,14 @@ public class AccountsResources {
             JSONObject json = jsonRecibido.getJSONObject("paging");
             PageSize = json.getInt("pageSize");
             PageStartIndex = json.getInt("pageStartIndex");
+            orderBy=json.getString("orderByField");
         }catch(Exception e){
             Error.put("Error","Error en parametros JSON");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Error).build();
         }
             int count=0;
             try{
-            List<AccountMovementsDTO> MiListaDTO = dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex);
+            List<AccountMovementsDTO> MiListaDTO = dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex,orderBy);
             com.github.cliftonlabs.json_simple.JsonObject j = new com.github.cliftonlabs.json_simple.JsonObject();
             count=dao.contadorAuxD(ProductBankIdentifier, DateFromFilter, DateToFilter);
             if(count>0){

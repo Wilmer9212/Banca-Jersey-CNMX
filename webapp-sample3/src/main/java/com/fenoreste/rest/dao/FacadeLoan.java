@@ -155,7 +155,7 @@ public abstract class FacadeLoan<T> {
         return loanFee;
     }
 
-    public List<LoanFee> LoanFees(String productBankIdentifier, int feesStatus, int pageSize, int pageStartIndex) {
+    public List<LoanFee> LoanFees(String productBankIdentifier, int feesStatus, int pageSize, int pageStartIndex,String order) {
         EntityManager em = emf.createEntityManager();
         LoanFee loanFee = null;
         int o = Integer.parseInt(productBankIdentifier.substring(0, 6));
@@ -164,6 +164,7 @@ public abstract class FacadeLoan<T> {
         List<Amortizaciones> ListaAmortizaciones = new ArrayList<>();
         List<LoanFee> listaFees = new ArrayList<>();
         try {
+            if(order!=null  && order.equalsIgnoreCase("feenumber")){
             AuxiliaresPK pk = new AuxiliaresPK(o, p, a);
             Auxiliares aux = em.find(Auxiliares.class, pk);
             //Obtengo informacion con el sai_auxiliar hasta la fecha actual, si hay dudas checar el catalogo o atributos que devuelve la funcion
@@ -185,18 +186,22 @@ public abstract class FacadeLoan<T> {
             String consultaA = "SELECT * FROM amortizaciones WHERE idorigenp=" + o
                     + " AND idproducto=" + p
                     + " AND idauxiliar=" + a
-                    + " " + complemento;
+                    + " " + complemento+" ORDER BY (idorigenp+idproducto+idauxiliar+idamortizacion) ASC";
             System.out.println("La consulta es:" + consultaA);
             int inicioB = 0;
-
+            /*
             if (pageStartIndex == 1 || pageStartIndex == 0) {
                 inicioB = 0;
             } else if (pageStartIndex > 1) {
-                inicioB = ((pageStartIndex * pageSize) - pageSize);
+                inicioB = ((pageStartIndex -1) * pageSize);
+                               
+            }*/               
+             inicioB = ((pageStartIndex * pageSize) - pageSize);
+            if(inicioB<0){
+                inicioB=0;
             }
-
             Query queryA = em.createNativeQuery(consultaA, Amortizaciones.class);
-            queryA.setFirstResult(inicioB);
+            queryA.setFirstResult(pageStartIndex);
             queryA.setMaxResults(pageSize);
             ListaAmortizaciones = queryA.getResultList();
             Double iovencido = Double.parseDouble(list.get(6).toString()) + Double.parseDouble(list.get(17).toString());
@@ -229,10 +234,10 @@ public abstract class FacadeLoan<T> {
                         abonoT);
                 listaFees.add(loanFee);
             }
+            }
         } catch (Exception e) {
             System.out.println("Error en LoanFee:" + e.getMessage());
         }
-        em.close();
         System.out.println("ListaFees:" + listaFees);
         return listaFees;
     }
@@ -348,21 +353,84 @@ public abstract class FacadeLoan<T> {
         int o = Integer.parseInt(productBankIdentifier.substring(0, 6));
         int p = Integer.parseInt(productBankIdentifier.substring(6, 11));
         int a = Integer.parseInt(productBankIdentifier.substring(11, 19));
+        
+        List<LoanPayment>listPayment=new ArrayList<LoanPayment>();
+        LoanPayment loanp=null;
+        
         try{
             AuxiliaresPK auxpk=new AuxiliaresPK(o,p,a);
             Auxiliares auxiliares=em.find(Auxiliares.class,auxpk);
-            String con="SELECT * FROM auxiliares_d WHERE idorigenp="+o+" AND idproducto="+p+" AND idauxiliar="+a;
+            String con="SELECT * FROM auxiliares_d WHERE idorigenp="+o+" AND idproducto="+p+" AND idauxiliar="+a+" AND cargoabono=1";
+            System.out.println("CON:"+con);
             Query query=em.createNativeQuery(con,AuxiliaresD.class);
+            query.setFirstResult(startPageIndex);
+            query.setMaxResults(pageSize);
             List<AuxiliaresD>MiLista=query.getResultList();
             for(int i=0;i<MiLista.size();i++){
-                AuxiliaresD auxd=MiLista.get(i);
-                System.out.println("Auxd:"+auxd);
+                AuxiliaresD io=MiLista.get(i);
+                System.out.println("io:"+io);
             }
-            System.out.println("con:"+con);
-        }catch(Exception e){
-            System.out.println("Error al buscar uxilaires d:"+e.getMessage());
+            
+        String sai_auxiliar = "SELECT * FROM sai_auxiliar(" + o + "," + p + "," + a + ",(SELECT date(fechatrabajo) FROM origenes limit 1))";
+        Double montoVencido = 0.0;
+        int feeNumber=0;
+        try {
+            Query RsSai = em.createNativeQuery(sai_auxiliar);
+            String sai = RsSai.getSingleResult().toString();
+            String[] parts = sai.split("\\|");
+            List list = Arrays.asList(parts);
+            montoVencido= Double.parseDouble(list.get(4).toString());
+            
+            String fechaNumber="";
+            if(!list.get(8).toString().equals("")){
+                fechaNumber=list.get(8).toString();
+                String c=("SELECT idamortizacion FROM amortizaciones WHERE "
+                                                + "(idorigenp,idproducto,idauxiliar)=("+o+","+p+","+a+") AND vence='"+fechaNumber+"'");
+                
+                System.out.println("FechaNumber:"+fechaNumber);
+                Query queryfe=em.createNativeQuery(c);
+                feeNumber=Integer.parseInt(String.valueOf(queryfe.getSingleResult()));
+                System.out.println("Consulta e:"+c);
+            }else {
+             String c1=("SELECT idamortizacion FROM amortizaciones WHERE "
+                                                + "(idorigenp,idproducto,idauxiliar)="+(o+","+p+","+a)+"ORDER BY vence ASC limit 1");
+             Query queryfecha=em.createNativeQuery(c1);
+             feeNumber=Integer.parseInt(String.valueOf(queryfecha.getSingleResult()));
+                System.out.println("Consulta e1:"+c1);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al correr SAI:" + e.getMessage());
+            
         }
-        return null;
+        int payEstatus=0;
+        for(int i=0;i<MiLista.size();i++){
+            System.out.println("aun");
+                AuxiliaresD auxd=MiLista.get(i);
+                if(Double.parseDouble(auxd.getSaldoec().toString())==0){
+                    payEstatus=1;
+                }else{
+                    payEstatus=2;
+                }
+                loanp=new LoanPayment(  Double.parseDouble(auxiliares.getSaldo().toString()),
+                                        feeNumber,
+                                        payEstatus,
+                                        Double.parseDouble(auxd.getMontoio().toString()),
+                                        Double.parseDouble(auxd.getMontoiva().toString()),
+                                        Double.parseDouble(auxd.getMontoim().toString()),
+                                        String.valueOf(auxd.getAuxiliaresDPK().getFecha()),
+                                        Double.parseDouble(auxd.getMonto().toString()),
+                                        Double.parseDouble(auxd.getMonto().toString()) +  Double.parseDouble(auxd.getMontoio().toString()) +  Double.parseDouble(auxd.getMontoim().toString()));
+                  
+                        System.out.println("LoanP:"+loanp);    
+            listPayment.add(loanp);
+        }
+            System.out.println("listaPayments:"+listPayment);
+        
+        }catch(Exception e){
+            System.out.println("Error al buscar auxiliares d:"+e.getMessage());
+        
+        }
+        return listPayment;
     }
     //Obetner cuota vencida
     public FeesDueData RSFeesDueData(int o, int p, int a) {
@@ -483,8 +551,9 @@ public abstract class FacadeLoan<T> {
             diasVencidos = Integer.parseInt(list.get(3).toString());
         } catch (Exception e) {
             System.out.println("Error en FeesDueData:" + e.getMessage());
-            cerrar();
+            em.close();
         }
+        
         return diasVencidos;
     }
 
@@ -497,8 +566,10 @@ public abstract class FacadeLoan<T> {
             Query query=em.createNativeQuery(consulta);
             tipoproducto=Integer.parseInt(String.valueOf(query.getSingleResult()));
         } catch (Exception e) {
+            em.close();
             System.out.println("Error en buscar tipoproducto:"+e.getMessage());
         }
+        em.close();
         return tipoproducto;
     }
     public static Date stringTodate(String fecha) {
@@ -512,7 +583,32 @@ public abstract class FacadeLoan<T> {
         System.out.println("date:" + date);
         return date;
     }
-
+    
+    public int contadorGeneral(String productBankIdentifier,int identificador,int feesstatus){
+        EntityManager em=emf.createEntityManager();
+        int cont=0;
+        try{
+            String consulta="";
+            if(identificador==1){
+                if(feesstatus==1){
+                consulta="SELECT count(*) FROM amortizaciones WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+productBankIdentifier+"' AND todopag=true";    
+                }else if(feesstatus==2){
+                consulta="SELECT count(*) FROM amortizaciones WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+productBankIdentifier+"' AND todopag=false";    
+                }else if(feesstatus==0){
+                consulta="SELECT count(*) FROM amortizaciones WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+productBankIdentifier+"'";    
+                }
+          
+            }else if(identificador==2){
+                consulta="SELECT count(*) FROM auxiliares_d WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+productBankIdentifier+"' AND cargoabono=1";
+            }
+            Query query=em.createNativeQuery(consulta);
+            cont=Integer.parseInt(String.valueOf(query.getSingleResult()));
+            System.out.println("cont:"+cont);
+        }catch(Exception e){
+            System.out.println("Error al obtener contador general:"+e.getMessage());
+        }
+        return cont;
+    }
     public String dateToString(Date cadena) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         String cadenaStr = sdf.format(cadena);
@@ -523,7 +619,7 @@ public abstract class FacadeLoan<T> {
      * *********************************Cerrando conexiones  * ***********************************
      */
     
- 
+    
     public void cerrar() {
         emf.close();
     }

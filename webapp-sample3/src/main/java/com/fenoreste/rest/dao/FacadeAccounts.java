@@ -7,16 +7,12 @@ import com.fenoreste.rest.ResponseDTO.AccountMovementsDTO;
 import com.fenoreste.rest.entidades.AuxiliaresPK;
 import com.fenoreste.rest.entidades.Productos;
 import com.fenoreste.rest.entidades.Auxiliares;
-import com.fenoreste.rest.entidades.AuxiliaresD;
-import com.fenoreste.rest.entidades.Persona;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +20,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 
 public abstract class FacadeAccounts<T> {
@@ -141,21 +136,24 @@ public abstract class FacadeAccounts<T> {
                     + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ? ORDER BY fecha DESC LIMIT 5";
             Query k = em.createNativeQuery(consulta);
             k.setParameter(1, accountId);
-
+            int movementTypeId=0;
             List<Object[]> milista = k.getResultList();
             for (int i = 0; i < milista.size(); i++) {
                 Object[] as = milista.get(i);
                 if (Integer.parseInt(as[4].toString()) == 1) {
                     Description = "Abono";
+                    movementTypeId=2;
+                    isDC=false;
                 } else if (Integer.parseInt(as[4].toString()) == 0) {
                     Description = "Cargo";
+                    movementTypeId=3;
+                    isDC=true;
                 }
+                
+                
+                
                 Productos productos = em.find(Productos.class, Integer.parseInt(as[1].toString()));
-                if (productos.getTipoproducto() == 2) {
-                    isDC = false;
-                } else {
-                    isDC = true;
-                }
+               
                 cuenta = new AccountLast5MovementsDTO(
                         Integer.parseInt(as[12].toString()),
                         accountId,
@@ -164,7 +162,7 @@ public abstract class FacadeAccounts<T> {
                         Double.parseDouble(as[5].toString()),
                         isDC,
                         Double.parseDouble(as[14].toString()),
-                        1,
+                        movementTypeId,
                         Description,
                         as[12].toString(),
                         as[20].toString());
@@ -176,16 +174,76 @@ public abstract class FacadeAccounts<T> {
         } catch (Exception e) {
             em.close();
             System.out.println("Error en GetAccountLast5Movements:" + e.getMessage());
-        }
+        };
         return ListaDTO;
     }
 
-    public List<AccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize, int pageStartIndex) {
+    public List<AccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize, int pageStartIndex,String orderBy) {
         em = emf.createEntityManager();
         AccountMovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
         List<AccountMovementsDTO> ListaDTO = new ArrayList<AccountMovementsDTO>();
+        String complemento="";
+        
+        /*if(!orderBy.equals("")){
+            if(orderBy.toUpperCase().contains("MOVEMENTDATE ASC")){
+                complemento="ORDER BY fecha ASC";
+            }else 
+        }*/
+        System.out.println("orderB:"+orderBy);
+        switch(orderBy.toUpperCase()){
+            
+            case "MOVEMENTDATE ASC":
+                complemento="ORDER BY fecha ASC";
+            break;
+            case "MOVEMENTDATE DESC":
+                complemento="ORDER BY fecha DESC";
+            break;
+            case "MOVEMENTDATE":
+                complemento="ORDER BY fecha";
+            break;  
+            case "ID ASC":
+                complemento="ORDER BY idpoliza ASC";
+            break;
+            case "ID DESC":
+                complemento="ORDER BY idpoliza DESC";
+            break;
+            case "ID":
+                complemento="ORDER BY idpoliza";
+            break;  
+            case "DESCRIPTION ASC":
+                complemento="ORDER BY cargoabono ASC";
+            break;
+            case "DESCRIPTION DESC":
+                complemento="ORDER BY cargoabono DESC";
+            break;
+            case "DESCRIPTION":
+                complemento="ORDER BY cargoabono";
+            break; 
+             case "AMOUNT ASC":
+                complemento="ORDER BY monto ASC";
+            break;
+            case "AMOUNT DESC":
+                complemento="ORDER BY monto DESC";
+            break;
+            case "AMOUNT":
+                complemento="ORDER BY monto";
+            break; 
+             case "BALANCE ASC":
+                complemento="ORDER BY saldoec ASC";
+            break;
+            case "BALANCE DESC":
+                complemento="ORDER BY saldoec DESC";
+            break;
+            case "BALANCE":
+                complemento="ORDER BY saldoec";
+            break; 
+            case "":
+            break;
+            
+            
+        }
 
         EntityManagerFactory emf = AbstractFacade.conexion();
         EntityManager em = emf.createEntityManager();
@@ -199,21 +257,21 @@ public abstract class FacadeAccounts<T> {
             consulta = " SELECT *"
                     + "         FROM auxiliares_d"
                     + "         WHERE date(fecha) between '" + dateFromFilter + "'"
-                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+                    + "         AND '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' "+complemento;
         } else if (!dateFromFilter.equals("") && dateToFilter.equals("")) {
             consulta = " SELECT *"
                     + "         FROM auxiliares_d"
-                    + "         WHERE date(fecha) > '" + dateFromFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+                    + "         WHERE date(fecha) > '" + dateFromFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' "+complemento;
 
         } else if (dateFromFilter.equals("") && !dateToFilter.equals("")) {
             consulta = " SELECT *"
                     + "         FROM auxiliares_d"
-                    + "         WHERE date(fecha) < '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+                    + "         WHERE date(fecha) < '" + dateToFilter + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' "+complemento;
 
         } else {
             consulta = " SELECT *"
                     + "         FROM auxiliares_d"
-                    + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' ORDER BY fecha ASC";
+                    + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "' "+complemento;
 
         }
 
@@ -224,7 +282,11 @@ public abstract class FacadeAccounts<T> {
         } else if (pageNumber > 1) {
             inicioB = ((pageNumber * pageSizes) - pageSizes);
         }*/
-
+        
+        inicioB = ((pageNumber * pageSizes) - pageSizes);
+        if(inicioB<0){
+            inicioB=0;
+        }
         try {
             Query queryE = em.createNativeQuery(consulta);
             queryE.setFirstResult(pageStartIndex);
