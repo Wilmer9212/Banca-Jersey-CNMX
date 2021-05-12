@@ -90,17 +90,26 @@ public abstract class FacadeCustomer<T> {
     }
 
     //Metodo para saber si la personas realmente existe en la base de datos
-    public boolean SearchPersonas(String Name, String LastName, String Mail, String Phone, String CellPhone, String UserName) throws Throwable {
+    public boolean SearchPersonas(int clientType,String documentId,String Name, String LastName, String Mail, String Phone, String CellPhone) throws Throwable {
         EntityManager em = emf.createEntityManager();
         List<Persona> Lista = null;
         boolean bandera = false;
+        String IdentClientType="";
+        if(clientType==1){
+            IdentClientType="curp";
+        }else if(clientType==2){
+            IdentClientType="rfc";
+        }
+        
+        
         try {
             String consulta = "SELECT * FROM personas p WHERE "
-                    + "replace(UPPER(p.nombre),' ','')='" + Name.toUpperCase().replace(" ","") + "' AND "
+                    + "replace((p." + IdentClientType.toUpperCase() + "),' ','')='" + documentId.replace(" ","").trim() + "' AND "
+                    + " replace(UPPER(p.nombre),' ','')='" + Name.toUpperCase().replace(" ","").trim() + "' AND "
                     + "UPPER(replace(p.appaterno,' ','')||''||replace(p.apmaterno,' ','')) like '%" + LastName.toUpperCase().replace(" ", "") + "%' AND "
-                    + "replace(UPPER(p.email),' ','')='" + Mail.toUpperCase() + "' AND "
-                    + "replace(p.telefono,' ','')='" + Phone.replace(" ","") + "' AND "
-                    + "replace(p.celular,' ','')='" + CellPhone.replace(" ","") + "'";
+                    + "replace(UPPER(p.email),' ','') like'%" + Mail.toUpperCase().trim() + "%' AND "
+                    + "replace(p.telefono,' ','')='" + Phone.replace(" ","").trim() + "' AND "
+                    + "replace(p.celular,' ','')='" + CellPhone.replace(" ","").trim() + "'";
             System.out.println("Consulta:" + consulta);
 
             Query query = em.createNativeQuery(consulta, Persona.class);

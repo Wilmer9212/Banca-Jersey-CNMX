@@ -64,7 +64,7 @@ public class CustomerResources {
         usuarios_banca_bankingly usersWeb = new usuarios_banca_bankingly();
         CustomerDAO metodos = new CustomerDAO();
         boolean bande = metodos.findUser(UserName);
-        boolean buscaP = metodos.SearchPersonas(Name, LastName, Mail, Phone, CellPhone, UserName);
+        boolean buscaP = metodos.SearchPersonas(ClientType,DocumentId,Name, LastName, Mail, Phone, CellPhone);
         System.out.println("Persona:" + buscaP);
         try {
             if (buscaP) {

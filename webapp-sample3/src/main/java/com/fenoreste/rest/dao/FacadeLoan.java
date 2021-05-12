@@ -162,31 +162,39 @@ public abstract class FacadeLoan<T> {
         int p = Integer.parseInt(productBankIdentifier.substring(6, 11));
         int a = Integer.parseInt(productBankIdentifier.substring(11, 19));
         List<Amortizaciones> ListaAmortizaciones = new ArrayList<>();
+        System.out.println(o+",p:"+p+",a:"+a);
         List<LoanFee> listaFees = new ArrayList<>();
         try {
-            if(order!=null  && order.equalsIgnoreCase("feenumber")){
+            
             AuxiliaresPK pk = new AuxiliaresPK(o, p, a);
             Auxiliares aux = em.find(Auxiliares.class, pk);
+                System.out.println("todavia:");
             //Obtengo informacion con el sai_auxiliar hasta la fecha actual, si hay dudas checar el catalogo o atributos que devuelve la funcion
             String sai_auxiliar = "SELECT * FROM sai_auxiliar(" + o + "," + p + "," + a + ",(SELECT date(fechatrabajo) FROM origenes limit 1))";
             Query RsSai = em.createNativeQuery(sai_auxiliar);
             String sai = RsSai.getSingleResult().toString();
+                System.out.println("sai:"+sai);
             String[] parts = sai.split("\\|");
             List list = Arrays.asList(parts);
             String complemento = "";
-            if (feesStatus == 0) {
+            
+            if (feesStatus == 0 && order.equalsIgnoreCase("feenumber")) {
+                complemento="ORDER BY (idorigenp+idproducto+idauxiliar+idamortizacion) ASC";
+            } else if (feesStatus == 1 && order.equalsIgnoreCase("feenumber")) {
+                complemento = "AND todopag=true ORDER BY (idorigenp+idproducto+idauxiliar+idamortizacion) ASC";
+            } else if(feesStatus==1 && order.equals("")){
+              complemento="AND todopag=true";
+            }else if (feesStatus == 2 && order.equalsIgnoreCase("feenumber")) {
+                complemento = "AND todopag=false ORDER BY (idorigenp+idproducto+idauxiliar+idamortizacion) ASC";
 
-            } else if (feesStatus == 1) {
-                complemento = "AND todopag=true";
-            } else if (feesStatus == 2) {
-                complemento = "AND todopag=false";
-
+            }else if(feesStatus==2 && order.equals("")){
+                complemento="AND todopag=false";
             }
+            System.out.println("complemento:"+complemento);
             //Obtengo la amortizacion que se vence
             String consultaA = "SELECT * FROM amortizaciones WHERE idorigenp=" + o
                     + " AND idproducto=" + p
-                    + " AND idauxiliar=" + a
-                    + " " + complemento+" ORDER BY (idorigenp+idproducto+idauxiliar+idamortizacion) ASC";
+                    + " AND idauxiliar=" + a +" "+ complemento;
             System.out.println("La consulta es:" + consultaA);
             int inicioB = 0;
             /*
@@ -234,7 +242,7 @@ public abstract class FacadeLoan<T> {
                         abonoT);
                 listaFees.add(loanFee);
             }
-            }
+            
         } catch (Exception e) {
             System.out.println("Error en LoanFee:" + e.getMessage());
         }
@@ -412,7 +420,7 @@ public abstract class FacadeLoan<T> {
                     payEstatus=2;
                 }
                 loanp=new LoanPayment(  Double.parseDouble(auxiliares.getSaldo().toString()),
-                                        feeNumber,
+                                        0,
                                         payEstatus,
                                         Double.parseDouble(auxd.getMontoio().toString()),
                                         Double.parseDouble(auxd.getMontoiva().toString()),

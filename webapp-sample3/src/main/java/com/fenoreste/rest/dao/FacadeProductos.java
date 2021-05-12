@@ -9,6 +9,10 @@ import com.fenoreste.rest.entidades.Catalogo_Cuenta_Bankingly;
 import com.fenoreste.rest.entidades.Persona;
 import com.fenoreste.rest.entidades.PersonasPK;
 import com.fenoreste.rest.entidades.Productos;
+import com.fenoreste.rest.entidades.Tablas;
+import com.fenoreste.rest.entidades.TablasPK;
+import com.fenoreste.rest.entidades.WsFoliosTarjetasSyC1;
+import com.fenoreste.rest.entidades.WsFoliosTarjetasSyCPK1;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,10 +48,26 @@ public abstract class FacadeProductos<T> {
             System.out.println("Consulta:" + consulta);
             Query query = em.createNativeQuery(consulta, Auxiliares.class);
             List<Auxiliares> ListaA = query.getResultList();
-
+            
+            //Identifico la caja para la TDD
+            TablasPK pkt=new TablasPK("identificador_uso_tdd","activa");
+            Tablas tb=em.find(Tablas.class, pkt);
+            
             for (int i = 0; i < ListaA.size(); i++) {
                 ProductsDTO auxi = new ProductsDTO();
                 Auxiliares a = ListaA.get(i);
+                
+                if(tb.getDato1().equals("1")){
+                    DAOTDD ws=new DAOTDD();
+                    if(a.getAuxiliaresPK().getIdproducto()==Integer.parseInt(tb.getDato2())){
+                        System.out.println("Entro");
+                        System.out.println("idorigenp:"+a.getAuxiliaresPK().getIdorigenp()+",idproducto:"+a.getAuxiliaresPK().getIdproducto()+",idauxiliar:"+a.getAuxiliaresPK().getIdauxiliar());
+                        WsFoliosTarjetasSyCPK1 pk1=new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(),a.getAuxiliaresPK().getIdproducto(),a.getAuxiliaresPK().getIdauxiliar());
+                        System.out.println("pkg1:"+pk1);
+                        WsFoliosTarjetasSyC1 sc1=em.find(WsFoliosTarjetasSyC1.class,pk1);
+                        System.out.println("sc1:"+sc1);                        
+                    }
+                }
                 try {
                     ccb = em.find(Catalogo_Cuenta_Bankingly.class, a.getAuxiliaresPK().getIdproducto());
                     productTypeId = String.valueOf(ccb.getProductTypeId());

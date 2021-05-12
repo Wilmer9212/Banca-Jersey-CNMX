@@ -60,7 +60,6 @@ public class LoanResources {
             LoanDTO loan = dao.Loan(productBankIdentifier);
             JsonObject j = new JsonObject();
             j.put("Loan", loan);
-
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
             dao.cerrar();
@@ -135,12 +134,12 @@ public class LoanResources {
             JSONObject json = jsonRecibido.getJSONObject("paging");
             pageSize = json.getInt("pageSize");
             pageStartIndex = json.getInt("pageStartIndex");
-            order=json.getString("OrderByField");
+            order=json.getString("orderByField");
             System.out.println("order:"+order);
             int o = Integer.parseInt(productBankIdentifier.substring(0, 6));
             int p = Integer.parseInt(productBankIdentifier.substring(6, 11));
             int a = Integer.parseInt(productBankIdentifier.substring(11, 19));
-            if(dao.tipoproducto(p)!=2 || !order.equalsIgnoreCase("feenumber")){
+            if(dao.tipoproducto(p)!=2){
                 Error.put("Error","Producto no valido para LOANS");
                 return Response.status(Response.Status.BAD_REQUEST).entity(Error).build();
             }
