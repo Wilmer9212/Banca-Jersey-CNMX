@@ -50,9 +50,13 @@ public abstract class FacadeProductos<T> {
             List<Auxiliares> ListaA = query.getResultList();
             
             //Identifico la caja para la TDD
+            Tablas tb=null;
+            try{           
             TablasPK pkt=new TablasPK("identificador_uso_tdd","activa");
-            Tablas tb=em.find(Tablas.class, pkt);
-            
+            tb=em.find(Tablas.class, pkt);
+            }catch(Exception e){
+                System.out.println("No se encontro la tabla:"+e.getMessage());
+            }
             for (int i = 0; i < ListaA.size(); i++) {
                 ProductsDTO auxi = new ProductsDTO();
                 Auxiliares a = ListaA.get(i);
