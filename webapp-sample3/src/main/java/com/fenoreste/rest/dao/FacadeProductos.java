@@ -64,9 +64,15 @@ public abstract class FacadeProductos<T> {
                 if(tb.getDato1().equals("1")){
                     DAOTDD ws=new DAOTDD();
                     if(a.getAuxiliaresPK().getIdproducto()==Integer.parseInt(tb.getDato2())){
-                        System.out.println("Entro");
                         System.out.println("idorigenp:"+a.getAuxiliaresPK().getIdorigenp()+",idproducto:"+a.getAuxiliaresPK().getIdproducto()+",idauxiliar:"+a.getAuxiliaresPK().getIdauxiliar());
                         WsFoliosTarjetasSyCPK1 pk1=new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(),a.getAuxiliaresPK().getIdproducto(),a.getAuxiliaresPK().getIdauxiliar());
+                        WsFoliosTarjetasSyC1 folios=em.find(WsFoliosTarjetasSyC1.class,pk1);
+                        System.out.println("Folio:"+folios);
+                        if(pk1!=null){
+                            if(folios.getActiva()){
+                                System.out.println("si");
+                            }
+                        }
                         System.out.println("pkg1:"+pk1);
                         WsFoliosTarjetasSyC1 sc1=em.find(WsFoliosTarjetasSyC1.class,pk1);
                         System.out.println("sc1:"+sc1);                        
