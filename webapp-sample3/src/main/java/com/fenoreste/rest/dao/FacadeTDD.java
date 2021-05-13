@@ -38,8 +38,7 @@ public abstract class FacadeTDD<T> {
         double saldo;
         try {
             TablasPK pk=new TablasPK("siscoop_banca_movil","wsdl_parametros");
-            Tablas tb=em.find(Tablas.class, pk); 
-            
+            Tablas tb=em.find(Tablas.class, pk);             
             if(authSyC(tb.getDato1(),tb.getDato2())){
                 SiscoopTDD tdd=new SiscoopTDD(tb.getDato1(),tb.getDato2());
                 BalanceQueryResponseDto dto=tdd.getSiscoop().getBalanceQuery(pan);
