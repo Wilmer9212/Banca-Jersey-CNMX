@@ -110,23 +110,29 @@ public abstract class FacadeProductos<T> {
             String consulta = "SELECT * FROM auxiliares "
                     + " WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifier
                     + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productsBank.get(ii) + "' AND estatus=2";
+            System.out.println("consulta:"+consulta);
             try {
                 Query query = em.createNativeQuery(consulta, Auxiliares.class);
                 List<Auxiliares> listaA = query.getResultList();
                 boolean prA = false;
-
+                System.out.println("llegando");
                 //Identifico la caja para la TDD
                 Tablas tb = null;
                 try {
                     TablasPK pkt = new TablasPK("identificador_uso_tdd", "activa");
                     tb = em.find(Tablas.class, pkt);
+                    System.out.println("Tablas:"+tb);
                 } catch (Exception e) {
                     System.out.println("No se encontro la tabla:" + e.getMessage());
                 }
                 
                 Double saldo=0.0;
+                System.out.println("oasi");
                 for (int i = 0; i < listaA.size(); i++) {
-                    Auxiliares a = listaA.get(i);                    
+                    System.out.println("ento al for");
+                    Auxiliares a = listaA.get(i);      
+                    System.out.println("Dentro del for dato1:"+tb.getDato1());
+                       saldo=Double.parseDouble(a.getSaldo().toString());
                     if (tb.getDato1().equals("1")) {
                     DAOTDD ws = new DAOTDD();
                     
@@ -150,7 +156,7 @@ public abstract class FacadeProductos<T> {
                         }
                     }
                 }
-                    saldo=Double.parseDouble(a.getSaldo().toString());
+                 
                     
                     try {
                         Query queryR = em.createNativeQuery("SELECT producttypeid FROM tipos_cuenta_bankingly WHERE idproducto=" + a.getAuxiliaresPK().getIdproducto());
