@@ -129,7 +129,9 @@ public abstract class FacadeProductos<T> {
                     Auxiliares a = listaA.get(i);                    
                     if (tb.getDato1().equals("1")) {
                     DAOTDD ws = new DAOTDD();
+                    
                     if (a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
+                        try{
                         System.out.println("idorigenp:" + a.getAuxiliaresPK().getIdorigenp() + ",idproducto:" + a.getAuxiliaresPK().getIdproducto() + ",idauxiliar:" + a.getAuxiliaresPK().getIdauxiliar());
                         WsFoliosTarjetasSyCPK1 pk1 = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
                         WsFoliosTarjetasSyC1 tarjeta = em.find(WsFoliosTarjetasSyC1.class, pk1);
@@ -143,6 +145,9 @@ public abstract class FacadeProductos<T> {
                         System.out.println("pkg1:" + pk1);
                         WsFoliosTarjetasSyC1 sc1 = em.find(WsFoliosTarjetasSyC1.class, pk1);
                         System.out.println("sc1:" + sc1);
+                        }catch(Exception e){
+                            System.out.println("Error al conectar a web service:"+e.getMessage());
+                        }
                     }
                 }
                     saldo=Double.parseDouble(a.getSaldo().toString());
