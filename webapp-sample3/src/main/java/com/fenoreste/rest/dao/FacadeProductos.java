@@ -117,7 +117,7 @@ public abstract class FacadeProductos<T> {
                 boolean prA = false;
                 System.out.println("llegando");
                 //Identifico la caja para la TDD
-                Tablas tb = null;
+               /* Tablas tb = null;
                 try {
                     TablasPK pkt = new TablasPK("identificador_uso_tdd", "activa");
                     tb = em.find(Tablas.class, pkt);
@@ -125,13 +125,13 @@ public abstract class FacadeProductos<T> {
                 } catch (Exception e) {
                     System.out.println("No se encontro la tabla:" + e.getMessage());
                 }
-                
+                */
                 Double saldo=0.0;
                 System.out.println("oasi");
                 for (int i = 0; i < listaA.size(); i++) {
                     System.out.println("ento al for");
                     Auxiliares a = listaA.get(i);      
-                    System.out.println("Dentro del for dato1:"+tb.getDato1());
+                    /*System.out.println("Dentro del for dato1:"+tb.getDato1());
                        saldo=Double.parseDouble(a.getSaldo().toString());
                     if (tb.getDato1().equals("1")) {
                     DAOTDD ws = new DAOTDD();
@@ -155,7 +155,7 @@ public abstract class FacadeProductos<T> {
                             System.out.println("Error al conectar a web service:"+e.getMessage());
                         }
                     }
-                }
+                }*/
                  
                     
                     try {
