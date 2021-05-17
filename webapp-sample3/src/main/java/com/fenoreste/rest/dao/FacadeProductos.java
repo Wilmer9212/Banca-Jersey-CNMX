@@ -234,16 +234,16 @@ public abstract class FacadeProductos<T> {
                     } catch (Exception e) {
                         System.out.println("Error en buscar nombre de la sucursal:" + e.getMessage());
                     }
-                    ProductsConsolidatePositionDTO dto = new ProductsConsolidatePositionDTO(
+                    ProductsConsolidatePositionDTO dto = new ProductsConsolidatePositionDTO();/*(
                             clientBankIdentifier,
                             productsBank.get(ii),
                             productTypeId,
                             pr.getNombre(),
                             String.valueOf(a.getAuxiliaresPK().getIdproducto()),
                             1,
-                            saldo,
+                            0.0,
                             1,
-                            Double.parseDouble(a.getSaldo().toString()),
+                            saldo,
                             tasa,
                             vencimiento,
                             cpagadas,
@@ -254,8 +254,28 @@ public abstract class FacadeProductos<T> {
                             1,
                             1,
                             "",
-                            1);
-
+                            1);*/
+                   
+                    dto.setClientBankIdentifier(clientBankIdentifier);
+                    dto.setProductBankIdentifier(productsBank.get(ii));
+                    dto.setProductTypeId(productTypeId);
+                    dto.setProductAlias(pr.getNombre());
+                    dto.setProductNumber(String.valueOf(a.getAuxiliaresPK().getIdproducto()));
+                    dto.setLocalCurrencyId(1);
+                    dto.setLocalBalance(saldo);
+                    dto.setInternationalCurrencyId(1);
+                    dto.setInternationalBalance(0.0);
+                    dto.setRate(tasa);
+                    dto.setExpirationDate(vencimiento);
+                    dto.setPaidFees(cpagadas);
+                    dto.setTerm(totalam);
+                    dto.setNextFeeDueDate(vencep);
+                    dto.setProductOwnerName(p.getNombre() + " " + p.getAppaterno() + " " + p.getApmaterno());
+                    dto.setProductBranchName(nmsucursal.toUpperCase());
+                    dto.setCanTransact(1);
+                    dto.setSubsidiaryId(1);
+                    dto.setSubsidiaryName("");
+                    dto.setBackendId(1);
                     ListaReturn.add(dto);
                 }
                 System.out.println("Lista:" + ListaReturn);
@@ -264,6 +284,7 @@ public abstract class FacadeProductos<T> {
                 cerrar();
             }
         }
+ 
         return ListaReturn;
 
     }
