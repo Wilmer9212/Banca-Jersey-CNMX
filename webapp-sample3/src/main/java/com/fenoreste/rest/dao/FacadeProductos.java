@@ -132,11 +132,13 @@ public abstract class FacadeProductos<T> {
                     System.out.println("ento al for");
                     Auxiliares a = listaA.get(i);      
                    
-                       saldo=Double.parseDouble(a.getSaldo().toString());
+                   saldo=Double.parseDouble(a.getSaldo().toString());
                     if (tb.getDato1().equals("1")) {
                     DAOTDD ws = new DAOTDD();
                     
                     if (a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
+                     boolean ping=ws.pingging();
+                     if(ping){
                         try{
                         System.out.println("idorigenp:" + a.getAuxiliaresPK().getIdorigenp() + ",idproducto:" + a.getAuxiliaresPK().getIdproducto() + ",idauxiliar:" + a.getAuxiliaresPK().getIdauxiliar());
                         WsFoliosTarjetasSyCPK1 pk1 = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
@@ -152,9 +154,13 @@ public abstract class FacadeProductos<T> {
                         WsFoliosTarjetasSyC1 sc1 = em.find(WsFoliosTarjetasSyC1.class, pk1);
                         System.out.println("sc1:" + sc1);
                         }catch(Exception e){
-                               System.out.println("Error al conectar a web service:"+e.getMessage());
-                            return null;
+                            em.close();
+                               System.out.println("Error al conectar a web service:"+e.getMessage());                            
                         }
+                    }else{
+                         em.close();
+                         return null;
+                     }
                     }
                 }
                  
@@ -284,7 +290,7 @@ public abstract class FacadeProductos<T> {
                 cerrar();
             }
         }
- 
+        em.close();
         return ListaReturn;
 
     }
