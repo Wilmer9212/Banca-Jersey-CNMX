@@ -152,7 +152,8 @@ public abstract class FacadeProductos<T> {
                         WsFoliosTarjetasSyC1 sc1 = em.find(WsFoliosTarjetasSyC1.class, pk1);
                         System.out.println("sc1:" + sc1);
                         }catch(Exception e){
-                            System.out.println("Error al conectar a web service:"+e.getMessage());
+                               System.out.println("Error al conectar a web service:"+e.getMessage());
+                            return null;
                         }
                     }
                 }
