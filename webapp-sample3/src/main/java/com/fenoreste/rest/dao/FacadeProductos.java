@@ -240,28 +240,7 @@ public abstract class FacadeProductos<T> {
                     } catch (Exception e) {
                         System.out.println("Error en buscar nombre de la sucursal:" + e.getMessage());
                     }
-                    ProductsConsolidatePositionDTO dto = new ProductsConsolidatePositionDTO();/*(
-                            clientBankIdentifier,
-                            productsBank.get(ii),
-                            productTypeId,
-                            pr.getNombre(),
-                            String.valueOf(a.getAuxiliaresPK().getIdproducto()),
-                            1,
-                            0.0,
-                            1,
-                            saldo,
-                            tasa,
-                            vencimiento,
-                            cpagadas,
-                            totalam,
-                            vencep,
-                            p.getNombre() + " " + p.getAppaterno() + " " + p.getApmaterno(),
-                            nmsucursal.toUpperCase(),
-                            1,
-                            1,
-                            "",
-                            1);*/
-                   
+                    ProductsConsolidatePositionDTO dto = new ProductsConsolidatePositionDTO();                   
                     dto.setClientBankIdentifier(clientBankIdentifier);
                     dto.setProductBankIdentifier(productsBank.get(ii));
                     dto.setProductTypeId(productTypeId);

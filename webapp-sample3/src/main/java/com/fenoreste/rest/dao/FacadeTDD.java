@@ -67,7 +67,7 @@ public abstract class FacadeTDD<T> {
             SiscoopTDD syc=new SiscoopTDD(user,pass);
             System.out.println("salio");
             bandera=true;
-        } catch (Exception e) {
+        } catch (Exception e) {            
             System.out.println("Error al autenticar:"+e.getMessage());
         }
         System.out.println("fin");
