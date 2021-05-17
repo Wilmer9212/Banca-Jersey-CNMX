@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package services;
+package com.fenoreste.rest.WsTDD;
 
 import com.syc.ws.endpoint.siscoop.BalanceQueryResponseDto;
 
