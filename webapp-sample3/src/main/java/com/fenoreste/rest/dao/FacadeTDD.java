@@ -6,6 +6,7 @@
 package com.fenoreste.rest.dao;
 
 import com.fenoreste.rest.Util.AbstractFacade;
+import com.fenoreste.rest.Util.AbstractFacade_1;
 import com.fenoreste.rest.entidades.Tablas;
 import com.fenoreste.rest.entidades.TablasPK;
 import com.syc.services.SiscoopTDD;
@@ -31,13 +32,15 @@ public abstract class FacadeTDD<T> {
 
     Calendar calendar = Calendar.getInstance();
     Date hoy = calendar.getTime();
-    private static EntityManagerFactory emf;
+    public static EntityManagerFactory emf;
 
     public FacadeTDD(Class<T> entityClass) {
-        emf = AbstractFacade.conexion();
+        emf = AbstractFacade.conexion();       
+       
     }
+   
     
-    public BalanceQueryResponseDto balanceQuery(String pan){        
+   public BalanceQueryResponseDto balanceQuery(String pan){        
         EntityManager em=emf.createEntityManager();
         double saldo;
         try {
@@ -97,6 +100,7 @@ public abstract class FacadeTDD<T> {
     
     public boolean pingging() throws MalformedURLException{
           boolean bandera=false;
+          
           EntityManager em=emf.createEntityManager();
           TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl");
           Tablas tb=em.find(Tablas.class, tablasPK);
@@ -113,4 +117,6 @@ public abstract class FacadeTDD<T> {
             em.close();
             return bandera;
     }
+    
+    
 }

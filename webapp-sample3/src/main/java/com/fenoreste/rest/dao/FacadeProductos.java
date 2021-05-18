@@ -3,6 +3,7 @@ package com.fenoreste.rest.dao;
 import com.fenoreste.rest.Util.AbstractFacade;
 import com.fenoreste.rest.ResponseDTO.ProductsConsolidatePositionDTO;
 import com.fenoreste.rest.ResponseDTO.ProductsDTO;
+import static com.fenoreste.rest.dao.FacadeTDD.emf;
 import com.fenoreste.rest.entidades.Auxiliares;
 import com.fenoreste.rest.entidades.Catalog_Status_Bankingly;
 import com.fenoreste.rest.entidades.Catalogo_Cuenta_Bankingly;
@@ -13,7 +14,12 @@ import com.fenoreste.rest.entidades.Tablas;
 import com.fenoreste.rest.entidades.TablasPK;
 import com.fenoreste.rest.entidades.WsFoliosTarjetasSyC1;
 import com.fenoreste.rest.entidades.WsFoliosTarjetasSyCPK1;
+import com.syc.services.SiscoopTDD;
 import com.syc.ws.endpoint.siscoop.BalanceQueryResponseDto;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +30,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.xml.namespace.QName;
 
 public abstract class FacadeProductos<T> {
 
@@ -35,10 +42,10 @@ public abstract class FacadeProductos<T> {
 
     public List<ProductsDTO> getProductos(String clientBankIdentifiers, Integer productTypes) {
         List<ProductsDTO> ListagetP = new ArrayList<ProductsDTO>();
-
+         EntityManager em = emf.createEntityManager();
         String productTypeId = "", descripcion = "";
         try {
-            EntityManager em = emf.createEntityManager();
+           
             String consulta = "";
             Catalogo_Cuenta_Bankingly ccb = null;
             if (!clientBankIdentifiers.equals("") && productTypes != null) {
@@ -98,6 +105,9 @@ public abstract class FacadeProductos<T> {
         } catch (Exception e) {
             e.getStackTrace();
             System.out.println("Error Producido:" + e.getMessage());
+        }finally{
+            em.clear();
+            em.close();
         }
         return null;
     }
@@ -106,13 +116,17 @@ public abstract class FacadeProductos<T> {
         EntityManager em = emf.createEntityManager();
         List<ProductsConsolidatePositionDTO> ListaReturn = new ArrayList<ProductsConsolidatePositionDTO>();
         String productTypeId = "";
+       
+       
+        try{
         for (int ii = 0; ii < productsBank.size(); ii++) {
-            String consulta = "SELECT * FROM auxiliares "
+           String consulta = "SELECT * FROM auxiliares "
                     + " WHERE replace((to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999')),' ','')='" + clientBankIdentifier
                     + "' AND replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productsBank.get(ii) + "' AND estatus=2";
             System.out.println("consulta:"+consulta);
-            try {
+           // try {
                 Query query = em.createNativeQuery(consulta, Auxiliares.class);
+                
                 List<Auxiliares> listaA = query.getResultList();
                 boolean prA = false;
                 System.out.println("llegando");
@@ -126,18 +140,18 @@ public abstract class FacadeProductos<T> {
                     System.out.println("No se encontro la tabla:" + e.getMessage());
                 }
                 
+                
+                
                 Double saldo=0.0;
                 System.out.println("oasi");
                 for (int i = 0; i < listaA.size(); i++) {
                     System.out.println("ento al for");
-                    Auxiliares a = listaA.get(i);      
-                   
+                    Auxiliares a = listaA.get(i);                         
                    saldo=Double.parseDouble(a.getSaldo().toString());
                     if (tb.getDato1().equals("1")) {
-                    DAOTDD ws = new DAOTDD();
-                    
-                    if (a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
-                     boolean ping=ws.pingging();
+             
+                   if (a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
+                     boolean ping=pingging();
                      if(ping){
                         try{
                         System.out.println("idorigenp:" + a.getAuxiliaresPK().getIdorigenp() + ",idproducto:" + a.getAuxiliaresPK().getIdproducto() + ",idauxiliar:" + a.getAuxiliaresPK().getIdauxiliar());
@@ -146,7 +160,7 @@ public abstract class FacadeProductos<T> {
                         System.out.println("Folio:" + tarjeta);
                         if (pk1 != null) {
                             if (tarjeta.getActiva()) {
-                                BalanceQueryResponseDto responseWs=ws.balanceQuery(tarjeta.getIdtarjeta());
+                                BalanceQueryResponseDto responseWs=balanceQuery(tarjeta.getIdtarjeta());
                                 saldo=responseWs.getAvailableAmount();
                             }
                         }
@@ -154,17 +168,13 @@ public abstract class FacadeProductos<T> {
                         WsFoliosTarjetasSyC1 sc1 = em.find(WsFoliosTarjetasSyC1.class, pk1);
                         System.out.println("sc1:" + sc1);
                         }catch(Exception e){
-                            em.close();
                                System.out.println("Error al conectar a web service:"+e.getMessage());                            
                         }
-                    }else{
-                         em.close();
-                         return null;
-                     }
-                    }
+                    }                       
+                   }
                 }
-                 
-                    
+                
+                   
                     try {
                         Query queryR = em.createNativeQuery("SELECT producttypeid FROM tipos_cuenta_bankingly WHERE idproducto=" + a.getAuxiliaresPK().getIdproducto());
                         if (queryR != null) {
@@ -264,12 +274,14 @@ public abstract class FacadeProductos<T> {
                     ListaReturn.add(dto);
                 }
                 System.out.println("Lista:" + ListaReturn);
-            } catch (Exception e) {
-                System.out.println("Error:" + e.getMessage());
-                cerrar();
-            }
+         
+        } 
+        }catch(Exception e){
+            System.out.println("Error produucido:"+e.getMessage());        
+        }finally{
+            em.close();
         }
-        em.close();
+        
         return ListaReturn;
 
     }
@@ -409,7 +421,90 @@ public abstract class FacadeProductos<T> {
         System.out.println("date:" + date);
         return date;
     }
+    
+    
+    
+    
+    /*========================================================================
+               Servicios S&C
+    ========++++++=++++++++++++++++++++++++++++++++++++++++++++++++==+++++++=*/
+    public BalanceQueryResponseDto balanceQuery(String pan){        
+        EntityManager em=emf.createEntityManager();
+        double saldo;
+        try {
+            TablasPK pk=new TablasPK("siscoop_banca_movil","wsdl_parametros");
+            Tablas tb=em.find(Tablas.class, pk);             
+            if(authSyC(tb.getDato1(),tb.getDato2())){
+                SiscoopTDD tdd=new SiscoopTDD(tb.getDato1(),tb.getDato2());
+                BalanceQueryResponseDto dto=tdd.getSiscoop().getBalanceQuery(pan);
+                return dto;
+            }
+        } catch (Exception e) {
+            em.clear();
+            em.close();
+            System.out.println("Error al consultar saldo de TDD:"+e.getMessage());
+        }
+        em.clear();
+        em.close();
+        return null;
+    }
+  
+    public boolean authSyC(String user,String pass){
+        System.out.println("llego a auth");
+        System.out.println("user:"+user+",pass:"+pass);
+        boolean bandera=true;
+        try {                       
+            System.out.println("entro a try");
+            SiscoopTDD syc=new SiscoopTDD(user,pass);
+            System.out.println("salio");
+            bandera=true;
+        } catch (Exception e) {            
+            System.out.println("Error al autenticar:"+e.getMessage());
+        }
+        System.out.println("fin");
+        return bandera;
+    }
+    
+       
+         // REALIZA UN PING A LA URL DEL WSDL
+    private boolean pingURL(URL url, String tiempo) {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(Integer.parseInt(tiempo));
+            connection.setReadTimeout(Integer.parseInt(tiempo));
+            int codigo = connection.getResponseCode();
 
+            if (codigo == 200) {
+                return true;
+            }
+        } catch (IOException ex) {
+            System.out.println("Error al conectarse a SYC: " + ex.getMessage());
+        }
+        return false;
+    }
+    
+    public boolean pingging() throws MalformedURLException{
+          boolean bandera=false;
+          
+          EntityManager em=emf.createEntityManager();
+          TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl");
+          Tablas tb=em.find(Tablas.class, tablasPK);
+          String wsdlLocation = "http://" + tb.getDato1() + ":" + tb.getDato3() + "/syc/webservice/" + tb.getDato2() + "?wsdl";
+            //"http://200.15.1.143:8080/syc/webservice/siscoopAlternativeService/?wsld"
+            QName QNAME = new QName("http://impl.siscoop.endpoint.ws.syc.com/", "SiscoopAlternativeEndpointImplService");
+            URL url = new URL(wsdlLocation);
+            if (pingURL(url, tb.getDato4())) {
+                bandera=true;
+             }else{
+                bandera=false;;;;
+            }
+            em.clear();
+            em.close();
+            return bandera;
+    }
+    
+    
+    
     public void cerrar() {
         emf.close();
     }

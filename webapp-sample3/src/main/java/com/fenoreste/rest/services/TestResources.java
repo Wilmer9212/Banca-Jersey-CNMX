@@ -26,7 +26,7 @@ public class TestResources {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Response pruebasWS(String pan){
-        System.out.println("pan:"+pan);
+     /*   System.out.println("pan:"+pan);
      DAOTDD tdd=new DAOTDD();
       BalanceQueryResponseDto dto=new BalanceQueryResponseDto();
       JSONObject json=new JSONObject(pan);
@@ -44,7 +44,7 @@ public class TestResources {
             System.out.println("Error al construir:"+e.getMessage());
         }finally{
         tdd.cerrar();
-    }
+    }*/
         return null;
         
     }
