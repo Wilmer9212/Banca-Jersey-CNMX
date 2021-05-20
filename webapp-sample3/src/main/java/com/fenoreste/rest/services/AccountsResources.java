@@ -83,39 +83,45 @@ public class AccountsResources {
         JSONObject jsonRecibido = new JSONObject(cadenaJson);
         JsonObject Json_De_Error = new JsonObject();
         String accountId = jsonRecibido.getString("productBankIdentifier");
+        AccountsDAO metodos = new AccountsDAO();
+        try{
         boolean bandera = true;
         for (int i = 0; i < accountId.length(); i++) {
             if (Character.isLetter(accountId.charAt(i))) {
                 bandera = false;
             }
         }
-        AccountsDAO metodos = new AccountsDAO();
+        
         List<AccountLast5MovementsDTO> cuentas = new ArrayList<AccountLast5MovementsDTO>();
         AccountLast5MovementsDTO cuentaM = null;
         if (bandera) {
             try {
-                cuentas = metodos.getAccountLast5Movements(accountId);
+                 cuentas = metodos.getAccountLast5Movements(accountId);
                 if (cuentas.size() > 0) {
                     JsonObject cuentasJson=new JsonObject();
                     cuentasJson.put("Last5Movements",cuentas);
                     return Response.status(Response.Status.OK).entity(cuentasJson).build();
                 } else {
-                    Json_De_Error.put("Error", "PRODUCTO NO ENCONTRADO");
-                    metodos.cerrar();
+                    Json_De_Error.put("Error", "PRODUCTO NO ENCONTRADO");                    
                     return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
                 }
 
             } catch (Exception e) {
-                metodos.cerrar();
+                
                 return null;
             }
 
         } else {
             Json_De_Error.put("Error", "CARACTERES INVALIDOS EN ENTRADA");
-            metodos.cerrar();
-            return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
+           return Response.status(Response.Status.BAD_REQUEST).entity(Json_De_Error).build();
         }
-
+        }catch(Exception e){
+           
+            System.out.println("Error:"+e.getMessage());
+        }finally{
+            metodos.cerrar();
+        }
+       return null;
     }
     
     
@@ -132,6 +138,7 @@ public class AccountsResources {
         int PageStartIndex = 0;        
         JsonObject Error=new JsonObject();
         String orderBy="";
+        try{
         try {
             JSONObject jsonRecibido = new JSONObject(cadenaJson);
             ProductBankIdentifier = jsonRecibido.getString("productBankIdentifier");
@@ -147,7 +154,8 @@ public class AccountsResources {
         }
             int count=0;
             try{
-            List<AccountMovementsDTO> MiListaDTO = dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex,orderBy);
+             List<AccountMovementsDTO> MiListaDTO=null;
+            MiListaDTO= dao.getAccountMovements(ProductBankIdentifier, DateFromFilter, DateToFilter, PageSize, PageStartIndex,orderBy);
             com.github.cliftonlabs.json_simple.JsonObject j = new com.github.cliftonlabs.json_simple.JsonObject();
             count=dao.contadorAuxD(ProductBankIdentifier, DateFromFilter, DateToFilter);
             if(count>0){
@@ -160,14 +168,17 @@ public class AccountsResources {
            
             return Response.status(Response.Status.OK).entity(j).build();
         } catch (Exception e) {
-            dao.cerrar();
             Error.put("Error","SOCIOS NO ENCONTRADOS");            
             System.out.println("Error al convertir cadena a JSON:" + e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).entity(Error).build();
 
-        } finally {
+        } 
+        }catch(Exception e){
+            dao.cerrar();
+            System.out.println("Error al consumir:"+e.getMessage());
+        }finally {
             dao.cerrar();
         }
-    }
-
+        return null;
+}
 }

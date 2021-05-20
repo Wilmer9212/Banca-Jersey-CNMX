@@ -125,12 +125,13 @@ public abstract class FacadeAccounts<T> {
     }
 
     public List<AccountLast5MovementsDTO> getAccountLast5Movements(String accountId) {
-        em = emf.createEntityManager();
+       
         AccountLast5MovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
         List<AccountLast5MovementsDTO> ListaDTO = new ArrayList<AccountLast5MovementsDTO>();
         try {
+            em = emf.createEntityManager();
             String consulta = " SELECT m.* "
                     + "         FROM auxiliares_d m"
                     + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')= ? ORDER BY fecha DESC LIMIT 5";
@@ -170,27 +171,23 @@ public abstract class FacadeAccounts<T> {
                 ListaDTO.add(cuenta);
             }
             System.out.println("ListaDTO:" + ListaDTO);
-
+           
         } catch (Exception e) {
             em.close();
             System.out.println("Error en GetAccountLast5Movements:" + e.getMessage());
-        };
+        }finally{
+            em.close();
+        }
         return ListaDTO;
     }
 
     public List<AccountMovementsDTO> getAccountMovements(String productBankIdentifier, String dateFromFilter, String dateToFilter, int pageSize, int pageStartIndex,String orderBy) {
-        em = emf.createEntityManager();
         AccountMovementsDTO cuenta;
         boolean isDC = false;
         String Description = "";
         List<AccountMovementsDTO> ListaDTO = new ArrayList<AccountMovementsDTO>();
         String complemento="";
-        
-        /*if(!orderBy.equals("")){
-            if(orderBy.toUpperCase().contains("MOVEMENTDATE ASC")){
-                complemento="ORDER BY fecha ASC";
-            }else 
-        }*/
+         try{
         System.out.println("orderB:"+orderBy);
         switch(orderBy.toUpperCase()){
             
@@ -244,8 +241,6 @@ public abstract class FacadeAccounts<T> {
             
             
         }
-
-        EntityManagerFactory emf = AbstractFacade.conexion();
         EntityManager em = emf.createEntityManager();
         int pageNumber = pageStartIndex;
         int pageSizes = pageSize;
@@ -320,8 +315,15 @@ public abstract class FacadeAccounts<T> {
                 ListaDTO.add(dto);    
             }
         } catch (Exception e) {
+            em.close();
             System.out.println("Error:" + e.getMessage());
         }
+        em.close();
+             System.out.println("salio y ListaDTO:"+ListaDTO);
+         }catch(Exception e){
+             em.close();
+             System.out.println("Error en account:"+e.getMessage());
+         }
         return ListaDTO;
     }
 
@@ -434,6 +436,7 @@ public abstract class FacadeAccounts<T> {
     public int contadorAuxD(String productBankIdentifier, String dateFromFilter, String dateToFilter) {
         String consulta = "";
         int count=0;
+        EntityManager em=emf.createEntityManager();
         try{
         if (!dateFromFilter.equals("") && !dateToFilter.equals("")) {
             consulta = " SELECT count(*)"
@@ -456,14 +459,17 @@ public abstract class FacadeAccounts<T> {
                     + "         WHERE replace((to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999')),' ','')='" + productBankIdentifier + "'";
 
         }
+        System.out.println("Consulta conta:"+consulta);
         Query query = em.createNativeQuery(consulta);
+            System.out.println("paso");
         BigInteger b1;
+            System.out.println("oasi1");
         b1 = new BigInteger(query.getSingleResult().toString());
+            System.out.println("pasoss");
         count = Integer.parseInt(b1.toString());
         }catch(Exception e){
         System.out.println("Error al contar registros:"+e.getMessage());
         }
-        System.out.println("contadooooooooooooooooooooooooooor:"+count);
         em.close();
         return count;
     }

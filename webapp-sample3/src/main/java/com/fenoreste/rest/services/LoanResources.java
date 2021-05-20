@@ -126,6 +126,7 @@ public class LoanResources {
         JsonObject Error = new JsonObject();
         int feesStatus = 0, pageSize = 0, pageStartIndex = 0;
         LoanDAO dao = new LoanDAO();
+        try{
         String order="";
         try {
             JSONObject jsonRecibido = new JSONObject(cadena);
@@ -164,9 +165,13 @@ public class LoanResources {
             System.out.println("Error al convertir cadena a JSON:" + e.getMessage());
             return Response.status(Response.Status.NO_CONTENT).entity(Error).build();
 
-        } finally {
+        } 
+        }catch(Exception e){
+            System.out.println("Error:"+e.getMessage());
+        }finally{
             dao.cerrar();
         }
+        return null;
     }
 
     @POST

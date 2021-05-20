@@ -158,13 +158,17 @@ public abstract class FacadeLoan<T> {
     public List<LoanFee> LoanFees(String productBankIdentifier, int feesStatus, int pageSize, int pageStartIndex,String order) {
         EntityManager em = emf.createEntityManager();
         LoanFee loanFee = null;
+        System.out.println("entro y paso");
         int o = Integer.parseInt(productBankIdentifier.substring(0, 6));
         int p = Integer.parseInt(productBankIdentifier.substring(6, 11));
         int a = Integer.parseInt(productBankIdentifier.substring(11, 19));
+        System.out.println("opa:"+o+","+p+","+a);
         List<Amortizaciones> ListaAmortizaciones = new ArrayList<>();
+        System.out.println("paso");
         System.out.println(o+",p:"+p+",a:"+a);
         List<LoanFee> listaFees = new ArrayList<>();
         try {
+            System.out.println("dento de try");
             
             AuxiliaresPK pk = new AuxiliaresPK(o, p, a);
             Auxiliares aux = em.find(Auxiliares.class, pk);
