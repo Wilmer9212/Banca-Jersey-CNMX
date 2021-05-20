@@ -151,7 +151,7 @@ public abstract class FacadeProductos<T> {
                     System.out.println("a:"+a.getAuxiliaresPK().getIdproducto());
                    saldo=Double.parseDouble(a.getSaldo().toString());
                     System.out.println("dato1:"+tb.getDato1());
-                   /* if (tb.getDato1().equals("1") && a.getAuxiliaresPK().getIdproducto()== Integer.parseInt(tb.getDato2())) {  
+                   if (tb.getDato1().equals("1") && a.getAuxiliaresPK().getIdproducto()== Integer.parseInt(tb.getDato2())) {  
                         System.out.println("entro a buscar tdd");
                         System.out.println("idproductos auxiliares:"+a.getAuxiliaresPK().getIdproducto()+",tb dato2:"+tb.getDato2());
                     
@@ -180,7 +180,7 @@ public abstract class FacadeProductos<T> {
                         }
                     }                       
                    
-                }*/
+                }
                 
                    
                     try {
