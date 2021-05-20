@@ -129,6 +129,7 @@ public abstract class FacadeProductos<T> {
                 
                 List<Auxiliares> listaA = query.getResultList();
                 boolean prA = false;
+                System.out.println("listaA:tdd"+listaA.get(ii).getAuxiliaresPK().getIdproducto());
                 System.out.println("llegando");
                 //Identifico la caja para la TDD
                Tablas tb = null;
@@ -140,22 +141,27 @@ public abstract class FacadeProductos<T> {
                     System.out.println("No se encontro la tabla:" + e.getMessage());
                 }
                 
-                
-                
                 Double saldo=0.0;
                 System.out.println("oasi");
                 for (int i = 0; i < listaA.size(); i++) {
                     System.out.println("ento al for");
-                    Auxiliares a = listaA.get(i);                         
+                   Auxiliares a = listaA.get(i); 
+                    System.out.println("a:"+a.getAuxiliaresPK().getIdproducto());
                    saldo=Double.parseDouble(a.getSaldo().toString());
-                    if (tb.getDato1().equals("1")) {
-             
-                   if (a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
+                    System.out.println("dato1:"+tb.getDato1());
+                    if (tb.getDato1().equals("1") && a.getAuxiliaresPK().getIdproducto()== Integer.parseInt(tb.getDato2())) {  
+                        System.out.println("entro a buscar tdd");
+                        System.out.println("idproductos auxiliares:"+a.getAuxiliaresPK().getIdproducto()+",tb dato2:"+tb.getDato2());
+                    
+                        System.out.println("ya entro aqui");
                      boolean ping=pingging();
+                        System.out.println("ping:"+ping);
                      if(ping){
+                         System.out.println("entro a if de ping");
                         try{
                         System.out.println("idorigenp:" + a.getAuxiliaresPK().getIdorigenp() + ",idproducto:" + a.getAuxiliaresPK().getIdproducto() + ",idauxiliar:" + a.getAuxiliaresPK().getIdauxiliar());
                         WsFoliosTarjetasSyCPK1 pk1 = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
+                            System.out.println("pk1:"+pk1);
                         WsFoliosTarjetasSyC1 tarjeta = em.find(WsFoliosTarjetasSyC1.class, pk1);
                         System.out.println("Folio:" + tarjeta);
                         if (pk1 != null) {
@@ -171,7 +177,7 @@ public abstract class FacadeProductos<T> {
                                System.out.println("Error al conectar a web service:"+e.getMessage());                            
                         }
                     }                       
-                   }
+                   
                 }
                 
                    
@@ -448,7 +454,7 @@ public abstract class FacadeProductos<T> {
         em.close();
         return null;
     }
-  
+
     public boolean authSyC(String user,String pass){
         System.out.println("llego a auth");
         System.out.println("user:"+user+",pass:"+pass);

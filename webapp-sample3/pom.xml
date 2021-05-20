@@ -73,6 +73,12 @@
             <artifactId>syc.com</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-pdf</artifactId>
+            <version>9.0.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies> 
     <build>
         <finalName>Banca</finalName>    
