@@ -153,12 +153,13 @@ public abstract class FacadeProductos<T> {
                     System.out.println("dato1:" + tb.getDato1());
                     if (tb.getDato1().equals("1") && a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
                         WsFoliosTarjetasSyCPK1 saldoTddPK = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());     
-                        if (saldoTddPK != null) {
-                                        BalanceQueryResponseDto responseWs = serviciosTdd.saldoTDD(saldoTddPK);
+                        try{                BalanceQueryResponseDto responseWs = serviciosTdd.saldoTDD(saldoTddPK);
                                         saldo = responseWs.getAvailableAmount();
                                         System.out.println("Saldo en Syc:"+saldo);
                                     
-                            }
+                        }catch(Exception e){
+                            System.out.println("Error en consultar tdd:"+e.getMessage());
+                        }
                         /*BalanceQueryResponseDto balance=serviciosTdd.saldoTDD(saldoTddPK);
                         
                         System.out.println("entro a buscar tdd");

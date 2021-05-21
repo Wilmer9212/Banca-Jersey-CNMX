@@ -26,10 +26,12 @@ import javax.xml.ws.WebServiceException;
 public class SiscoopTDD {
 
     EntityManagerFactory emf=AbstractFacade.conexion();
-    EntityManager em=emf.createEntityManager();
+    
     
     // REALIZA LA AUTENTIFICACIÓN
     public SiscoopTDD() {
+        EntityManager em=emf.createEntityManager();
+        try{
         java.net.Authenticator.setDefault(new java.net.Authenticator() {
             // Pruebas: USUARIO: snicolas - PASSWORD: wsn4yc8ja$s
             // Produccion: USUARIO: ws_snicolas - PASSWORD: wu8K2SyJbjYc9rw
@@ -41,7 +43,13 @@ public class SiscoopTDD {
                 Tablas tablasDTO = em.find(Tablas.class,tablasPK);
                 return new java.net.PasswordAuthentication(tablasDTO.getDato1(), tablasDTO.getDato2().toCharArray());
             }
+           
         });
+        }catch(Exception e){
+            em.close();
+            em.close();
+            System.out.println("Error al autentitar:"+e.getMessage());
+        }
     }
     
     // REALIZA UN PING A LA URL DEL WSDL
@@ -63,6 +71,7 @@ public class SiscoopTDD {
 
     // GENERA EL PUERTO PARA SYC
     public SiscoopAlternativeEndpoint siscoop() {
+        EntityManager em=emf.createEntityManager();
         try {
             // Parametros SYC
             TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl");
@@ -76,8 +85,12 @@ public class SiscoopTDD {
                 SiscoopAlternativeEndpoint port = service.getPort(SiscoopAlternativeEndpoint.class);
                 return port;
              }
+            em.close();
+            emf.close();
            }catch (MalformedURLException | WebServiceException ex) {
-                System.out.println(ex.getMessage());
+               em.close();
+               emf.close();
+               System.out.println(ex.getMessage());
            }
         return null;
     }
