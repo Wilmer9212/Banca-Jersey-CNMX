@@ -55,20 +55,26 @@ public class TarjetaDeDebito {
                 } catch (Exception e) {
                     balanceQueryResponseDto.setDescription("Connect timed out");
                     System.out.println("Error al consultar SYC, tiempo agotado. " + e.getMessage());
+                    em.close();
+                    emf.close();
+                    
                 }
             } else {
                 System.out.println("hasta aqui");
                 //balanceQueryResponseDto.setCode(0);
                 balanceQueryResponseDto.setDescription("La tarjeta esta inactiva: " + tarjeta.getIdtarjeta());
             }
-        }}catch(Exception e){
+        }
+        }catch(Exception e){
             em.close();
             emf.close();
             System.out.println("Error producido en tdd:"+e.getMessage());
-        }
+        }finally{
         em.clear();
         em.close();
         emf.close();
+        }
+       
         System.out.println("responseDTO:"+balanceQueryResponseDto);
         return balanceQueryResponseDto;
     }
