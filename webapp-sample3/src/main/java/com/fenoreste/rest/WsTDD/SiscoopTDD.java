@@ -25,30 +25,38 @@ import javax.xml.ws.WebServiceException;
  */
 public class SiscoopTDD {
 
-    EntityManagerFactory emf=AbstractFacade.conexion();
+   
     
     
-    // REALIZA LA AUTENTIFICACIÓN
+    // REALIZA LA AUTENTIFICACIï¿½N
     public SiscoopTDD() {
+        System.out.println(" aquiiiii");
+         EntityManagerFactory emf=AbstractFacade.conexion();
         EntityManager em=emf.createEntityManager();
+        
         try{
+            System.out.println("entro entro");
         java.net.Authenticator.setDefault(new java.net.Authenticator() {
             // Pruebas: USUARIO: snicolas - PASSWORD: wsn4yc8ja$s
             // Produccion: USUARIO: ws_snicolas - PASSWORD: wu8K2SyJbjYc9rw
+            
             @Override
             
             protected java.net.PasswordAuthentication getPasswordAuthentication() {
                 // Credenciales SYC
                 TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl_parametros");
                 Tablas tablasDTO = em.find(Tablas.class,tablasPK);
+                System.out.println("Tablas en siscoopTdd");
                 return new java.net.PasswordAuthentication(tablasDTO.getDato1(), tablasDTO.getDato2().toCharArray());
             }
            
         });
         }catch(Exception e){
             em.close();
-            em.close();
             System.out.println("Error al autentitar:"+e.getMessage());
+        }finally{
+            em.close();
+            
         }
     }
     
@@ -71,6 +79,8 @@ public class SiscoopTDD {
 
     // GENERA EL PUERTO PARA SYC
     public SiscoopAlternativeEndpoint siscoop() {
+        System.out.println("aqui");
+         EntityManagerFactory emf=AbstractFacade.conexion();
         EntityManager em=emf.createEntityManager();
         try {
             // Parametros SYC
@@ -85,18 +95,19 @@ public class SiscoopTDD {
                 SiscoopAlternativeEndpoint port = service.getPort(SiscoopAlternativeEndpoint.class);
                 return port;
              }
-            em.close();
-            emf.close();
+            
            }catch (MalformedURLException | WebServiceException ex) {
                em.close();
-               emf.close();
-               System.out.println(ex.getMessage());
-           }
+            System.out.println(ex.getMessage());
+           }finally{
+            em.close();
+        }
         return null;
     }
 
     // PUERTO
     public SiscoopAlternativeEndpoint getSiscoop() {
+        System.out.println("aqui en siscoop");
         return siscoop();
     }
 

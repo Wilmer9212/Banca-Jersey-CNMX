@@ -18,17 +18,19 @@ import javax.persistence.EntityManagerFactory;
  */
 public class TarjetaDeDebito {
     
-    EntityManagerFactory emf=AbstractFacade.conexion();
+    
    
     
     SiscoopTDD SiscoopTdd;
         // CONSULTA Y ACTUALIZA EL SALDO DE LA TarjetaDeDebito
     public BalanceQueryResponseDto saldoTDD(WsFoliosTarjetasSyCPK1 saldotTddPK) {
-         EntityManager em=emf.createEntityManager();
+        EntityManagerFactory emf=AbstractFacade.conexion();
         BalanceQueryResponseDto balanceQueryResponseDto = new BalanceQueryResponseDto();
-        WsFoliosTarjetasSyC1 tarjeta =  em.find(WsFoliosTarjetasSyC1.class,saldotTddPK);
-        System.out.println("Llegando al web service de SYC");
+       
         try{
+         EntityManager em=emf.createEntityManager();
+         WsFoliosTarjetasSyC1 tarjeta =  em.find(WsFoliosTarjetasSyC1.class,saldotTddPK);
+         System.out.println("Llegando al web service de SYC");
         if (tarjeta.getWsSiscoopFoliosTarjetasPK() != null) {
             System.out.println("entro al if 1");
             // La tarjeta tiene que estar activa
@@ -57,7 +59,6 @@ public class TarjetaDeDebito {
                     balanceQueryResponseDto.setDescription("Connect timed out");
                     System.out.println("Error al consultar SYC, tiempo agotado. " + e.getMessage());
                     em.close();
-                    emf.close();
                     
                 }
             } else {
@@ -65,20 +66,13 @@ public class TarjetaDeDebito {
                 //balanceQueryResponseDto.setCode(0);
                 balanceQueryResponseDto.setDescription("La tarjeta esta inactiva: " + tarjeta.getIdtarjeta());
             }
-            em.close();
-            emf.close();
         }
         }catch(Exception e){
-            em.close();
             emf.close();
             System.out.println("Error producido en tdd:"+e.getMessage());
-        }finally{
-        em.clear();
-        em.close();
-        emf.close();
         }
        
-        System.out.println("responseDTO:"+balanceQueryResponseDto);
+   
         return balanceQueryResponseDto;
     }
   
