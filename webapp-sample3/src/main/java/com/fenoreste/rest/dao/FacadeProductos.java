@@ -133,31 +133,22 @@ public abstract class FacadeProductos<T> {
 
                 System.out.println("llegando");
                 //Identifico la caja para la TDD
-                Tablas tb = null;
-                try {
-                    TablasPK pkt = new TablasPK("identificador_uso_tdd", "activa");
-                    tb = em.find(Tablas.class, pkt);
-                    System.out.println("Tablas:" + tb);
-                } catch (Exception e) {
-                    System.out.println("No se encontro la tabla:" + e.getMessage());
-                }
+               
 
                 Double saldo = 0.0;
                 System.out.println("oasi");
                 TarjetaDeDebito serviciosTdd=new TarjetaDeDebito();
                 for (int i = 0; i < listaA.size(); i++) {
-                    System.out.println("ento al for");
                     Auxiliares a = listaA.get(i);
-                    System.out.println("a:" + a.getAuxiliaresPK().getIdproducto());
-                    saldo = Double.parseDouble(a.getSaldo().toString());
-                    System.out.println("dato1:" + tb.getDato1());
-                    if (tb.getDato1().equals("1") && a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tb.getDato2())) {
-                        WsFoliosTarjetasSyCPK1 saldoTddPK = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());     
-                        try{           System.out.println("saldoTDDPK:"+saldoTddPK);
-                            BalanceQueryResponseDto responseWs = serviciosTdd.saldoTDD(saldoTddPK);
-                                       saldo = responseWs.getAvailableAmount();
-                                        System.out.println("Saldo en Syc:"+saldo);
-                                    
+                    WsFoliosTarjetasSyCPK1 saldoTddPK = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());     
+                    try{
+                        Tablas tbp=serviciosTdd.productoParaTdd();
+                        if(Integer.parseInt(tbp.getDato1())==1 && Integer.parseInt(tbp.getDato2())==a.getAuxiliaresPK().getIdproducto()){
+                        System.out.println("saldoTDDPK:"+saldoTddPK);
+                        BalanceQueryResponseDto responseWs = serviciosTdd.saldoTDD(saldoTddPK);
+                        saldo = responseWs.getAvailableAmount();
+                        System.out.println("Saldo en Syc:"+saldo);                             
+                        }                       
                         }catch(Exception e){
                             System.out.println("Error en consultar tdd:"+e.getMessage());
                         }
@@ -205,7 +196,7 @@ public abstract class FacadeProductos<T> {
                             System.out.println("No existe ping con SyC");
                         }*/
 
-                    }
+                    
 
                     try {
                         Query queryR = em.createNativeQuery("SELECT producttypeid FROM tipos_cuenta_bankingly WHERE idproducto=" + a.getAuxiliaresPK().getIdproducto());

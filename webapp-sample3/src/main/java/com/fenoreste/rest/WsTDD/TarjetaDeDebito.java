@@ -5,9 +5,10 @@ import com.fenoreste.rest.entidades.Tablas;
 import com.fenoreste.rest.entidades.TablasPK;
 import com.fenoreste.rest.entidades.WsFoliosTarjetasSyC1;
 import com.fenoreste.rest.entidades.WsFoliosTarjetasSyCPK1;
-import com.syc.ws.endpoint.siscoop.BalanceQueryResponseDto;
+import com.syc.services.SiscoopTDD;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import com.syc.ws.endpoint.siscoop.BalanceQueryResponseDto;
 
 /**
  *
@@ -17,12 +18,11 @@ public class TarjetaDeDebito {
     
    
     
-    SiscoopTDD SiscoopTdd;
         // CONSULTA Y ACTUALIZA EL SALDO DE LA TarjetaDeDebito
     
     
     
-    private Tablas productoParaTdd(){
+    public Tablas productoParaTdd(){
         EntityManagerFactory emf=AbstractFacade.conexion();
         EntityManager em=emf.createEntityManager();
         try {
@@ -49,7 +49,7 @@ public class TarjetaDeDebito {
         try {
             Tablas tbb=productoParaTdd();
             if(tbb!=null){
-            TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl");
+            TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl_parametros");
             Tablas paramc = em.find(Tablas.class, tablasPK);
             
             if(paramc!=null){
@@ -74,48 +74,28 @@ public class TarjetaDeDebito {
         EntityManagerFactory emf=AbstractFacade.conexion();
         EntityManager em=emf.createEntityManager();
         
-        BalanceQueryResponseDto balanceQueryResponseDto = new BalanceQueryResponseDto();
+        BalanceQueryResponseDto response= new BalanceQueryResponseDto();
         WsFoliosTarjetasSyC1 tarjeta =  em.find(WsFoliosTarjetasSyC1.class,saldotTddPK);
         System.out.println("Llegando al web service de SYC");
-        try{
-            Tablas tpws=parametrosConexion();
+        try {
+                 Tablas tpws=parametrosConexion();
         if (tpws!=null) {
-            System.out.println("entro al if 1");
-            // La tarjeta tiene que estar activa
-            if (tarjeta.getActiva()) {
-                System.out.println("entro al if 2");
-                try {
-                    System.out.println("idtjeta:"+tarjeta.getIdtarjeta());
-                    balanceQueryResponseDto = SiscoopTdd.getSiscoop().getBalanceQuery(tarjeta.getIdtarjeta());
-                    System.out.println("Descripcion:"+balanceQueryResponseDto.getDescription());
-                    System.out.println("Disponible:"+balanceQueryResponseDto.getAvailableAmount());
-                    System.out.println("Code balance:"+balanceQueryResponseDto.getCode());
-                    if (balanceQueryResponseDto.getCode() == 1) {
-                        System.out.println("entro al if de code=1");
-                        /*int actualizaSaldoTdd = saldoTddService.actualizaSaldoTdd(saldoTddPK, new BigDecimal(balanceQueryResponseDto.getAvailableAmount()), saiFunciones.saiFechaDB("24"));
-                        if (actualizaSaldoTdd == 0) {
-                            System.out.println("entro al if de saldo=0");
-                            System.out.println("Error no se actualizo el saldo de la tarjeta TDD en la tabla saldo_tdd. ");
-                            balanceQueryResponseDto.setCode(0);
-                            return balanceQueryResponseDto;
-                        }*/
-                    }
+              SiscoopTDD wssyc = new SiscoopTDD(tpws.getDato1(),tpws.getDato2());
+            System.out.println("idtjeta:"+tarjeta.getIdtarjeta());
+                    if(tarjeta.getActiva()){
+                    response = wssyc.getSiscoop().getBalanceQuery(tarjeta.getIdtarjeta());
+                    System.out.println("response:"+response.getDescription());
+                   
                     /*if (!BalanceQueryResponse(balanceQueryResponseDto, tarjeta, idusuario)) {
                         System.out.println("Error no se inserto el registro en el log de TDD, tabla ws_siscoop_resultado_final_bancamovil. ");
                     }*/
-                } catch (Exception e) {
-                    balanceQueryResponseDto.setDescription("Connect timed out");
-                    em.close();
-                    emf.close();
-                    
-                }
+               
             } else {
                 System.out.println("hasta aqui");
                 //balanceQueryResponseDto.setCode(0);
-                balanceQueryResponseDto.setDescription("La tarjeta esta inactiva: " + tarjeta.getIdtarjeta());
+                response.setDescription("La tarjeta esta inactiva: " + tarjeta.getIdtarjeta());
             }
-            em.close();
-            emf.close();
+       
         }
         }catch(Exception e){
             em.close();
@@ -127,9 +107,10 @@ public class TarjetaDeDebito {
         emf.close();
         }
        
-        System.out.println("responseDTO:"+balanceQueryResponseDto);
-        return balanceQueryResponseDto;
+        System.out.println("responseDTO:"+response);
+        return response;
     }
   
     }
+
     
