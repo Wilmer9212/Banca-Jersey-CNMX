@@ -129,7 +129,7 @@ public class TransactionResources {
                 
                  if(dto.getDescription().replace(" ","").contains("prestamo")){
                  if(dao.buscarPrestamos(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                  arr=dao.transferencias(dto);
+                  arr=dao.PageToPrestamo(dto);
                 } 
                 }
                   JsonObject json=new JsonObject();
