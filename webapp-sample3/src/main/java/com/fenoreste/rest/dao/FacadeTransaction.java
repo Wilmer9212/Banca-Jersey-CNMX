@@ -27,7 +27,7 @@ public abstract class FacadeTransaction<T> {
     }
 
     
-    public String[] transferenciasEtreMisCuentas(TransactionToOwnAccountsDTO transactionOWN){
+    public String[] transferencias(TransactionToOwnAccountsDTO transactionOWN){
         EntityManager em=emf.createEntityManager();
         Date hoy=new Date();
         String[]arr=new String[2];
@@ -106,35 +106,101 @@ public abstract class FacadeTransaction<T> {
             System.out.println("Error al insertar registro:"+e.getMessage());
         }
         em.close();
+        System.out.println("arr:"+arr);
         return arr;
     }
    
   //Buscar si existe la cuenta,si pertenece al socio,si tiene saldo,si esta activa y si la cuenta a la que se esta transfiriendo realmente es del mismo socio
-  public boolean buscar(String opa,String customerId,Double saldo,String opa2){
+  public boolean buscarEntreMisCuentas(String cuentaOrigen,String customerId,Double saldo,String cuentaDestino){
       EntityManager em=emf.createEntityManager();
       boolean bandera=false;
       try {
-       String consulta="SELECT * FROM auxiliares WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+opa
-                      +"' AND replace(to_char(idorigen,'099999')||to_char(idgrupo,'09')||to_char(idsocio,'099999'),' ','')='"+customerId
-                      +"' AND saldo>="+saldo+" AND estatus=2";
+       String consulta="SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='"+cuentaOrigen
+                      +"' AND replace(to_char(a.idorigen,'099999')||to_char(a.idgrupo,'09')||to_char(a.idsocio,'099999'),' ','')='"+customerId
+                      +"' AND a.saldo>="+saldo+" AND a.estatus=2 AND (SELECT tipoproducto FROM productos pr WHERE pr.idproducto=a.idproducto)!=2";
        Query query=em.createNativeQuery(consulta,Auxiliares.class);
        
        Auxiliares a=(Auxiliares) query.getSingleResult();
-       String consulta2="SELECT * FROM auxiliares WHERE idorigen="+a.getIdorigen()+
-                        " AND idgrupo="+a.getIdgrupo()+
-                        " AND idsocio="+a.getIdsocio()+
-                        " AND estatus=2"+
-                        " AND replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+opa2+"'";
+       String consulta2="SELECT * FROM auxiliares a WHERE a.idorigen="+a.getIdorigen()+
+                        " AND a.idgrupo="+a.getIdgrupo()+
+                        " AND a.idsocio="+a.getIdsocio()+
+                        " AND a.estatus=2 "+
+                        " AND replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='"+cuentaDestino+"'"+
+                        " AND (SELECT tipoproducto FROM productos pr WHERE pr.idproducto=a.idproducto)!=2";
        Query aux=em.createNativeQuery(consulta2,Auxiliares.class);
        Auxiliares aa=(Auxiliares) aux.getSingleResult();
        if(query!=null && aux!=null){
            bandera=true;
        }
       } catch (Exception e) {
+          em.close();
           System.out.println("Error al validar la transferencia:"+e.getMessage());
       }
       em.close();
       System.out.println(" bandera:"+bandera);
       return bandera;
-  }    
+  }
+  
+  public boolean buscarATerceros(String cuentaOrigen,String customerId,Double saldo,String cuentaDestino){
+      EntityManager em=emf.createEntityManager();
+      boolean bandera=false;
+      try {
+         String consulta="SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='"+cuentaOrigen
+                      +"' AND replace(to_char(a.idorigen,'099999')||to_char(a.idgrupo,'09')||to_char(a.idsocio,'099999'),' ','')='"+customerId
+                      +"' AND a.saldo>="+saldo+" AND a.estatus=2 AND (SELECT tipoproducto FROM productos pr WHERE pr.idproducto=a.idproducto)!=2";
+       Query query=em.createNativeQuery(consulta,Auxiliares.class);
+       
+       Auxiliares a=(Auxiliares) query.getSingleResult();
+       String consulta2="SELECT * FROM auxiliares a WHERE "
+               + " replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='"+cuentaDestino+"'"
+               + " AND a.estatus=2 AND (SELECT tipoproducto FROM productos pr WHERE pr.idproducto=a.idproducto)!=2";
+       
+       Query aux=em.createNativeQuery(consulta2,Auxiliares.class);
+       Auxiliares aa=(Auxiliares) aux.getSingleResult();
+       if(query!=null && aux!=null){
+           bandera=true;
+       }
+      } catch (Exception e) {
+          em.close();
+          System.out.println("Error al validar la transferencia:"+e.getMessage());
+      }
+      em.close();
+      System.out.println(" bandera:"+bandera);
+      return bandera;
+  }
+  
+     public boolean buscarPrestamos(String cuentaOrigen,String customerId,Double saldo,String cuentaDestino){
+      EntityManager em=emf.createEntityManager();
+      boolean bandera=false;
+      try {
+         String consulta="SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='"+cuentaOrigen
+                      +"' AND replace(to_char(a.idorigen,'099999')||to_char(a.idgrupo,'09')||to_char(a.idsocio,'099999'),' ','')='"+customerId
+                      +"' AND a.saldo>="+saldo+" AND a.estatus=2 AND (SELECT tipoproducto FROM productos pr WHERE pr.idproducto=a.idproducto)!=2";
+       Query query=em.createNativeQuery(consulta,Auxiliares.class);
+       
+       Auxiliares a=(Auxiliares) query.getSingleResult();
+       String consulta2="SELECT * FROM auxiliares a WHERE a.idorigen="+a.getIdorigen()+
+                        " AND a.idgrupo="+a.getIdgrupo()+
+                        " AND a.idsocio="+a.getIdsocio()+
+                        " AND a.estatus=2"+
+                        " AND replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='"+cuentaDestino+"'"+
+                        " AND (SELECT tipoproducto FROM productos pr WHERE pr.idproducto=a.idproducto)=2";
+       Query aux=em.createNativeQuery(consulta2,Auxiliares.class);
+       Auxiliares aa=(Auxiliares) aux.getSingleResult();
+       if(query!=null && aux!=null){
+           bandera=true;
+       }
+      } catch (Exception e) {
+          em.close();
+          System.out.println("Error al validar la transferencia:"+e.getMessage());
+      }
+      em.close();
+      System.out.println(" bandera:"+bandera);
+      return bandera;
+  }
+  
+  
+  public void cerrar(){
+      emf.close();
+  }
 }

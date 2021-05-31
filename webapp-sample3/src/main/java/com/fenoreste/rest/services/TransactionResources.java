@@ -11,13 +11,10 @@ import com.fenoreste.rest.ResponseDTO.sourceDocumentIdDTO;
 import com.fenoreste.rest.ResponseDTO.userDocumentIdDTO;
 import com.fenoreste.rest.dao.TransactionDAO;
 import com.google.gson.JsonObject;
-import com.sun.rowset.internal.InsertRow;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.json.Json;
-import javax.json.JsonValue;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -115,9 +112,26 @@ public class TransactionResources {
                 dto.setRouteNumberIntermediaryInstitution("{}");
                 dto.setIntegrationParameters("{}");
                 
+                String[]arr = null;
+                System.out.println("dtoDescripcion:"+dto.getDescription());
+                if(dto.getDescription().replace(" ","").contains("entremiscuentas")){
+                    System.out.println("entro");
+                if(dao.buscarEntreMisCuentas(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
+                    System.out.println("entro entro");
+                    arr=dao.transferencias(dto);
+                }
+                }
+                if(dto.getDescription().replace(" ","").contains("atercerosdentrodelaentidad")){
+                 if(dao.buscarATerceros(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
+                  arr=dao.transferencias(dto);
+                } 
+                }
                 
-                if(dao.buscar(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),4.00,dto.getCreditProductBankIdentifier())){
-                  String[]arr=dao.transferenciasEtreMisCuentas(dto);
+                 if(dto.getDescription().replace(" ","").contains("prestamo")){
+                 if(dao.buscarPrestamos(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
+                  arr=dao.transferencias(dto);
+                } 
+                }
                   JsonObject json=new JsonObject();
                   JsonObject json1=new JsonObject();
                   
@@ -133,17 +147,15 @@ public class TransactionResources {
                                                                                                                        .add("idTransaction",arr[1])
                                                                                      ).build())
                           .build();
-                                                                                                                        
-                                                  
-                                                 
-                  
-                  
+                            
                   return Response.status(Response.Status.OK).entity(build).build();
-                }
-                System.out.println("dto:"+dto);
+                
             }
+            
         } catch (Exception e) {
             System.out.println("Error:"+e.getMessage());
+        }finally{
+            dao.cerrar();
         }
         return null;
     }
