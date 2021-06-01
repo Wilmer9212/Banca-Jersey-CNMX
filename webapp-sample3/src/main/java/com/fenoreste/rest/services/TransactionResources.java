@@ -75,9 +75,10 @@ public class TransactionResources {
                 System.out.println("dto1:" + dto1);
                 System.out.println("dto2:" + dto2);
                 System.out.println("dto3:" + dto3);
-
+                
                 TransactionToOwnAccountsDTO dto = new TransactionToOwnAccountsDTO();
-                dto.setSubTransactionTypeId(Integer.parseInt(insertTransaction.getString("subTransactionTypeId")));
+                try {
+                    dto.setSubTransactionTypeId(Integer.parseInt(insertTransaction.getString("subTransactionTypeId")));
                 dto.setCurrencyId(insertTransaction.getString("currencyId"));
                 dto.setValueDate(stringTodate(insertTransaction.getString("valueDate")));
                 dto.setTransactionTypeId(insertTransaction.getInt("transactionTypeId"));
@@ -111,6 +112,10 @@ public class TransactionResources {
                 dto.setCountryIntermediaryInstitution(insertTransaction.getString("countryIntermediaryInstitution"));
                 dto.setRouteNumberIntermediaryInstitution("{}");
                 dto.setIntegrationParameters("{}");
+                } catch (Exception e) {
+                    System.out.println("Error al cjson:"+e.getMessage());
+                }
+                
                 
                 String[]arr = null;
                 System.out.println("dtoDescripcion:"+dto.getDescription());

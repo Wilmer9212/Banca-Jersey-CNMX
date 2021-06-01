@@ -73,24 +73,20 @@ public abstract class FacadeTransaction<T> {
          tr.commit();
          
          if(bandera){
-           EntityTransaction tr1=em.getTransaction();
-           tr1.begin();
-           em.createNativeQuery("UPDATE auxiliares a SET saldo="
-           + "(SELECT saldo FROM auxiliares WHERE "
-                    + "replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+transaction.getDebitproductbankidentifier()+"')-"+transaction.getAmount()
+        em.getTransaction().begin();
+        em.createNativeQuery("UPDATE auxiliares a SET saldo="
+         + "(SELECT saldo FROM auxiliares WHERE "
+               + "replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+transaction.getDebitproductbankidentifier()+"')-"+transaction.getAmount()
            + " WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+transaction.getDebitproductbankidentifier()+"'").executeUpdate();
-          tr1.commit();
-          
-           EntityTransaction tr2=em.getTransaction();
-           tr2.begin();
-           em.createNativeQuery("UPDATE auxiliares a SET saldo="
+         
+         em.createNativeQuery("UPDATE auxiliares a SET saldo="
            + "(SELECT saldo FROM auxiliares WHERE "
                     + "replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+transaction.getCreditproductbankidentifier()+"')+"+transaction.getAmount()
            + " WHERE replace(to_char(idorigenp,'099999')||to_char(idproducto,'09999')||to_char(idauxiliar,'09999999'),' ','')='"+transaction.getCreditproductbankidentifier()+"'").executeUpdate();
-          tr2.commit();
-          bandera2=true;
-         }
-         
+        em.getTransaction().commit();
+        bandera2=true;
+        }
+            System.out.println("paso"); 
          String iserror="",idtransaction="";
          if(bandera2){
              iserror="false";
@@ -106,7 +102,6 @@ public abstract class FacadeTransaction<T> {
             System.out.println("Error al insertar registro:"+e.getMessage());
         }
         em.close();
-        System.out.println("arr:"+arr);
         return arr;
     }   
         
