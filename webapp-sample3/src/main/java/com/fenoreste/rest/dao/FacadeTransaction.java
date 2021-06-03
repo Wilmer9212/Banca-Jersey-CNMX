@@ -328,7 +328,7 @@ public abstract class FacadeTransaction<T> {
             Auxiliares aux=(Auxiliares) query.getSingleResult();
             Double Saldo = Double.parseDouble(aux.getSaldo().toString());
             Productos pr=em.find(Productos.class,aux.getAuxiliaresPK().getIdproducto());
-            if(pr.getIdproducto()==0){
+            if(pr.getTipoproducto()==0){
             if (Saldo >= monto) {
                  Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
                  Auxiliares aux2=(Auxiliares) query2.getSingleResult();
@@ -336,22 +336,23 @@ public abstract class FacadeTransaction<T> {
                  switch(idMov){                      
                      case 1:     
                      Productos prr=em.find(Productos.class,aux2.getAuxiliaresPK().getIdproducto());
-                     if(prr.getTipoproducto()!=2){
                           if(aux2.getIdorigen()==aux.getIdorigen() &&
                              aux2.getIdgrupo()==aux.getIdgrupo() &&
                              aux2.getIdsocio()==aux.getIdsocio()){
+                          if(prr.getTipoproducto()!=2){
                           System.out.println("saldo:" + Saldo+", estatus:"+estatus);
-                          if(estatus==2){
+                            if(estatus==2){
                               message="Trasaccion Exitosa";
-                          }else{
+                            }else{
                               message="Cuenta destino inactiva"; 
+                            }
+                          }else{
+                            message="Prestamo no acepta transferencia";
                           }
                           }else{
                               message="cuenta destino no pertenece al socio";
                           }
-                     }else{
-                         message="Prestamo no acepta transferencia";
-                     }
+                    
                           break;
                      case 2:          
                          if(aux2.getAuxiliaresPK().getIdproducto()!=2){
