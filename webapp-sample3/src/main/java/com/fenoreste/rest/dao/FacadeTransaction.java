@@ -37,10 +37,11 @@ public abstract class FacadeTransaction<T> {
         BackendOperationResultDTO backendResult = new BackendOperationResultDTO();
         String messageBackend=comprobarEntreMisCuentas(transactionOWN.getDebitProductBankIdentifier(),
                                                        transactionOWN.getCreditProductBankIdentifier(),
-                                                       transactionOWN.getAmount());
+                                                       transactionOWN.getAmount()).toUpperCase();
         System.out.println("BackendMessage:"+messageBackend);
         try {
-            Transfers transaction = new Transfers();
+            if(messageBackend.contains("EXITO")){
+            Transfers transaction = new Transfers();            
             boolean bandera = false;
             boolean bandera2 = false;
             EntityTransaction tr = em.getTransaction();
@@ -101,23 +102,23 @@ public abstract class FacadeTransaction<T> {
                 idtransaction = String.valueOf(transaction.getTransactionid());
                 backendResult.setIsError(false);
                 backendResult.setBackendCode("1");
-                backendResult.setBackendMessage("Transaccion Exitosa");
+                backendResult.setBackendMessage(messageBackend);
                 backendResult.setIntegrationProperties("{}");
                 backendResult.setBackendReference(null);
                 backendResult.setTransactionIdenty(idtransaction);
-            } else {
+            }
+            }else {
                 backendResult.setIsError(true);
                 backendResult.setBackendCode("2");
-                backendResult.setBackendMessage("Transaccion Fallida");
+                backendResult.setBackendMessage(messageBackend);
                 backendResult.setIntegrationProperties("{}");
                 backendResult.setBackendReference(null);
                 backendResult.setTransactionIdenty("0");
             }
         } catch (Exception e) {
-
             backendResult.setIsError(true);
             backendResult.setBackendCode("2");
-            backendResult.setBackendMessage("Transaccion Fallida");
+            backendResult.setBackendMessage(messageBackend);
             backendResult.setIntegrationProperties("{}");
             backendResult.setBackendReference(null);
             backendResult.setTransactionIdenty("0");
