@@ -75,12 +75,9 @@ public abstract class FacadeTransaction<T> {
             transaction.setTransactioncostcurrencyid(transactionOWN.getTransactionCostCurrencyId());
             transaction.setExchangerate(transactionOWN.getExchangeRate());
             transaction.setFechaejecucion(hoy);
-
             em.persist(transaction);
             bandera = true;
-
             tr.commit();
-
             if (bandera) {
                 em.getTransaction().begin();
                 em.createNativeQuery("UPDATE auxiliares a SET saldo="
@@ -120,7 +117,7 @@ public abstract class FacadeTransaction<T> {
         } catch (Exception e) {
             backendResult.setIsError(true);
             backendResult.setBackendCode("2");
-            backendResult.setBackendMessage(messageBackend);
+            backendResult.setBackendMessage(e.getMessage());
             backendResult.setIntegrationProperties("{}");
             backendResult.setBackendReference(null);
             backendResult.setTransactionIdenty("0");
@@ -339,20 +336,28 @@ public abstract class FacadeTransaction<T> {
     //Busco si el saldo es mayor o igual al que se solicita para la transaccion
     public String comprobarEntreMisCuentas(String opa,String opa2, Double monto) {
         EntityManager em = emf.createEntityManager();
-        String con = "SELECT saldo FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa + "'";
-        String consulta2="SELECT estatus FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa2 + "'";
+        String con = "SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa + "' AND estatus=2";
+        String consulta2="SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa2 + "'";
         String message = "";
         try {
-            Query query = em.createNativeQuery(con);
-            Double Saldo = Double.parseDouble(query.getSingleResult().toString());         
+            Query query = em.createNativeQuery(con,Auxiliares.class);
+            Auxiliares aux=(Auxiliares) query.getSingleResult();
+            Double Saldo = Double.parseDouble(aux.getSaldo().toString());         
             if (Saldo >= monto) {
-                 Query query2 = em.createNativeQuery(consulta2);
-                          int estatus=Integer.parseInt(query2.getSingleResult().toString());
+                 Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
+                 Auxiliares aux2=(Auxiliares) query2.getSingleResult();
+                          int estatus=aux2.getEstatus();
+                          if(aux2.getIdorigen()==aux.getIdorigen() &&
+                             aux2.getIdgrupo()==aux.getIdgrupo() &&
+                             aux2.getIdsocio()==aux.getIdsocio()){
                           System.out.println("saldo:" + Saldo+", estatus:"+estatus);
                           if(estatus==2){
                               message="Trasaccion Exitosa";
                           }else{
                               message="Cuenta destino inactiva"; 
+                          }
+                          }else{
+                              message="cuenta destino no pertenece al socio";
                           }
             } else {
              message="Fondos insuficientes para completar la transaccion";
