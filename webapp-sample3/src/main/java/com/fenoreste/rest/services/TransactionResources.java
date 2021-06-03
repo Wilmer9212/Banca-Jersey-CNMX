@@ -47,7 +47,6 @@ public class TransactionResources {
         
         try {
             insertTransaction=jsonRecibido.getJSONObject("inserTransactionInput");
-            transactionTypeId=insertTransaction.getInt("transactionTypeId");
             destinationDocumentId = insertTransaction.getJSONObject("destinationDocumentId");
             sourceDocumentId =insertTransaction.getJSONObject("sourceDocumentId");
             userDocumentId=insertTransaction.getJSONObject("userDocumentId");
@@ -57,7 +56,7 @@ public class TransactionResources {
         }
 
         try {
-            if (transactionTypeId == 1) {
+          
                 destinationDocumentIdDTO dto1 = new destinationDocumentIdDTO();
                 dto1.setIntegrationProperties("{}");
                 dto1.setDocumentNumber(destinationDocumentId.getString("documentNumber"));
@@ -121,7 +120,7 @@ public class TransactionResources {
                 BackendOperationResultDTO dtos= null;
                 if(dto.getSubTransactionTypeId()==1 && dto.getTransactionTypeId()==1){
                 if(dao.buscarEntreMisCuentas(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                  dtos=dao.transferencias(dto);
+                  dtos=dao.transferencias(dto);                
                 }
                 }
                 if(dto.getSubTransactionTypeId()==2 && dto.getTransactionTypeId()==1){
@@ -152,7 +151,7 @@ public class TransactionResources {
                             
                   return Response.status(Response.Status.OK).entity(build).build();
                 
-            }
+            
             
         } catch (Exception e) {
             System.out.println("Error:"+e.getMessage());
