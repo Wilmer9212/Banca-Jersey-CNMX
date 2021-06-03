@@ -345,7 +345,7 @@ public abstract class FacadeTransaction<T> {
             Auxiliares aux=(Auxiliares) query.getSingleResult();
             Double Saldo = Double.parseDouble(aux.getSaldo().toString());
             Productos pr=em.find(Productos.class,aux.getAuxiliaresPK().getIdproducto());
-            if(pr.getIdproducto()==2){
+            if(pr.getIdproducto()==0){
             if (Saldo >= monto) {
                  Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
                  Auxiliares aux2=(Auxiliares) query2.getSingleResult();
@@ -377,7 +377,7 @@ public abstract class FacadeTransaction<T> {
              message="Fondos insuficientes para completar la transaccion";
             }
             }else{
-                message="Producto origen no permite sobrecargos.";
+                message="Producto origen no permite sobrecargos";
             }
         } catch (Exception e) {
             em.close();
