@@ -9,6 +9,7 @@ import com.fenoreste.rest.ResponseDTO.BackendOperationResultDTO;
 import com.fenoreste.rest.ResponseDTO.TransactionToOwnAccountsDTO;
 import com.fenoreste.rest.Util.AbstractFacade;
 import com.fenoreste.rest.entidades.Auxiliares;
+import com.fenoreste.rest.entidades.Productos;
 import com.fenoreste.rest.entidades.Transfers;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class FacadeTransaction<T> {
         Date hoy = new Date();
         String[] arr = new String[2];
         BackendOperationResultDTO backendResult = new BackendOperationResultDTO();
-        String messageBackend=comprobarTransferencia(       transactionOWN.getDebitProductBankIdentifier(),
+        String messageBackend=comprobarTransferencia(transactionOWN.getDebitProductBankIdentifier(),
                                                      transactionOWN.getCreditProductBankIdentifier(),
                                                      transactionOWN.getAmount(),
                                                      transactionOWN.getSubTransactionTypeId()).toUpperCase();
@@ -342,7 +343,9 @@ public abstract class FacadeTransaction<T> {
         try {
             Query query = em.createNativeQuery(con,Auxiliares.class);
             Auxiliares aux=(Auxiliares) query.getSingleResult();
-            Double Saldo = Double.parseDouble(aux.getSaldo().toString());         
+            Double Saldo = Double.parseDouble(aux.getSaldo().toString());
+            Productos pr=em.find(Productos.class,aux.getAuxiliaresPK().getIdproducto());
+            if(pr.getIdproducto()==2){
             if (Saldo >= monto) {
                  Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
                  Auxiliares aux2=(Auxiliares) query2.getSingleResult();
@@ -372,6 +375,9 @@ public abstract class FacadeTransaction<T> {
                  }                        
             } else {
              message="Fondos insuficientes para completar la transaccion";
+            }
+            }else{
+                message="Producto origen no permite sobrecargos.";
             }
         } catch (Exception e) {
             em.close();
