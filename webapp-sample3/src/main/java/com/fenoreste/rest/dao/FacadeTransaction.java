@@ -35,6 +35,10 @@ public abstract class FacadeTransaction<T> {
         Date hoy = new Date();
         String[] arr = new String[2];
         BackendOperationResultDTO backendResult = new BackendOperationResultDTO();
+        String messageBackend=comprobarEntreMisCuentas(transactionOWN.getDebitProductBankIdentifier(),
+                                                       transactionOWN.getCreditProductBankIdentifier(),
+                                                       transactionOWN.getAmount());
+        System.out.println("BackendMessage:"+messageBackend);
         try {
             Transfers transaction = new Transfers();
             boolean bandera = false;

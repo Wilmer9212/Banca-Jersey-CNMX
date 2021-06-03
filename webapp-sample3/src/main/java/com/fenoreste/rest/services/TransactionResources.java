@@ -119,9 +119,7 @@ public class TransactionResources {
                 
                 BackendOperationResultDTO dtos= null;
                 if(dto.getSubTransactionTypeId()==1 && dto.getTransactionTypeId()==1){
-                if(dao.buscarEntreMisCuentas(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                  dtos=dao.transferencias(dto);                
-                }
+                dtos=dao.transferencias(dto);                
                 }
                 if(dto.getSubTransactionTypeId()==2 && dto.getTransactionTypeId()==1){
                  if(dao.buscarATerceros(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
