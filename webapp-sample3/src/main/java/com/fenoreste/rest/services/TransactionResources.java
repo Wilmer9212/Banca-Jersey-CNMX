@@ -5,6 +5,7 @@
  */
 package com.fenoreste.rest.services;
 
+import com.fenoreste.rest.ResponseDTO.BackendOperationResultDTO;
 import com.fenoreste.rest.ResponseDTO.TransactionToOwnAccountsDTO;
 import com.fenoreste.rest.ResponseDTO.destinationDocumentIdDTO;
 import com.fenoreste.rest.ResponseDTO.sourceDocumentIdDTO;
@@ -117,39 +118,35 @@ public class TransactionResources {
                 }
                 
                 
-                String[]arr = null;
-                System.out.println("dtoDescripcion:"+dto.getDescription());
-                if(dto.getDescription().replace(" ","").contains("entremiscuentas")){
-                    System.out.println("entro");
+                BackendOperationResultDTO dtos= null;
+                if(dto.getSubTransactionTypeId()==1 && dto.getTransactionTypeId()==1){
                 if(dao.buscarEntreMisCuentas(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                    System.out.println("entro entro");
-                    arr=dao.transferencias(dto);
+                  dtos=dao.transferencias(dto);
                 }
                 }
-                if(dto.getDescription().replace(" ","").contains("atercerosdentrodelaentidad")){
+                if(dto.getSubTransactionTypeId()==2 && dto.getTransactionTypeId()==1){
                  if(dao.buscarATerceros(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                  arr=dao.transferencias(dto);
+                  dtos=dao.transferencias(dto);
                 } 
                 }
                 
-                 if(dto.getDescription().replace(" ","").contains("prestamo")){
+                 if(dto.getSubTransactionTypeId()==9 && dto.getTransactionTypeId()==6){
                  if(dao.buscarPrestamos(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                  arr=dao.PageToPrestamo(dto);
+                  dtos=dao.PageToPrestamo(dto);
                 } 
                 }
                   JsonObject json=new JsonObject();
                   JsonObject json1=new JsonObject();
-                  
                   javax.json.JsonObject build=null;
                   
                   build=Json.createObjectBuilder().add("InsertTransactionResult",Json.createObjectBuilder()
                                                                                      .add("backendOperationResult",Json.createObjectBuilder()
                                                                                                                        .add("integrationProperties",Json.createObjectBuilder().build())
-                                                                                                                       .add("backendCode",Json.createObjectBuilder().build())
-                                                                                                                       .add("backendMessage",Json.createObjectBuilder().build())
-                                                                                                                       .add("backendReference",Json.createObjectBuilder().build())
-                                                                                                                       .add("isError",arr[0])
-                                                                                                                       .add("idTransaction",arr[1])
+                                                                                                                       .add("backendCode",dtos.getBackendCode())
+                                                                                                                       .add("backendMessage",dtos.getBackendMessage())
+                                                                                                                       .add("backendReference",dtos.getBackendReference())
+                                                                                                                       .add("isError",dtos.isIsError())
+                                                                                                                       .add("idTransaction",dtos.getTransactionIdenty())
                                                                                      ).build())
                           .build();
                             
@@ -177,3 +174,5 @@ public class TransactionResources {
         return date;
     }
 }
+
+

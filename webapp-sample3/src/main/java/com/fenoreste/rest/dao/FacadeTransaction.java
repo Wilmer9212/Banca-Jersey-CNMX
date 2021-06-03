@@ -5,6 +5,7 @@
  */
 package com.fenoreste.rest.dao;
 
+import com.fenoreste.rest.ResponseDTO.BackendOperationResultDTO;
 import com.fenoreste.rest.ResponseDTO.TransactionToOwnAccountsDTO;
 import com.fenoreste.rest.Util.AbstractFacade;
 import com.fenoreste.rest.entidades.Auxiliares;
@@ -14,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import sun.swing.BakedArrayList;
 
 /**
  *
@@ -27,10 +29,11 @@ public abstract class FacadeTransaction<T> {
     }
 
     
-    public String[] transferencias(TransactionToOwnAccountsDTO transactionOWN){
+    public BackendOperationResultDTO transferencias(TransactionToOwnAccountsDTO transactionOWN){
         EntityManager em=emf.createEntityManager();
         Date hoy=new Date();
         String[]arr=new String[2];
+         BackendOperationResultDTO backendResult=new BackendOperationResultDTO();
         try {
          Transfers transaction=new Transfers();
          boolean bandera=false;
@@ -86,29 +89,45 @@ public abstract class FacadeTransaction<T> {
         em.getTransaction().commit();
         bandera2=true;
         }
-            System.out.println("paso"); 
+         System.out.println("paso"); 
          String iserror="",idtransaction="";
+        
          if(bandera2){
-             iserror="false";
              idtransaction=String.valueOf(transaction.getTransactionid());
-             arr[0]=iserror;
-             arr[1]=idtransaction;
-         }else{
-             iserror="true";
-             arr[0]=iserror;
-             arr[1]=idtransaction;   
+             backendResult.setIsError(false);
+             backendResult.setBackendCode("1");
+             backendResult.setBackendMessage("Transaccion Exitosa");
+             backendResult.setIntegrationProperties("{}");
+             backendResult.setBackendReference(null);
+             backendResult.setTransactionIdenty(idtransaction);
+            }else{
+             backendResult.setIsError(true);
+             backendResult.setBackendCode("2");
+             backendResult.setBackendMessage("Transaccion Fallida");
+             backendResult.setIntegrationProperties("{}");
+             backendResult.setBackendReference(null);
+             backendResult.setTransactionIdenty("0");   
          }
         } catch (Exception e) {
+            
+             backendResult.setIsError(true);
+             backendResult.setBackendCode("2");
+             backendResult.setBackendMessage("Transaccion Fallida");
+             backendResult.setIntegrationProperties("{}");
+             backendResult.setBackendReference(null);
+             backendResult.setTransactionIdenty("0");     
+             em.close();
             System.out.println("Error al insertar registro:"+e.getMessage());
+             return backendResult;
         }
         em.close();
-        return arr;
+        return backendResult;
     }   
         
-    public String[] PageToPrestamo(TransactionToOwnAccountsDTO transactionOWN){
+    public BackendOperationResultDTO PageToPrestamo(TransactionToOwnAccountsDTO transactionOWN){
         EntityManager em=emf.createEntityManager();
         Date hoy=new Date();
-        String[]arr=new String[2];
+        BackendOperationResultDTO backendResult=new BackendOperationResultDTO();
         try {
          Transfers transaction=new Transfers();
          boolean bandera=false;
@@ -168,24 +187,36 @@ public abstract class FacadeTransaction<T> {
           tr2.commit();
           bandera2=true;
          }
-         
-         String iserror="",idtransaction="";
-         if(bandera2){
-             iserror="false";
+         String idtransaction="";
+          if(bandera2){
              idtransaction=String.valueOf(transaction.getTransactionid());
-             arr[0]=iserror;
-             arr[1]=idtransaction;
-         }else{
-             iserror="true";
-             arr[0]=iserror;
-             arr[1]=idtransaction;   
+             backendResult.setIsError(false);
+             backendResult.setBackendCode("1");
+             backendResult.setBackendMessage("Transaccion Exitosa");
+             backendResult.setIntegrationProperties("{}");
+             backendResult.setBackendReference(null);
+             backendResult.setTransactionIdenty(idtransaction);
+            }else{
+             backendResult.setIsError(true);
+             backendResult.setBackendCode("2");
+             backendResult.setBackendMessage("Transaccion Fallida");
+             backendResult.setIntegrationProperties("{}");
+             backendResult.setBackendReference(null);
+             backendResult.setTransactionIdenty("0");   
          }
-        } catch (Exception e) {
+        } catch (Exception e) {            
+             backendResult.setIsError(true);
+             backendResult.setBackendCode("2");
+             backendResult.setBackendMessage("Transaccion Fallida");
+             backendResult.setIntegrationProperties("{}");
+             backendResult.setBackendReference(null);
+             backendResult.setTransactionIdenty("0");     
+             em.close();
             System.out.println("Error al insertar registro:"+e.getMessage());
+             return backendResult;
         }
         em.close();
-        System.out.println("arr:"+arr);
-        return arr;
+        return backendResult;
     }
    
         
