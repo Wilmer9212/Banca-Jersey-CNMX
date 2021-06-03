@@ -126,10 +126,8 @@ public class TransactionResources {
                 }
                 
                  if(dto.getSubTransactionTypeId()==9 && dto.getTransactionTypeId()==6){
-                 if(dao.buscarPrestamos(dto.getDebitProductBankIdentifier(),dto.getClientBankIdentifier(),dto.getAmount(),dto.getCreditProductBankIdentifier())){
-                  dtos=dao.PageToPrestamo(dto);
-                } 
-                }
+                    dtos=dao.PageToPrestamo(dto);
+                  }
                   JsonObject json=new JsonObject();
                   JsonObject json1=new JsonObject();
                   javax.json.JsonObject build=null;
