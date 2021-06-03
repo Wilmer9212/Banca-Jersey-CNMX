@@ -35,9 +35,11 @@ public abstract class FacadeTransaction<T> {
         Date hoy = new Date();
         String[] arr = new String[2];
         BackendOperationResultDTO backendResult = new BackendOperationResultDTO();
-        String messageBackend=comprobarEntreMisCuentas(transactionOWN.getDebitProductBankIdentifier(),
-                                                       transactionOWN.getCreditProductBankIdentifier(),
-                                                       transactionOWN.getAmount()).toUpperCase();
+        String messageBackend=comprobarTransferencia(       transactionOWN.getDebitProductBankIdentifier(),
+                                                     transactionOWN.getCreditProductBankIdentifier(),
+                                                     transactionOWN.getAmount(),
+                                                     transactionOWN.getSubTransactionTypeId()).toUpperCase();
+       
         System.out.println("BackendMessage:"+messageBackend);
         try {
             if(messageBackend.contains("EXITO")){
@@ -135,9 +137,7 @@ public abstract class FacadeTransaction<T> {
          String backendMessage="";
         BackendOperationResultDTO backendResult = new BackendOperationResultDTO();
         if(transactionOWN.getSubTransactionTypeId()==1){
-        backendMessage=comprobarEntreMisCuentas(transactionOWN.getDebitProductBankIdentifier(),
-                                                      transactionOWN.getCreditProductBankIdentifier(),
-                                                      transactionOWN.getAmount());  
+         
         }
         
         try {
@@ -322,7 +322,7 @@ public abstract class FacadeTransaction<T> {
             int op=tipoTransaccion;
             switch(op){
                 case 1:
-                    comprobarEntreMisCuentas(opa,opa1,Monto);
+                    comprobarTransferencia(opa,opa1,Monto,tipoTransaccion);
                     break;
                  
            
@@ -334,7 +334,7 @@ public abstract class FacadeTransaction<T> {
     }
     
     //Busco si el saldo es mayor o igual al que se solicita para la transaccion
-    public String comprobarEntreMisCuentas(String opa,String opa2, Double monto) {
+    public String comprobarTransferencia(String opa,String opa2, Double monto,int idMov) {
         EntityManager em = emf.createEntityManager();
         String con = "SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa + "' AND estatus=2";
         String consulta2="SELECT * FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa2 + "'";
@@ -346,7 +346,9 @@ public abstract class FacadeTransaction<T> {
             if (Saldo >= monto) {
                  Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
                  Auxiliares aux2=(Auxiliares) query2.getSingleResult();
-                          int estatus=aux2.getEstatus();
+                 int estatus=aux2.getEstatus();
+                 switch(idMov){                      
+                     case 1:                          
                           if(aux2.getIdorigen()==aux.getIdorigen() &&
                              aux2.getIdgrupo()==aux.getIdgrupo() &&
                              aux2.getIdsocio()==aux.getIdsocio()){
@@ -359,13 +361,23 @@ public abstract class FacadeTransaction<T> {
                           }else{
                               message="cuenta destino no pertenece al socio";
                           }
+                          break;
+                     case 2:                           
+                         if(estatus==2){
+                              message="Trasaccion Exitosa";
+                          }else{
+                              message="Cuenta destino inactiva"; 
+                          }                          
+                         break;
+                 }                        
             } else {
              message="Fondos insuficientes para completar la transaccion";
             }
         } catch (Exception e) {
             em.close();
-            message=e.getMessage();
+            message=e.getMessage();            
             System.out.println("Error en revisar el saldo:" + e.getMessage());
+            return message;
         }
         em.close();
         return message.toUpperCase();
