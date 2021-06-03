@@ -134,6 +134,7 @@ public abstract class FacadeTransaction<T> {
 
     public BackendOperationResultDTO PageToPrestamo(TransactionToOwnAccountsDTO loanPage) {
         EntityManager em = emf.createEntityManager();
+        System.out.println("aquiiiiiiiiiiiiiii");
         Date hoy = new Date();
         BackendOperationResultDTO backendResult = new BackendOperationResultDTO();
         String backendMessage=comprobarPrestamo(loanPage.getDebitProductBankIdentifier(),
@@ -213,11 +214,18 @@ public abstract class FacadeTransaction<T> {
                 backendResult.setBackendReference(null);
                 backendResult.setTransactionIdenty("0");
             }
+        }else{
+           backendResult.setIsError(true);
+                backendResult.setBackendCode("2");
+                backendResult.setBackendMessage(backendMessage);
+                backendResult.setIntegrationProperties("{}");
+                backendResult.setBackendReference(null);
+                backendResult.setTransactionIdenty("0");      
         }
         }catch (Exception e) {
             backendResult.setIsError(true);
             backendResult.setBackendCode("2");
-            backendResult.setBackendMessage(backendMessage);
+            backendResult.setBackendMessage(e.getMessage());
             backendResult.setIntegrationProperties("{}");
             backendResult.setBackendReference(null);
             backendResult.setTransactionIdenty("0");
@@ -333,9 +341,9 @@ public abstract class FacadeTransaction<T> {
                  Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
                  Auxiliares aux2=(Auxiliares) query2.getSingleResult();
                  int estatus=aux2.getEstatus();
+                 Productos prr=em.find(Productos.class,aux2.getAuxiliaresPK().getIdproducto());
                  switch(idMov){                      
-                     case 1:     
-                     Productos prr=em.find(Productos.class,aux2.getAuxiliaresPK().getIdproducto());
+                     case 1:                          
                           if(aux2.getIdorigen()==aux.getIdorigen() &&
                              aux2.getIdgrupo()==aux.getIdgrupo() &&
                              aux2.getIdsocio()==aux.getIdsocio()){
@@ -355,7 +363,7 @@ public abstract class FacadeTransaction<T> {
                     
                           break;
                      case 2:          
-                         if(aux2.getAuxiliaresPK().getIdproducto()!=2){
+                         if(prr.getTipoproducto()!=2){
                          if(estatus==2){
                               message="Trasaccion Exitosa";
                           }else{
@@ -392,13 +400,16 @@ public abstract class FacadeTransaction<T> {
             Auxiliares aux=(Auxiliares) query.getSingleResult();
             Double Saldo = Double.parseDouble(aux.getSaldo().toString());
             Productos pr=em.find(Productos.class,aux.getAuxiliaresPK().getIdproducto());
-            if(pr.getIdproducto()==0){
+            if(pr.getTipoproducto()==0){
             if (Saldo >= monto) {
                  Query query2 = em.createNativeQuery(consulta2,Auxiliares.class);
                  Auxiliares aux2=(Auxiliares) query2.getSingleResult();
                  int estatus=aux2.getEstatus();
                  switch(1){                    
                      case 1:     
+                      if(aux2.getIdorigen()==aux.getIdorigen() &&
+                             aux2.getIdgrupo()==aux.getIdgrupo() &&
+                             aux2.getIdsocio()==aux.getIdsocio()){
                      Productos prr=em.find(Productos.class,aux2.getAuxiliaresPK().getIdproducto());
                      if(prr.getTipoproducto()==2){
                      if(estatus==2){
@@ -408,7 +419,12 @@ public abstract class FacadeTransaction<T> {
                           }
                      }else{
                          message="el producto destino no acepta pagos";
-                     }
+                     }                          
+                   }else{
+                     message="cuenta destino no pertenece al socio";       
+                   }
+                           
+                   
                      break;
                     
                  }                        
