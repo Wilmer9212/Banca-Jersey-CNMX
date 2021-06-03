@@ -128,15 +128,10 @@ public abstract class FacadeProductos<T> {
 
                 List<Auxiliares> listaA = new ArrayList<>();
                 listaA = query.getResultList();
-                System.out.println("Tamaño de lista:" + listaA.size());
                 boolean prA = false;
-
-                System.out.println("llegando");
+                
                 //Identifico la caja para la TDD
-               
-
                 Double saldo = 0.0;
-                System.out.println("oasi");
                 TarjetaDeDebito serviciosTdd=new TarjetaDeDebito();
                 for (int i = 0; i < listaA.size(); i++) {
                     Auxiliares a = listaA.get(i);
@@ -152,52 +147,7 @@ public abstract class FacadeProductos<T> {
                         }catch(Exception e){
                             System.out.println("Error en consultar tdd:"+e.getMessage());
                         }
-                        /*BalanceQueryResponseDto balance=serviciosTdd.saldoTDD(saldoTddPK);
-                        
-                        System.out.println("entro a buscar tdd");
-                        System.out.println("idproductos auxiliares:" + a.getAuxiliaresPK().getIdproducto() + ",tb dato2:" + tb.getDato2());
-
-                        System.out.println("ya entro aqui");
-
-                        TablasPK tablasPK = new TablasPK("siscoop_banca_movil", "wsdl");
-                        Tablas tbsyc = em.find(Tablas.class, tablasPK);
-                        System.out.println("tablas encontrdas:" + tb);
-                        String wsdlLocation = "http://" + tbsyc.getDato1() + ":" + tbsyc.getDato3() + "/syc/webservice/" + tbsyc.getDato2() + "?wsdl";
-                        System.out.println("wsdlLocation:" + wsdlLocation);
-                        URL url = new URL(wsdlLocation);
-                        System.out.println("ur:" + url);
-                        System.out.println("tbdato4:" + tb.getDato4());
-                        
-                        TablasPK pk = new TablasPK("siscoop_banca_movil", "wsdl_parametros");
-                        Tablas tbWsld = em.find(Tablas.class, pk);
-                        SiscoopTDD syc = new SiscoopTDD(tbWsld.getDato1(),tbWsld.getDato2());
-                        if(syc.pingURL(url,tbsyc.getDato4())){
-                            System.out.println("si hay ping");
-                         try {
-                                System.out.println("idorigenp:" + a.getAuxiliaresPK().getIdorigenp() + ",idproducto:" + a.getAuxiliaresPK().getIdproducto() + ",idauxiliar:" + a.getAuxiliaresPK().getIdauxiliar());
-                                WsFoliosTarjetasSyCPK1 pk1 = new WsFoliosTarjetasSyCPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
-                                System.out.println("pk1:" + pk1);
-                                WsFoliosTarjetasSyC1 tarjeta = em.find(WsFoliosTarjetasSyC1.class, pk1);
-                                System.out.println("Folio:" + tarjeta);
-                                if (pk1 != null) {
-                                    if (tarjeta.getActiva()) {
-                                        BalanceQueryResponseDto responseWs = syc.getSiscoop().getBalanceQuery(tarjeta.getIdtarjeta());
-                                        saldo = responseWs.getAvailableAmount();
-                                        System.out.println("Saldo en Syc:"+saldo);
-                                    }
-                                }
-                                System.out.println("pkg1:" + pk1);
-                                WsFoliosTarjetasSyC1 sc1 = em.find(WsFoliosTarjetasSyC1.class, pk1);
-                                System.out.println("sc1:" + sc1);
-                            } catch (Exception e) {
-                                System.out.println("Error al conectar a web service:" + e.getMessage());
-                            }
-                         }else{
-                            System.out.println("No existe ping con SyC");
-                        }*/
-
-                    
-
+                                      
                     try {
                         Query queryR = em.createNativeQuery("SELECT producttypeid FROM tipos_cuenta_bankingly WHERE idproducto=" + a.getAuxiliaresPK().getIdproducto());
                         if (queryR != null) {

@@ -114,6 +114,8 @@ public abstract class FacadeTransaction<T> {
                 backendResult.setIntegrationProperties("{}");
                 backendResult.setBackendReference(null);
                 backendResult.setTransactionIdenty("0");
+                System.out.println("aaaaa");
+                return backendResult;
             }
         } catch (Exception e) {
             backendResult.setIsError(true);
@@ -338,7 +340,7 @@ public abstract class FacadeTransaction<T> {
     public String comprobarEntreMisCuentas(String opa,String opa2, Double monto) {
         EntityManager em = emf.createEntityManager();
         String con = "SELECT saldo FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa + "'";
-        String consulta2="SELECT esatus FROM auxiliares WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa2 + "'";
+        String consulta2="SELECT estatus FROM auxiliares a WHERE replace(to_char(a.idorigenp,'099999')||to_char(a.idproducto,'09999')||to_char(a.idauxiliar,'09999999'),' ','')='" + opa2 + "'";
         String message = "";
         try {
             Query query = em.createNativeQuery(con);
@@ -348,7 +350,7 @@ public abstract class FacadeTransaction<T> {
                           int estatus=Integer.parseInt(query2.getSingleResult().toString());
                           System.out.println("saldo:" + Saldo+", estatus:"+estatus);
                           if(estatus==2){
-                              message="Aprobados";
+                              message="Trasaccion Exitosa";
                           }else{
                               message="Cuenta destino inactiva"; 
                           }
@@ -361,7 +363,7 @@ public abstract class FacadeTransaction<T> {
             System.out.println("Error en revisar el saldo:" + e.getMessage());
         }
         em.close();
-        return message;
+        return message.toUpperCase();
     }
 
     public void cerrar() {

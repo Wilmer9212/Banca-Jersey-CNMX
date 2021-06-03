@@ -141,9 +141,9 @@ public class TransactionResources {
                                                                                                                        .add("integrationProperties",Json.createObjectBuilder().build())
                                                                                                                        .add("backendCode",dtos.getBackendCode())
                                                                                                                        .add("backendMessage",dtos.getBackendMessage())
-                                                                                                                       .add("backendReference",dtos.getBackendReference())
+                                                                                                                       .add("backendReference","null")
                                                                                                                        .add("isError",dtos.isIsError())
-                                                                                                                       .add("idTransaction",dtos.getTransactionIdenty())
+                                                                                                                       .add("transactionIdenty",dtos.getTransactionIdenty())
                                                                                      ).build())
                           .build();
                             
