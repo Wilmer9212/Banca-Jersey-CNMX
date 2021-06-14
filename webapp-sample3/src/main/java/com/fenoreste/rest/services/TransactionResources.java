@@ -126,8 +126,7 @@ public class TransactionResources {
                 }
                 
                  if(dto.getSubTransactionTypeId()==9 && dto.getTransactionTypeId()==6){
-                     System.out.println("llego aqui");
-                    dtos=dao.PageToPrestamo(dto);
+                   dtos=dao.PageToPrestamo(dto);
                   }
                   JsonObject json=new JsonObject();
                   JsonObject json1=new JsonObject();
