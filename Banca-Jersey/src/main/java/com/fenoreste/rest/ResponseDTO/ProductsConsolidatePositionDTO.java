@@ -5,6 +5,7 @@
  */
 package com.fenoreste.rest.ResponseDTO;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -18,7 +19,7 @@ public class ProductsConsolidatePositionDTO {
       private String productAlias;
       private String productNumber;
       private Integer localCurrencyId;
-      private Double localBalance;
+      private BigDecimal localBalance;
       private Integer internationalCurrencyId;
       private Double internationalBalance;
       private Double rate;
@@ -36,7 +37,7 @@ public class ProductsConsolidatePositionDTO {
     public ProductsConsolidatePositionDTO() {
     }
 
-    public ProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, Double localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, String expirationDate, Integer paidFees, Double term, String nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName,Integer backendId) {
+    public ProductsConsolidatePositionDTO(String clientBankIdentifier, String productBankIdentifier, String productTypeId, String productAlias, String productNumber, Integer localCurrencyId, BigDecimal localBalance, Integer internationalCurrencyId, Double internationalBalance, Double rate, String expirationDate, Integer paidFees, Double term, String nextFeeDueDate, String productOwnerName, String productBranchName, Integer canTransact, Integer subsidiaryId, String subsidiaryName, Integer backendId) {
         this.clientBankIdentifier = clientBankIdentifier;
         this.productBankIdentifier = productBankIdentifier;
         this.productTypeId = productTypeId;
@@ -107,11 +108,11 @@ public class ProductsConsolidatePositionDTO {
         this.localCurrencyId = localCurrencyId;
     }
 
-    public Double getLocalBalance() {
+    public BigDecimal getLocalBalance() {
         return localBalance;
     }
 
-    public void setLocalBalance(Double localBalance) {
+    public void setLocalBalance(BigDecimal localBalance) {
         this.localBalance = localBalance;
     }
 
@@ -221,8 +222,8 @@ public class ProductsConsolidatePositionDTO {
 
     @Override
     public String toString() {
-        return "GetProductsConsolidatePositionDTO{" + "clientBankIdentifier=" + clientBankIdentifier + ", productBankIdentifier=" + productBankIdentifier + ", productTypeId=" + productTypeId + ", productAlias=" + productAlias + ", productNumber=" + productNumber + ", localCurrencyId=" + localCurrencyId + ", localBalance=" + localBalance + ", internationalCurrencyId=" + internationalCurrencyId + ", internationalBalance=" + internationalBalance + ", rate=" + rate + ", expirationDate=" + expirationDate + ", paidFees=" + paidFees + ", term=" + term + ", nextFeeDueDate=" + nextFeeDueDate + ", productOwnerName=" + productOwnerName + ", productBranchName=" + productBranchName + ", canTransact=" + canTransact + ", subsidiaryId=" + subsidiaryId + ", subsidiaryName=" + subsidiaryName + ", backendId=" + backendId + '}';
+        return "ProductsConsolidatePositionDTO{" + "clientBankIdentifier=" + clientBankIdentifier + ", productBankIdentifier=" + productBankIdentifier + ", productTypeId=" + productTypeId + ", productAlias=" + productAlias + ", productNumber=" + productNumber + ", localCurrencyId=" + localCurrencyId + ", localBalance=" + localBalance + ", internationalCurrencyId=" + internationalCurrencyId + ", internationalBalance=" + internationalBalance + ", rate=" + rate + ", expirationDate=" + expirationDate + ", paidFees=" + paidFees + ", term=" + term + ", nextFeeDueDate=" + nextFeeDueDate + ", productOwnerName=" + productOwnerName + ", productBranchName=" + productBranchName + ", canTransact=" + canTransact + ", subsidiaryId=" + subsidiaryId + ", subsidiaryName=" + subsidiaryName + ", backendId=" + backendId + '}';
     }
-      
-      
+
+    
 }

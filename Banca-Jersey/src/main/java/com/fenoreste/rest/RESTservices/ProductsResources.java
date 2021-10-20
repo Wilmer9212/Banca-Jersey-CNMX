@@ -108,12 +108,12 @@ public class ProductsResources {
         JsonObject jsonError = new JsonObject();
         List<String> productsBank = new ArrayList<String>();
         try {
+            
             JSONObject Object = new JSONObject(cadena);
             JSONArray jsonCB = Object.getJSONArray("clientBankIdentifiers");
             JSONArray jsonPB = Object.getJSONArray("productBankIdentifiers");
 
             for (int i = 0; i < jsonCB.length(); i++) {
-                System.out.println("si");
                 JSONObject jCB = (JSONObject) jsonCB.get(i);
                 ClientBankIdentifiers = jCB.getString("value");
 
@@ -130,6 +130,7 @@ public class ProductsResources {
             System.out.println("Error al convertir Json:" + e.getMessage());
         }
         System.out.println("Lista de opas:" + productsBank);
+        
         ProductsDAO dao = new ProductsDAO();
         
          if(!dao.actividad_horario()){

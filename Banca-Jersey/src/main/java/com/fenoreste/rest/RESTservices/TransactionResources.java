@@ -36,7 +36,7 @@ import org.json.JSONObject;
 public class TransactionResources {
 
     Authorization auth = new Authorization();
-    BackendOperationResultDTO backendOperationResult = new BackendOperationResultDTO();
+
     //BasePath SPEI
     String basePath = "";
 
@@ -45,6 +45,7 @@ public class TransactionResources {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Response insertTransaction(String cadena, @HeaderParam("authorization") String authCredentials /*, @Context UriInfo urlPath*/) throws IOException {
+        BackendOperationResultDTO backendOperationResult = new BackendOperationResultDTO();
         backendOperationResult.setBackendCode("2");
         backendOperationResult.setBackendMessage("Error en transaccion");
         backendOperationResult.setBackendReference(null);
@@ -52,13 +53,13 @@ public class TransactionResources {
         backendOperationResult.setIsError(true);
         backendOperationResult.setTransactionIdenty("0");
 
+        JsonObject response_json_principal = new JsonObject();
         /*================================================================
                 Validamos las credenciales mediante la utenticacion basica
         =================================================================*/
  /*if (!auth.isUserAuthenticated(authCredentials)) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Credenciales incorrectas").build();
         }*/
-        
 
         JSONObject jsonRecibido = new JSONObject(cadena.replace("null", "nulo"));
 
@@ -67,7 +68,9 @@ public class TransactionResources {
                 Obtenemos el request y lo pasamos a DTO
         =================================================================*/
         TransactionToOwnAccountsDTO dto = new TransactionToOwnAccountsDTO();
-          javax.json.JsonObject build = null;
+        JsonObject response_json_secundario = new JsonObject();
+        JsonObject response_json_3 = new JsonObject();
+
         try {
 
             JSONObject insertTransaction = jsonRecibido.getJSONObject("inserTransactionInput");
@@ -138,22 +141,40 @@ public class TransactionResources {
         } catch (Exception e) {
             backendOperationResult.setBackendCode("2");
             backendOperationResult.setBackendMessage(e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            response_json_3.put("integrationProperties", backendOperationResult.getIntegrationProperties());
+            response_json_3.put("backendCode", backendOperationResult.getBackendCode());
+            response_json_3.put("backendMessage", backendOperationResult.getBackendMessage());
+            response_json_3.put("backendReference", null);
+            response_json_3.put("isError", backendOperationResult.isIsError());
+            response_json_3.put("transactionType", backendOperationResult.getTransactionIdenty());
+
+            response_json_secundario.put("backendOperationResult", response_json_3);
+            response_json_principal.put("InsertTransactionResult", response_json_secundario);
+            return Response.status(Response.Status.BAD_REQUEST).entity(response_json_principal).build();
         }
 
         /*======================================================================
                 Si el request que nos llego es el correcto procedemos
           ======================================================================*/
-        TransactionDAO dao = new TransactionDAO();          
-        if(!dao.actividad_horario()){
-            JsonObject obje=new JsonObject();
-            obje.put("ERROR","VERIFIQUE SU HORARIO DE ACTIVIDAD FECHA,HORA O CONTACTE A SU PROVEEEDOR");
-            backendOperationResult.setBackendMessage("VVERIFIQUE SU HORARIO DE ACTIVIDAD FECHA,HORA O CONTACTE A SU PROVEEEDOR");
-           
-            return Response.status(Response.Status.BAD_REQUEST).entity(backendOperationResult).build();
+        TransactionDAO dao = new TransactionDAO();
+        if (!dao.actividad_horario()) {
+            JsonObject obje = new JsonObject();
+            obje.put("ERROR", "VERIFIQUE SU HORARIO DE ACTIVIDAD FECHA,HORA O CONTACTE A SU PROVEEEDOR");
+            backendOperationResult.setBackendMessage("VERIFIQUE SU HORARIO DE ACTIVIDAD FECHA,HORA O CONTACTE A SU PROVEEEDOR");
+             response_json_3.put("integrationProperties",null);
+            response_json_3.put("backendCode", backendOperationResult.getBackendCode());
+            response_json_3.put("backendMessage", backendOperationResult.getBackendMessage());
+            response_json_3.put("backendReference", null);
+            response_json_3.put("isError", backendOperationResult.isIsError());
+            response_json_3.put("transactionType", backendOperationResult.getTransactionIdenty());
+
+            response_json_secundario.put("backendOperationResult", response_json_3);
+            response_json_principal.put("InsertTransactionResult", response_json_secundario);
+            
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(response_json_principal).build();
         }
         try {
-            System.out.println("Accediendo a trasnferencias con subTransactionType="+dto.getSubTransactionTypeId()+",TransactionId:"+dto.getTransactionTypeId());
+            System.out.println("Accediendo a trasnferencias con subTransactionType=" + dto.getSubTransactionTypeId() + ",TransactionId:" + dto.getTransactionTypeId());
             //metodosTransferencias.comprobar(dto.getCreditProductBankIdentifier(),dto.getAmount(), dto.getClientBankIdentifier());
             //validamos el estatus de la cuenta origen(Usuario Activo,Cuenta Activa,Saldo>MontoTransaferencia y que el opa realmente pertenece al socio,que producto no sea un prestamo)
             //String mensajeOrigen=metodosTransferencias.comprobarCuentaOrigen(dto.getDebitProductBankIdentifier(),dto.getAmount(), dto.getClientBankIdentifier());
@@ -164,28 +185,27 @@ public class TransactionResources {
                 //Si la cuenta origen a sido validada
                 //validamos la cuenta destino como es una transferencia entre mis cuentas valida(cuenta al mismo ogs que el destino,que este activa y que no sea un prestamo)
              */
-            
-            
+
             //Si subtransactionType es 1 y transactionType es 1: El tipo de transaccion es es entre mis cuentas
             if (dto.getSubTransactionTypeId() == 1 && dto.getTransactionTypeId() == 1) {
-                backendOperationResult = dao.transferencias(dto, 1,null);
+                backendOperationResult = dao.transferencias(dto, 1, null);
             }
             //Si subtransactionType es 2 y transactionType es 1: El tipo de transaccion es a terceros
             if (dto.getSubTransactionTypeId() == 2 && dto.getTransactionTypeId() == 1) {
-                backendOperationResult = dao.transferencias(dto, 2,null);
+                backendOperationResult = dao.transferencias(dto, 2, null);
             }
             //Si subtransactionType es 9 y transactionType es 6: El tipo de transaccion es es un pago a prestamos 
             if (dto.getSubTransactionTypeId() == 9 && dto.getTransactionTypeId() == 6) {
-                backendOperationResult = dao.transferencias(dto, 3,null);
+                backendOperationResult = dao.transferencias(dto, 3, null);
             }
             //Si es un pago a prestamo tercero
             if (dto.getSubTransactionTypeId() == 10 && dto.getTransactionTypeId() == 6) {
-                backendOperationResult = dao.transferencias(dto, 4,null);
+                backendOperationResult = dao.transferencias(dto, 4, null);
             }
             //Si es una trasnferencia SPEI
             if (dto.getSubTransactionTypeId() == 3 && dto.getTransactionTypeId() == 1) {
                 //Consumimos mis servicios de SPEI que tengo en otro proyecto(CSN0)
-                RequestDataOrdenPagoDTO ordenReque=new RequestDataOrdenPagoDTO();                
+                RequestDataOrdenPagoDTO ordenReque = new RequestDataOrdenPagoDTO();
                 ordenReque.setClienteClabe(dto.getDebitProductBankIdentifier());//Opa origen como cuenta clabe en el metodo spei se busca la clave
                 ordenReque.setConceptoPago(dto.getDescription());
                 ordenReque.setCuentaBeneficiario(dto.getCreditProductBankIdentifier());//La clabe del beneficiario
@@ -193,11 +213,10 @@ public class TransactionResources {
                 ordenReque.setMonto(dto.getAmount());
                 ordenReque.setNombreBeneficiario(dto.getDestinationName());
                 ordenReque.setRfcCurpBeneficiario(dto.getDestinationDocumentId().getDocumentNumber());
-                ordenReque.setOrdernante(dto.getClientBankIdentifier());   
-                
-                backendOperationResult=dao.transferencias(dto,5, ordenReque);
-                
-                
+                ordenReque.setOrdernante(dto.getClientBankIdentifier());
+
+                backendOperationResult = dao.transferencias(dto, 5, ordenReque);
+
                 /*
                 requestSPEI.setBanco(dto.getDestinationBank());//Banco destino
                 requestSPEI.setBeneficiario(dto.getDestinationName());//Nombre del beneficiario
@@ -207,10 +226,19 @@ public class TransactionResources {
                 requestSPEI.setMonto(dto.getAmount());
                 requestSPEI.setRfcCurpBeneficiario(dto.getSourceName());
                 requestSPEI.setRfcCurpBeneficiario(dto.getDestinationDocumentId().getDocumentNumber());*/
-                
             }
-          
 
+            response_json_3.put("integrationProperties",null);
+            response_json_3.put("backendCode", backendOperationResult.getBackendCode());
+            response_json_3.put("backendMessage", backendOperationResult.getBackendMessage());
+            response_json_3.put("backendReference", null);
+            response_json_3.put("isError", backendOperationResult.isIsError());
+            response_json_3.put("transactionType", backendOperationResult.getTransactionIdenty());
+
+            response_json_secundario.put("backendOperationResult", response_json_3);
+            response_json_principal.put("InsertTransactionResult", response_json_secundario);
+            /*
+            response_json_principal.put("InsertTransactionResult", dao)
             build = Json.createObjectBuilder().add("InsertTransactionResult", Json.createObjectBuilder()
                     .add("backendOperationResult", Json.createObjectBuilder()
                             .add("integrationProperties", Json.createObjectBuilder().build())
@@ -220,61 +248,72 @@ public class TransactionResources {
                             .add("isError", backendOperationResult.isIsError())
                             .add("transactionIdenty", backendOperationResult.getTransactionIdenty())).build())
                     .build();
-
-           /* if (backendOperationResult.getBackendCode().equals("1")) {
+             */
+ /* if (backendOperationResult.getBackendCode().equals("1")) {
                 return Response.status(Response.Status.OK).entity(build).build();
             } else {
                 return Response.status(Response.Status.BAD_GATEWAY).entity(build).build();
             }*/
-        
+
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-        } 
-        return Response.status(Response.Status.OK).entity(build).build();
+            backendOperationResult.setBackendMessage(e.getMessage());
+            response_json_3.put("integrationProperties", null);
+            response_json_3.put("backendCode", backendOperationResult.getBackendCode());
+            response_json_3.put("backendMessage", backendOperationResult.getBackendMessage());
+            response_json_3.put("backendReference", null);
+            response_json_3.put("isError", backendOperationResult.isIsError());
+            response_json_3.put("transactionType", backendOperationResult.getTransactionIdenty());
+
+            response_json_secundario.put("backendOperationResult", response_json_3);
+            response_json_principal.put("InsertTransactionResult", response_json_secundario);
+            
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(response_json_principal).build();
+        }
+        return Response.status(Response.Status.OK).entity(response_json_principal).build();
     }
-    
+
     @POST
     @Path("/Voucher")
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response voucher(String cadena){
-        JSONObject request=new JSONObject(cadena);
-        String idTransaccion="";
+    public Response voucher(String cadena) {
+        JSONObject request = new JSONObject(cadena);
+        String idTransaccion = "";
         try {
-            idTransaccion=request.getString("transactionVoucherIdentifier");
+            idTransaccion = request.getString("transactionVoucherIdentifier");
         } catch (Exception e) {
-            System.out.println("Error al obtener Json Request:"+e.getMessage());
+            System.out.println("Error al obtener Json Request:" + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }        
-        TransactionDAO dao=new TransactionDAO();
-        JsonObject jsonMessage=new JsonObject();
+        }
+        TransactionDAO dao = new TransactionDAO();
+        JsonObject jsonMessage = new JsonObject();
         try {
-            String fileRoute=dao.voucherFileCreate(idTransaccion);
-            if(!fileRoute.equals("")){
+            String fileRoute = dao.voucherFileCreate(idTransaccion);
+            if (!fileRoute.equals("")) {
                 File file = new File(fileRoute);
-            if (file.exists()) {
-                 byte[] input_file = Files.readAllBytes(Paths.get(fileRoute));
-                byte[] encodedBytesFile = Base64.getEncoder().encode(input_file);
-                String bytesFileId = new String(encodedBytesFile);
-                jsonMessage.put("productBankStatementFile",bytesFileId);
-                jsonMessage.put("productBankStatementFileName",file.getName());             
-                
-            } else {
-                jsonMessage.put("Error","EL ARCHIVO QUE INTENTA DESCARGAR NO EXISTE");
-            }
+                if (file.exists()) {
+                    byte[] input_file = Files.readAllBytes(Paths.get(fileRoute));
+                    byte[] encodedBytesFile = Base64.getEncoder().encode(input_file);
+                    String bytesFileId = new String(encodedBytesFile);
+                    jsonMessage.put("productBankStatementFile", bytesFileId);
+                    jsonMessage.put("productBankStatementFileName", file.getName());
+
+                } else {
+                    jsonMessage.put("Error", "EL ARCHIVO QUE INTENTA DESCARGAR NO EXISTE");
+                }
             }
         } catch (Exception e) {
-            jsonMessage.put("Error",e.getMessage());
+            jsonMessage.put("Error", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(jsonMessage).build();
         }
         return Response.status(Response.Status.OK).entity(jsonMessage).build();
     }
 
     public static Timestamp stringTodate(String fecha) {
-        Timestamp time=null;
-        
-        Timestamp tm=Timestamp.valueOf(fecha);
-        time=tm;
+        Timestamp time = null;
+
+        Timestamp tm = Timestamp.valueOf(fecha);
+        time = tm;
         System.out.println("date:" + time);
         return time;
     }

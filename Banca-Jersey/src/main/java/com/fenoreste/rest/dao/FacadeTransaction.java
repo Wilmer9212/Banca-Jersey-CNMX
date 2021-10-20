@@ -145,7 +145,7 @@ public abstract class FacadeTransaction<T> {
             //Valido la transferencia y devuelvo el mensaje que se produce
             //Valido el origen si es CSN 
             if (util2.obtenerOrigen(em).contains("SANNICOLAS")) {
-                System.out.println("Ordennnnnnnnnnnnnnnnnnnnnnnnnnn SPEIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+              
                 //Valido el producto para retiro
                 //Busco el producto configurado para retiros
                 messageBackend = validarTransferenciaCSN(transactionOWN, identificadorTransferencia, SPEIOrden);
@@ -516,7 +516,7 @@ public abstract class FacadeTransaction<T> {
                             }
                         }
                     }
-
+                    
                     if (envio_ok_sms.toUpperCase().contains("ERROR")) {
                         backendResponse.setBackendMessage(backendResponse.getBackendMessage() + " " + envio_ok_sms);
                     }
@@ -529,7 +529,6 @@ public abstract class FacadeTransaction<T> {
                     } else {
                         backendResponse.setTransactionIdenty(String.valueOf(transaction.getTransactionid()));
                     }
-
                     backendResponse.setBackendMessage(mensajeBackendResult);
                     backendResponse.setBackendReference(transaction.getTransactionid().toString());
 
@@ -541,6 +540,7 @@ public abstract class FacadeTransaction<T> {
                         em.persist(transaction);
                         em.getTransaction().commit();
                     } catch (Exception e) {
+                        System.out.println("Error al persistir:"+e.getMessage());
                     }
 
                 }
@@ -1073,6 +1073,7 @@ public abstract class FacadeTransaction<T> {
                                                                 /*=======================REGLAS DE NEGOCIO==================================*/
                                                                 //Valido que la cuenta origen para CSN esta un grupo de retiro configurado
                                                                 if (util2.obtenerOrigen(em).toUpperCase().contains("SANNICOL")) {
+                                                                    System.out.println("entro a csn");
                                                                     //Buscamos que el producto origen pertenezca al grupo de retiro
                                                                     Tablas tb = util2.busquedaTabla(em, "bankingly_banca_movil", "grupo_retiro");
                                                                     if (ctaOrigen.getIdgrupo() == Integer.parseInt(tb.getDato1())) {
@@ -1080,6 +1081,7 @@ public abstract class FacadeTransaction<T> {
                                                                         Tablas tbRetiro = util2.busquedaTabla(em, "bankingly_banca_movil", "grupo_deposito");
                                                                         String cadena[] = tbRetiro.getDato1().split("\\|");
                                                                         List list = Arrays.asList(cadena);
+                                                                        System.out.println("pasoooooo : ");
                                                                         for (int i = 0; i < list.size(); i++) {
                                                                             if (ctaOrigen.getIdgrupo() == Integer.parseInt(String.valueOf(list.get(i)))) {
                                                                                 banderaGrupo = true;
@@ -1088,25 +1090,30 @@ public abstract class FacadeTransaction<T> {
                                                                         if (banderaGrupo) {
                                                                             //valido que el producto acepte depositos
                                                                             Tablas tbDeposito = util2.busquedaTabla(em, "bankingly_banca_movil", "productos_deposito");
+                                                                            System.out.println("Tabla encontrada y siguiendo:"+tbDeposito);
+                                                                            
                                                                             String productos_deposito[] = tbDeposito.getDato2().split("\\|");
                                                                             List list_deposito = Arrays.asList(productos_deposito);
+                                                                            System.out.println("dentro de for");
                                                                             for (int i = 0; i < list_deposito.size(); i++) {
                                                                                 if (ctaDestino.getAuxiliaresPK().getIdproducto() == Integer.parseInt(String.valueOf(list_deposito.get(i)))) {
                                                                                     banderaProductosDeposito = true;
                                                                                 }
                                                                             }
+                                                                            System.out.println("sgiienxcdvlxvnxclv");
                                                                             if (banderaProductosDeposito) {
                                                                                 //Para CSN el producto de prestamos ya sea tercero o propio no debe estar en Moroso
-                                                                                String b_cartera = "SELECT cartera FROM carteravencida WHERE "
+                                                                               /* String b_cartera = "SELECT cartera FROM carteravencida WHERE "
                                                                                         + " idorigenp=" + ctaDestino.getAuxiliaresPK().getIdorigenp()
                                                                                         + " AND idproducto=" + ctaDestino.getAuxiliaresPK().getIdproducto()
                                                                                         + " AND idauxiliar=" + ctaDestino.getAuxiliaresPK().getIdauxiliar();
 
-                                                                                Query query_cartera = em.createNativeQuery(b_cartera);
-                                                                                String cartera = String.valueOf(query_cartera.getSingleResult());
+                                                                                Query query_cartera = em.createNativeQuery(b_cartera);*/
+                                                                                String cartera =ctaDestino.getCartera(); //String.valueOf(query_cartera.getSingleResult());
                                                                                 if (cartera.toUpperCase().equals("M")) {
                                                                                     message = "ESTATUS DE PRODUCTO:MOROSO";
                                                                                 } else {
+                                                                                    System.out.println("yesssss");
                                                                                     message = message + " VALIDADO CON EXITO";
                                                                                 }
                                                                             } else {

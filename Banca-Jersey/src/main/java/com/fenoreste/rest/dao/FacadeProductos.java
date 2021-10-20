@@ -35,6 +35,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -118,9 +119,8 @@ public abstract class FacadeProductos<T> {
                 descripcion = "";
             }
             System.out.println("Lista:" + ListagetP);
-
-        } catch (Exception e) {
-            e.getStackTrace();
+            em.clear();
+        } catch (Exception e) {           
             System.out.println("Error Producido en buscar producto:" + e.getMessage());
         } finally {
             em.close();
@@ -129,9 +129,11 @@ public abstract class FacadeProductos<T> {
     }
 
     public List<ProductsConsolidatePositionDTO> ProductsConsolidatePosition(String clientBankIdentifier, List<String> productsBank) {
+        
         EntityManager em = AbstractFacade.conexion();
         List<ProductsConsolidatePositionDTO> ListaReturn = new ArrayList<>();
         OgsDTO ogs = util.ogs(clientBankIdentifier);
+        BigDecimal saldo=null;
         try {
             for (int ii = 0; ii < productsBank.size(); ii++) {
                 //Obtengo el opa de formateado de cada folio en la lista
@@ -139,19 +141,19 @@ public abstract class FacadeProductos<T> {
                 //Genero la consulta para buscar el auxiliar
                 String consulta = "SELECT * FROM auxiliares "
                         + " WHERE idorigenp=" + opa.getIdorigenp() + " AND idproducto=" + opa.getIdproducto() + " AND idauxiliar=" + opa.getIdauxiliar()
-                        + " AND  idorigen=" + ogs.getIdorigen() + "AND idgrupo=" + ogs.getIdgrupo() + " AND idsocio=" + ogs.getIdsocio() + " AND estatus=2";
-
+                        + " AND  idorigen=" + ogs.getIdorigen() + " AND idgrupo=" + ogs.getIdgrupo() + " AND idsocio=" + ogs.getIdsocio() + " AND estatus=2";
+                System.out.println("consulta:"+consulta);
                 Query query = em.createNativeQuery(consulta, Auxiliares.class);
                 List<Auxiliares> lista_folios = query.getResultList();
 
                 //Identifico la caja para la TDD
-                Double saldo = 0.0;
+                //Double saldo = 0.0;
                 //Corro un ciclo con todos los folios encontrados para el socio
                 for (int i = 0; i < lista_folios.size(); i++) {
                     //Obtengo folio por folio
                     Auxiliares a = lista_folios.get(i);
                     //Obtengo el saldo del folio auxiliar
-                    saldo = a.getSaldo().doubleValue();
+                    saldo = a.getSaldo();
 
                     //Verificamos cual es el origen 
                     if (util2.obtenerOrigen(em).contains("SANNICOLAS")) {
@@ -161,11 +163,11 @@ public abstract class FacadeProductos<T> {
                         if (a.getAuxiliaresPK().getIdproducto() == Integer.parseInt(tablaTDD.getDato2())) {
                             //Buscamos registros de folio para obtener el id tarjeta                       
                             WsSiscoopFoliosTarjetasPK1 foliosPK = new WsSiscoopFoliosTarjetasPK1(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
-
                             try {
+                                saldo=new BigDecimal(0);
                                 BalanceQueryResponseDto saldoWS = new TarjetaDeDebito().saldoTDD(foliosPK, em);
                                 if (saldoWS.getCode() >= 1) {
-                                    saldo = saldoWS.getAvailableAmount();
+                                    saldo = new BigDecimal(saldoWS.getAvailableAmount());
                                     // SaldoTddPK saldoTddPK = new SaldoTddPK(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
                                     // new TarjetaDeDebito().actualizarSaldoTDD(saldoTddPK, saldo, em);
                                 } else {
@@ -210,9 +212,11 @@ public abstract class FacadeProductos<T> {
                         //Particionamos el resultado de sai donde esta la pipa para obtener los valores de cada ṕocision
                         String[] partes_sai_auxiliar = sai_respuesta.split("\\|");
                         List posiciones_sai = Arrays.asList(partes_sai_auxiliar);//Posiciones sai
-                        Double io = Double.parseDouble(posiciones_sai.get(6).toString()) + Double.parseDouble(posiciones_sai.get(17).toString());
-                        Double im = Double.parseDouble(posiciones_sai.get(15).toString()) + Double.parseDouble(posiciones_sai.get(18).toString());
-                        saldo = a.getSaldo().doubleValue() + io + im;
+                        BigDecimal io = new BigDecimal(Double.parseDouble(posiciones_sai.get(6).toString()) + Double.parseDouble(posiciones_sai.get(17).toString()));
+                        BigDecimal im = new BigDecimal(Double.parseDouble(posiciones_sai.get(15).toString()) + Double.parseDouble(posiciones_sai.get(18).toString()));
+                        
+                        Double saldo1= a.getSaldo().doubleValue() + io.doubleValue() + im.doubleValue();
+                        saldo = new BigDecimal(saldo1);
                         vencimiento = String.valueOf(posiciones_sai.get(8));
 
                         String consulta1 = "SELECT count(*) FROM amortizaciones am WHERE idorigenp=" + a.getAuxiliaresPK().getIdorigenp()
@@ -263,10 +267,12 @@ public abstract class FacadeProductos<T> {
                 }
             }
             System.out.println("Lista:" + ListaReturn);
-
+            
+            
         } catch (Exception e) {
             System.out.println("Error produucido en consilidated position:" + e.getMessage());
         } finally {
+            em.clear();
             em.close();
         }
         return ListaReturn;
@@ -316,7 +322,24 @@ public abstract class FacadeProductos<T> {
 
                     //System.out.println("LocaDate:"+localDate);
                     System.out.println("yyyy/MM/dd HH:mm:ss-> " + dtf.format(LocalDateTime.now()));
-                    file = crear_llenar_txt(productBankIdentifier, fi, ff, productType);
+                    
+                    //Busco si hay movimientos si no mejor no llamos a estados de cuenta porque va a tronar
+                    String busqueda_mov="SELECT count(*) FROM auxiliares_d WHERE idorigenp="+opa.getIdorigenp()+" AND idproducto="+opa.getIdproducto()+" AND idauxiliar="+opa.getIdauxiliar()
+                                      + " AND date(fecha) between '"+fi.substring(0,10)+"' AND '"+ff.substring(0,10)+"'";
+                    
+                    System.out.println("Busqueda_mov:"+busqueda_mov);
+                    int count_mov=0;
+                    try {
+                        Query query_count_mov=em.createNativeQuery(busqueda_mov);
+                        count_mov=Integer.parseInt(String.valueOf(query_count_mov.getSingleResult()));
+                    } catch (Exception e) {
+                        System.out.println("no hay movs");
+                    }
+                    
+                    if(count_mov>0){
+                        file = crear_llenar_txt(productBankIdentifier, fi, ff, productType);
+                    }
+                    
                     //file=new File(ruta()+"e_cuenta_ahorro_0101010011000010667_2.txt");          
                     File fileTxt = new File(ruta() + file.getName());
                     if (fileTxt.exists()) {
@@ -387,7 +410,9 @@ public abstract class FacadeProductos<T> {
             String a = opa.substring(11, 19);
             String fichero_txt = ruta() + nombre_txt;
             String contenido;
-
+            
+            
+            /*Solo para pruebas buscar si hay movimientos en el mes que se esta generando para no tronar con la funcion*/
             String consulta = "SELECT sai_estado_" + NProducto.replace("e_", "") + "(" + o + "," + p + "," + a + ",'" + FInicio + "','" + FFinal + "')";
             System.out.println("Consulta Statements:" + consulta);
             Query query = em.createNativeQuery(consulta);

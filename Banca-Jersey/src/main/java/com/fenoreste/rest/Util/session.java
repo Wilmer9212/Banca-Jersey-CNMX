@@ -5,17 +5,15 @@
  */
 package com.fenoreste.rest.Util;
 
-import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionListener;
+
 
 /**
  *
  * @author wilmer
  */
-public class session implements HttpSessionListener{
-    public void sessionCreated(HttpSessionEvent event){ 
-        event.getSession().setMaxInactiveInterval(15*60); 
-    }
-        public void sessionDestroyed(HttpSessionEvent event){}
-    
-}
+@WebListener
+public class session implements HttpSessionListener {
+  
+  }
