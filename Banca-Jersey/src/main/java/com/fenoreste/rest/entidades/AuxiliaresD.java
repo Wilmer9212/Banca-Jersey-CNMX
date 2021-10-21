@@ -8,6 +8,7 @@ package com.fenoreste.rest.entidades;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "auxiliares_d")
+@Cacheable(false)
 public class AuxiliaresD implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -5,6 +5,7 @@
  */
 package com.fenoreste.rest.entidades;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="catalogo_status_bankingly")
+@Cacheable(false)
 public class Catalog_Status_Bankingly {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

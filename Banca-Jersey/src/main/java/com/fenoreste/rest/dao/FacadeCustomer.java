@@ -5,14 +5,18 @@ import com.fenoreste.rest.ResponseDTO.ClientByDocumentDTO;
 import com.fenoreste.rest.ResponseDTO.usuarios_banca_bankinglyDTO;
 import com.fenoreste.rest.entidades.Persona;
 import com.fenoreste.rest.Util.AbstractFacade;
+import com.fenoreste.rest.WsTDD.TarjetaDeDebito;
 import com.fenoreste.rest.entidades.Auxiliares;
 import com.fenoreste.rest.entidades.PersonasPK;
 import com.fenoreste.rest.entidades.Tablas;
 import com.fenoreste.rest.entidades.TablasPK;
 import com.fenoreste.rest.entidades.Usuarios_Banca_Movil;
+import com.fenoreste.rest.entidades.WsSiscoopFoliosTarjetasPK1;
 import com.fenoreste.rest.entidades.banca_movil_usuarios;
+import com.syc.ws.endpoint.siscoop.BalanceQueryResponseDto;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -209,13 +213,29 @@ public abstract class FacadeCustomer<T> {
                 if (util.obtenerOrigen(em).replace(" ", "").contains("SANNICOLAS")) {
                     //Buscamos que el socio tenga el producto 133 y con el saldo de 50 pesos
                     try {
+
+                        //Buscamos que en la tdd tenga minimo 50 pesos de saldo leemos el ws de Alestra
                         String busqueda133 = "SELECT * FROM auxiliares a WHERE idorigen=" + idorigen
                                 + " AND idgrupo=" + idgrupo
                                 + " AND idsocio=" + idsocio
                                 + " AND idproducto=" + tablaProducto.getDato2() + " AND estatus=2";
                         Query auxiliar = em.createNativeQuery(busqueda133, Auxiliares.class);
                         Auxiliares aa = (Auxiliares) auxiliar.getSingleResult();
-                        if (aa.getSaldo().doubleValue() >= Double.parseDouble(tablaProducto.getDato3())) {
+
+                        WsSiscoopFoliosTarjetasPK1 foliosPK = new WsSiscoopFoliosTarjetasPK1(aa.getAuxiliaresPK().getIdorigenp(), aa.getAuxiliaresPK().getIdproducto(), aa.getAuxiliaresPK().getIdauxiliar());
+
+                        double saldo = 0.0;
+                        BalanceQueryResponseDto saldoWS = new TarjetaDeDebito().saldoTDD(foliosPK, em);
+                        if (saldoWS.getCode() >= 1) {
+                            saldo = saldoWS.getAvailableAmount();
+                            // SaldoTddPK saldoTddPK = new SaldoTddPK(a.getAuxiliaresPK().getIdorigenp(), a.getAuxiliaresPK().getIdproducto(), a.getAuxiliaresPK().getIdauxiliar());
+                            // new TarjetaDeDebito().actualizarSaldoTDD(saldoTddPK, saldo, em);
+                        } else {
+                           
+                            System.out.println("Error al consumir web service para saldo de TDD");
+                        }
+
+                        if (saldo >= Double.parseDouble(tablaProducto.getDato3())) {
                             //S tiene el saldoque se encesita en la tdd
                             //Ahora verificamos que no se un socio bloqueado buscamos en la lista sopar
                             Tablas tb_sopar = util.busquedaTabla(em, "bankingly_banca_movil", "sopar");

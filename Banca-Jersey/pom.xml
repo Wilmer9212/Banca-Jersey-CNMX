@@ -30,7 +30,7 @@
     <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.5</version>
+        <version>9.2-1002-jdbc4</version>
     </dependency>
 
 <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
@@ -104,7 +104,7 @@
     <dependency>   
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>eclipselink</artifactId>
-        <version>2.5.2</version>
+        <version>2.7.5</version>
         <exclusions>
             <exclusion>
                 <groupId>org.eclipse.persistence</groupId>
@@ -115,7 +115,7 @@
     <dependency>
         <groupId>org.eclipse.persistence</groupId>
         <artifactId>javax.persistence</artifactId>
-        <version>2.1.0</version>
+        <version>2.1.1</version>
     </dependency>
 
 

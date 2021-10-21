@@ -8,6 +8,7 @@ package com.fenoreste.rest.entidades;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +22,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "transferencias_bankingly")
+@Cacheable(false)
 public class Transferencias implements Serializable {
 
     private static final long serialVersionUID = 1L;

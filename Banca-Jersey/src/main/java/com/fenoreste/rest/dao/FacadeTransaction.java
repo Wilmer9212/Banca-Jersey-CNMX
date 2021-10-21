@@ -451,7 +451,7 @@ public abstract class FacadeTransaction<T> {
                                         + "IVA INTERES ORDINARIO :" + ArrayDistribucion[5] + "\n"
                                         + "CAPITAL               :" + ArrayDistribucion[5] + "\n"
                                         + "ADELANTO DE INTERES   :" + ArrayDistribucion[6] + "\n \n \n \n"
-                                        + "EVITA ATRASOS, EN TU PRESTAMO EL PAGO DE INTERESES DEBBE SER MENSUAL";//Para adelanto de interese solo aplicaria para los productos configurados
+                                        + "EVITA ATRASOS, EN TU PRESTAMO EL PAGO DE INTERESES DEBE SER MENSUAL";//Para adelanto de interese solo aplicaria para los productos configurados
                             } else {
                                 mensajeBackendResult = "PAGO EXITOSO" + "\n"
                                         + "SEGURO HIPOTECARIO    :" + ArrayDistribucion[0] + "\n "

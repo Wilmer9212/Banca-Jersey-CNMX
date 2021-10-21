@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "amortizaciones")
+@Cacheable(false)
 public class Amortizaciones implements Serializable {
     private static final long serialVersionUID = 1L;
 

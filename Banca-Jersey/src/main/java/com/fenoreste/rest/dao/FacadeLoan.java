@@ -583,7 +583,7 @@ public abstract class FacadeLoan<T> {
             //Double abonoT = Double.parseDouble(amm.getAbono().toString()) + iovencido + imvencido;
             loanFee.setCapitalBalance(Double.parseDouble(aux.getSaldo().toString()));//Saldo o balance actual del prestamo
             loanFee.setFeeNumber(idamortizacion);//(amm.getAmortizacionesPK().getIdorigenp() + amm.getAmortizacionesPK().getIdproducto() + amm.getAmortizacionesPK().getIdauxiliar() + amm.getAmortizacionesPK().getIdamortizacion());//Numero de cuota
-            loanFee.setPrincipalAmount(Double.parseDouble(String.valueOf(list.get(11))));//monto de la cuota
+            loanFee.setPrincipalAmount(Double.parseDouble(String.valueOf(list.get(11)))+Double.parseDouble(String.valueOf(list.get(4))));//monto de la cuota
             loanFee.setDueDate(String.valueOf(list.get(10)));//fecha de vencimiento
             loanFee.setInterestAmount(iovencido);//Monto de interes
             loanFee.setOverdueAmount(imvencido);//Monto de mora
